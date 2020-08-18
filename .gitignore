@@ -1,0 +1,55 @@
+sam/
+
+temp/
+sumai_mob/
+python/
+icon/
+backup/
+.vscode/
+
+node_modules/**/*
+.expo/*
+npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+web-report/
+
+# macOS
+.DS_Store
+
+
+
+######################### SUMAI WEB #########################
+
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+sumai_web/node_modules
+sumai_web/.pnp
+sumai_web/.pnp.js
+
+# testing
+sumai_web/coverage
+
+# production
+sumai_web/build
+
+# misc
+sumai_web/.DS_Store
+sumai_web/.env.local
+sumai_web/.env.development.local
+sumai_web/.env.test.local
+sumai_web/.env.production.local
+
+sumai_web/npm-debug.log*
+sumai_web/yarn-debug.log*
+sumai_web/yarn-error.log*
+
+
+######################### SUMAI WEB #########################
