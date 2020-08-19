@@ -3,12 +3,13 @@ import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import imgLogo from '../images/sumai_logo.png';
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
-import {createBrowserHistory} from 'history';
 import NoticesContents from "./NoticesContents"; 
 import PolicyFooter from "./PolicyFooter"; 
+import Button from '@material-ui/core/Button';
+import {createBrowserHistory} from 'history';
+import Divider from '@material-ui/core/Divider';
 import Box from '@material-ui/core/Box';
+import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 
 const useStyles = theme => ({
     root: {
@@ -38,7 +39,6 @@ const useStyles = theme => ({
         height: '50px',
         fontSize: '15px',
         borderRadius: '0px',
-        minWidth: "80px",
         
         "&:hover": {
           fontWeight: "bold",
@@ -55,7 +55,6 @@ const useStyles = theme => ({
       fontSize: '15px',
       borderRadius: '0px',
       background: "#1e1e1e",
-      minWidth: "80px",
       
       "&:hover": {
         fontWeight: "bold",
@@ -76,7 +75,58 @@ class Notices extends Component{
           browserHistory.push(url)
         };
 
-        return ( 
+
+        /**************************************************** PC *****************************************************/
+        if(isWidthUp('sm', this.props.width)) {
+          return ( 
+              <div className={classes.root}>
+                  <AppBar position="static" className={classes.AppBarStyle}>
+                      <Toolbar variant="dense">
+
+                          <a href="/" className={classes.link} >
+                              <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
+                          </a>
+
+                      </Toolbar>
+                  </AppBar> 
+
+                  <div style={{backgroundColor: "#fff", padding: "50px 10%", minWidth: "300px"}}>
+                      
+                  <Box display="flex" justifyContent="center">
+                        <Box flexGrow={1} style={{marginRight: "-1px"}}>
+                          <Button className={classes.button} onClick={link("terms")}>
+                            이용약관
+                          </Button>
+                        </Box>
+                        <Box flexGrow={1} style={{marginRight: "-1px"}} onClick={link("privacy")}>
+                          <Button className={classes.button}>
+                            개인정보처리방침
+                          </Button>
+                        </Box>
+                        <Box flexGrow={1}>
+                          <Button className={classes.buttonSelect} >
+                            공지사항
+                          </Button>
+                        </Box>
+                      </Box>
+
+                      <Divider style={{marginTop: "50px", marginBottom: "50px"}}/>
+
+                      <div >
+                        <NoticesContents/>
+                      </div>
+                  </div>
+                  
+                  <PolicyFooter/>
+
+              </div>
+          ) 
+        }
+
+
+        /*************************************************** 모바일 ***************************************************/
+        else {
+          return ( 
             <div className={classes.root}>
                 <AppBar position="static" className={classes.AppBarStyle}>
                     <Toolbar variant="dense">
@@ -88,8 +138,8 @@ class Notices extends Component{
                     </Toolbar>
                 </AppBar> 
 
-                <div style={{backgroundColor: "#fff", padding: "50px 10%"}}>
-
+                <div style={{backgroundColor: "#fff", margin: "-1px -1px 0px -1px"}}>
+                    
                     <Box display="flex" justifyContent="center">
                       <Box flexGrow={1} style={{marginRight: "-1px"}}>
                         <Button className={classes.button} onClick={link("terms")}>
@@ -101,25 +151,27 @@ class Notices extends Component{
                           개인정보처리방침
                         </Button>
                       </Box>
-                      <Box flexGrow={1}>
-                        <Button className={classes.buttonSelect} >
+                      <Box flexGrow={1} >
+                        <Button className={classes.buttonSelect}>
                           공지사항
                         </Button>
                       </Box>
                     </Box>
 
-                    <Divider style={{marginTop: "50px", marginBottom: "50px"}}/>
-
-                    <NoticesContents/>
+                    <div style={{padding: "20px"}}>
+                        <NoticesContents/>
+                    </div>
                 </div>
                 
-                <PolicyFooter/>
-
             </div>
-        ) 
+        )
+      }
+
+
+
     } 
 }
 
-export default withStyles(useStyles)(Notices);
+export default withStyles(useStyles)(withWidth()(Notices));
 
 
