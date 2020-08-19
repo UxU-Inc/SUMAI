@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 import './App.css';
 
@@ -20,7 +20,10 @@ class App extends Component {
             <Route path="/privacy" component={ Privacy } />
             <Route path="/notices" component={ Notices } />
 
-            <Route path="/login" component={ LoginMain } />
+            <Switch>
+              <Route path="/login/signup" component={ LoginMain } />
+              <Route path="/login" component={ LoginMain } />
+            </Switch>
           </div> 
       </Router> 
       ); 

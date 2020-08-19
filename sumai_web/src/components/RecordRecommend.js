@@ -7,7 +7,6 @@ import CardContent from '@material-ui/core/CardContent';
 import Grid from '@material-ui/core/Grid';
 import Avatar from '@material-ui/core/Avatar';
 import CryptoJS from 'crypto-js';
-import axios from 'axios';
 import IconButton from '@material-ui/core/IconButton';
 import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -18,12 +17,16 @@ import PropTypes from 'prop-types';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import { connect } from 'react-redux';
+import { recommendRequest, likeRequest  } from '../actions/mainRecord';
 
 const useStyles = theme => ({
     root: {
         flexGrow: 1,
         padding: theme.spacing(3),
-        minWidth: "300px",
+        minWidth: "270px",
+        maxWidth: "1280px",
+        margin: "auto"
     },
     lineTop: {
         paddingTop: 10,
@@ -36,6 +39,13 @@ const useStyles = theme => ({
         color: '#0000008a',
         padding: theme.spacing(1),
         paddingLeft: theme.spacing(2),
+    },
+    summaryText: {
+        color: "#787878",
+        padding: "20px",
+        lineHeight: "27px",
+        pointerEvents: "none",
+        userSelect: "none",
     },
     showExpand: {
     },
@@ -85,25 +95,38 @@ class RecordRecommend extends Component{
             notLoginError: false,
             isAllLoad: false,
             loadingScroll: false,
-            isLoading: true,
         }
         references.ref = []
     }
     componentDidMount() {
-        this._dbGet();
+        this.recommend();
         window.addEventListener('resize', this.handleResize, {once: true})
         window.addEventListener("scroll", this.handleScroll)
     }
-    _dbGet = async() => {
-        const res = await axios.get('/api/record/recommend')
-        this.setState({
-            data: res.data,
-            isLoading: false,
-        })
+    recommend = () => {
+        this.props.recommendRequest().then(
+            () => {
+                if(this.props.recommendStatus === "SUCCESS") {
+                    this.setState({
+                        data: this.state.data.concat(this.props.recommendData),
+                    })
+                    if(this.state.data[this.state.data.length-1] && this.state.data[this.state.data.length-1].idx === 1) {
+                        this.setState({
+                            isAllLoad: true,
+                        })
+                    }
+                }
+            }
+        );
     }
-    _dbPost = async(sign, idx) => {
-        const res = await axios.post('/api/record/like', { sign, idx })
-        console.log(res)
+    like = (sign, idx) => {
+        this.props.likeRequest(sign, idx).then(
+            () => {
+                if(this.props.likeStatus === "SUCCESS") {
+                    
+                }
+            }
+        );
     }
 
     handleResize = () => {
@@ -175,13 +198,13 @@ class RecordRecommend extends Component{
         if(!tempState[key]) {
             sign = -1
         }
-        this._dbPost(sign, idx)
+        this.like(sign, idx)
         this.setState({
             isClick: tempState,
         })
     }    
     onClickConvertSort = (convert) => {
-        if(!this.state.isLoading){
+        if(this.props.recommendStatus !== "WAITING"){
             this.props.convertSortFunction(convert); 
         }
     }
@@ -253,10 +276,10 @@ class RecordRecommend extends Component{
                             <CardContent onClick={this.onClickExpand.bind(this, key)} style={{padding: "0px", position: "relative"}}>
                                 <Grid container direction="row" className={clsx(classes.showExpand, {[classes.hideExpand]: !this.state.isExpand[key]})}>
                                     <Grid item xs={7} sm={7} md={7} lg={7} xl={7}>
-                                        <Typography style={{color: "#787878", padding: "20px", lineHeight: "27px"}}>{el.original_data}</Typography>
+                                        <Typography className={classes.summaryText}>{el.original_data}</Typography>
                                     </Grid >
                                     <Grid item xs={5} sm={5} md={5} lg={5} xl={5} style={{borderLeft:'1px solid #e0e0e0'}}>
-                                        <Typography style={{color: "#787878", padding: "20px", lineHeight: "27px"}}>{el.summarize}</Typography>
+                                        <Typography className={classes.summaryText}>{el.summarize}</Typography>
                                     </Grid >
                                 </Grid>
                                 <Grid className={clsx(classes.expandBar, {[classes.expandBarOpen]: this.state.isExpand[key]})} style={this.state.isLowHeight[key]? {display: "none"}:null}>
@@ -287,4 +310,25 @@ RecordRecommend.defaultProps = {
     isLoggedIn: false,
 };
 
-export default withStyles(useStyles)(RecordRecommend);
+const mapStateToProps = (state) => {
+    return {
+        recommendStatus: state.mainRecord.recommend.status,
+        recommendError: state.mainRecord.recommend.error,
+        recommendData: state.mainRecord.recommend.data,
+        likeStatus: state.mainRecord.like.status,
+        likeError: state.mainRecord.like.error
+    };
+};
+ 
+const mapDispatchToProps = (dispatch) => {
+    return {
+        recommendRequest: () => {
+            return dispatch(recommendRequest());
+        },
+        likeRequest: (sign, idx) => {
+            return dispatch(likeRequest(sign, idx));
+        }
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(useStyles)(RecordRecommend));

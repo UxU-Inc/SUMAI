@@ -1,4 +1,5 @@
 import React, { Component } from 'react'; 
+import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
@@ -10,7 +11,6 @@ import TextField from '@material-ui/core/TextField';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import Box from '@material-ui/core/Box';
-import axios from 'axios';
 import imgLogo from '../images/sumai_logo_blue.png';
 import Typography from '@material-ui/core/Typography';
 import * as root from '../rootValue';
@@ -137,10 +137,6 @@ class Login extends Component{
             this.onClickLogin();
         }
     }
-    onClickGoogle = async() => {
-        const res = await axios.get('/api/login/google')
-        console.log(res.data)
-    }
     render() { 
         const { classes } = this.props;
         return ( 
@@ -166,7 +162,7 @@ class Login extends Component{
                                 fullWidth label="비밀번호" placeholder="비밀번호를 입력해주세요." type="password" style={{height: "70px"}} inputRef={this.textFieldRef[1]}
                                 onKeyPress={this.onKeyPress}/>
                             <Box textAlign="right" fontSize={13}>
-                                <Button onClick={this.props.startSignupFunction} className={classes.accountCreateButton}>계정 만들기</Button>
+                                <Link to="/login/signup" style={{textDecoration: 'none'}}><Button className={classes.accountCreateButton}>계정 만들기</Button></Link>
                             </Box>
                         </CardContent>
                         <CardActions className={classes.loginButtonLayout}>
