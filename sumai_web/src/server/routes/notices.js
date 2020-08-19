@@ -8,7 +8,7 @@ const router = express.Router();
 router.post('/notices', (req, res) => {
     let page=req.body.page
     let rowsPPage=req.body.rowsPPage
-    db.query("SELECT * FROM summary.notices ORDER BY `index` DESC LIMIT "+page*rowsPPage+", "+(page+1)*rowsPPage, (err, data) => {
+    db.query("SELECT * FROM summary.notices ORDER BY `index` DESC LIMIT "+page*rowsPPage+", "+rowsPPage, (err, data) => {
         if(!err) {
             res.send(data);
         } else {
