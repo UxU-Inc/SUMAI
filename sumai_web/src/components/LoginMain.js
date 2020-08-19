@@ -1,5 +1,4 @@
 import React, { Component } from 'react'; 
-import './Main.css';
 
 import Header from "../components/Header"; 
 import Signup from "../components/Signup";
@@ -7,20 +6,14 @@ import Login from "../components/Login";
 import { Alert, AlertTitle } from '@material-ui/lab';
 
 import { connect } from 'react-redux';
-import { signupRequest } from '../actions/authentication';
-import { loginRequest } from '../actions/authentication';
+import { signupRequest, loginRequest  } from '../actions/authentication';
 
 class LoginMain extends Component{ 
-    state = {
-        isSignup: false,
-    }
     handleSignup = (email, name, password) => {
         return this.props.signupRequest(email, name, password).then(
             () => {
                 if(this.props.signupStatus === "SUCCESS") {
-                    this.setState({
-                        isSignup: false
-                    })
+                    this.props.history.push('/login');
                     return { success: true }
                 } else {
                     return { success: false, error: this.props.signupErrorCode }
@@ -48,11 +41,6 @@ class LoginMain extends Component{
             }
         );
     }
-    startSignupFunction = () => {
-        this.setState({
-            isSignup: true
-        })
-    } 
     render(){ 
         return ( 
             <div> 
@@ -63,9 +51,8 @@ class LoginMain extends Component{
                         <strong>로그인을 해주세요!</strong>
                     </Alert>: null}
                 <div className="Main">
-                    {this.state.isSignup? <Signup onSignup={this.handleSignup}/>:<Login startSignupFunction={this.startSignupFunction} onLogin={this.handleLogin}/>}
+                    {this.props.match.path === "/login/signup"? <Signup onSignup={this.handleSignup}/>:<Login onLogin={this.handleLogin}/>}
                 </div>
-
             </div> 
         ) 
     } 

@@ -103,6 +103,10 @@ export default function authentication(state = initialState, action) {
     case types.AUTH_LOGOUT:
       return {
         ...state,
+        signup: {
+          status: 'INIT',
+          error: -1
+        },
         status: {
           ...state.status,
           isLoggedIn: false,
