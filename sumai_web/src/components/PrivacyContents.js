@@ -20,12 +20,12 @@ const useStyles = theme => ({
       },
   },
   subtitle: {
-    fontSize: "16px",
+    fontSize: "20px",
     fontWeight: "bold",
   },
   content: {
     fontSize: "14px",
-    fontFamily: "NotoSansKR-Black",
+    fontFamily: "NotoSansKR-Regular",
     lineHeight: "25px",
   },
 });
@@ -37,7 +37,7 @@ class PrivacyContents extends React.Component {
         const { classes } = this.props;
 
         return (
-          <div style={{padding: "0px 5%", minWidth: "200px"}}>
+          <div style={{minWidth: "300px"}}>
             <Typography className={classes.subtitle}>1. 개인정보처리방침이란?</Typography>
             <Typography className={classes.content}>
                 SUMAI(이하"회사")는 이용자의 ‘동의를 기반으로 개인정보를 수집·이용 및 제공’하고 있으며,<br/>
@@ -59,12 +59,12 @@ class PrivacyContents extends React.Component {
                 회원 가입 시 또는 서비스 이용 과정에서 홈페이지 또는 개별 어플리케이션이나 프로그램 등을 통해 아래와 같은 서비스 제공을 위해 필요한 최소한의 개인정보를 수집하고 있습니다.<br/>
                 <br/>
                 [SUMAI]
-                <ul>
+                <ul style={{margin: "0px"}}>
                     <li>필수 : 이메일, 비밀번호(SNS 가입이 아닌 이메일 가입의 경우), 이름(닉네임)</li>
                     <li>선택 : 생년월일, 성별</li>
                 </ul>
                 [고객센터]
-                <ul>
+                <ul style={{margin: "0px"}}>
                     <li>필수 : 이메일</li>
                 </ul>
                 <br/>

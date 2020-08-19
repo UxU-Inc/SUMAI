@@ -20,12 +20,12 @@ const useStyles = theme => ({
       },
   },
   subtitle: {
-    fontSize: "16px",
+    fontSize: "20px",
     fontWeight: "bold",
   },
   content: {
     fontSize: "14px",
-    fontFamily: "NotoSansKR-Black",
+    fontFamily: "NotoSansKR-Regular",
     lineHeight: "25px",
   },
 });
@@ -37,7 +37,7 @@ class TermsContents extends React.Component {
         const { classes } = this.props;
 
         return (
-          <div style={{padding: "0px 5%", minWidth: "200px"}}>
+          <div style={{minWidth: "300px"}}>
             <Typography className={classes.subtitle}>여러분을 환영합니다.</Typography>
             <Typography className={classes.content}>
               SUMAI 서비스 및 제품(이하 ‘서비스’)을 이용해 주셔서 감사합니다. 본 약관은 다양한 SUMAI 서비스의 이용과 관련하여 SUMAI 서비스를 제공하는 SUMAI와 이를 이용하는 SUMAI 서비스 회원(이하 ‘회원’) 또는 비회원과의 관계를 설명하며, 아울러 여러분의 SUMAI 서비스 이용에 도움이 될 수 있는 유익한 정보를 포함하고 있습니다.<br/>

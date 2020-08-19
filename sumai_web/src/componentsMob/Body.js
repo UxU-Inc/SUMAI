@@ -14,6 +14,7 @@ import IconButton from '@material-ui/core/IconButton';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import Box from '@material-ui/core/Box';
 import CloseIcon from '@material-ui/icons/Close';
+import * as root from '../rootValue';
 
 const useStyles = theme => ({
   root: {
@@ -41,7 +42,7 @@ const useStyles = theme => ({
       lineHeight: '35px',
       minHeight: theme.spacing(12),
       fontSize: '24px',
-      fontFamily: 'NotoSansKR-Black',
+      fontFamily: 'NotoSansKR-Regular',
       border: 'none',
       outline: 'none',
       resize: 'none',
@@ -56,9 +57,9 @@ const useStyles = theme => ({
   },
   summaryButton: {
       color: '#ffffff',
-      background: '#2196f3',
+      background: root.PrimaryColor,
       "&:hover": {
-        background: "#42a5f5"
+        background: root.HoberColor
       },
       padding: theme.spacing(1),
       margin: "0px 10px 10px 0px",

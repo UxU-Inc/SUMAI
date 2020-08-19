@@ -17,6 +17,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import clsx from 'clsx';
 import Fab from '@material-ui/core/Fab';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import * as root from '../rootValue';
 
 const useStyles = theme => ({
   root: {
@@ -60,7 +61,7 @@ const useStyles = theme => ({
     textAlign: "right",
   },
   summaryLayout: {
-    minHeight: theme.spacing(29.275),
+    minHeight: theme.spacing(28.8),
     fontSize: '24px',
     lineHeight: '35px',
   },
@@ -70,9 +71,9 @@ const useStyles = theme => ({
   summaryButton: {
     variant: 'contained',
     color: '#ffffff',
-    background: '#2196f3',
+    background: root.PrimaryColor,
     "&:hover": {
-      background: "#42a5f5"
+      background: root.HoberColor
     },
     width: '100%',
     height: '50px',
@@ -164,6 +165,7 @@ class Body extends React.Component {
     componentWillUnmount() {
       window.removeEventListener('scroll', this.scrollFab)
     }
+
 
     render() {
         const { classes } = this.props;
