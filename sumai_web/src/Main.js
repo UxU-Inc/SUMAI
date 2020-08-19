@@ -36,8 +36,7 @@ class Main extends React.Component {
         }
         
     }
-
-
+    
     convertSortFunction = (convert) => {
         this.setState({
             convertSort: convert
@@ -93,7 +92,6 @@ class Main extends React.Component {
         );
     }
 
-
     handleChange = (e) => {
         if(e.target.value.length === 0) {
             this.setState({
@@ -133,7 +131,6 @@ class Main extends React.Component {
         }
     }
 
-
     onClick = (e) => {
         if(100 < this.state.text.length) {
             this.setState({
@@ -161,7 +158,6 @@ class Main extends React.Component {
           fontSizeSummary: 22,
         })
     }
-
 
     fetchUsers = async () => {
         try {
@@ -200,62 +196,51 @@ class Main extends React.Component {
         })
     };
 
-  
+
     errorSet = () => {
         this.setState({
             error: null,
         })
     }
 
-
     render() {
-
-
-        /**************************************************** PC *****************************************************/
-        if(isWidthUp('sm', this.props.width)) {
-
-            return ( 
-                <div> 
-                    <Header isLoggedIn={this.props.status.isLoggedIn} currentUser={this.props.status.currentUser} 
-                            onLogout={this.handleLogout} props={this.props}/> 
-
-                    <div >
-                        <Body state={this.state} handleChange={this.handleChange} onClick={this.onClick} 
-                              textRemove={this.textRemove} fetchUsers={this.fetchUsers} errorSet={this.errorSet} />
-                    </div>
-
+        return ( 
+            <div>
+                {[''].map( (key) => {
+                    return(
+                        isWidthUp('sm', this.props.width)? 
+                        <div key={key}> 
+                            <Header isLoggedIn={this.props.status.isLoggedIn} currentUser={this.props.status.currentUser} 
+                                    onLogout={this.handleLogout} props={this.props}/> 
+                            <div >
+                                <Body state={this.state} handleChange={this.handleChange} onClick={this.onClick} 
+                                        textRemove={this.textRemove} fetchUsers={this.fetchUsers} errorSet={this.errorSet} />
+                            </div>
+                        </div> :
+                        <div className="MainMob" key={key}> 
+                            <HeaderMob isLoggedIn={this.props.status.isLoggedIn} currentUser={this.props.status.currentUser} 
+                                    onLogout={this.handleLogout} props={this.props}/> 
+                            <div >
+                                <BodyMob state={this.state} handleChange={this.handleChange} 
+                                        textRemove={this.textRemove} fetchUsers={this.fetchUsers} errorSet={this.errorSet} />
+                            </div>
+                            
+                        </div> 
+                    )
+                })}
+                <div style={isWidthUp('sm', this.props.width)? null: {display:"none"}}>
                     {this.state.convertSort? <RecordRecommend convertSortFunction={this.convertSortFunction} isLoggedIn={this.props.status.isLoggedIn}/>:
                     <RecordLastest convertSortFunction={this.convertSortFunction} isLoggedIn={this.props.status.isLoggedIn}/>}
-
                 </div> 
-            )
-        } 
-        
-
-
-        /*************************************************** 모바일 ***************************************************/
-        else {
-
-            return ( 
-                <div className="MainMob"> 
-                    <HeaderMob /> 
-                    <div >
-                        <BodyMob state={this.state} handleChange={this.handleChange} 
-                                textRemove={this.textRemove} fetchUsers={this.fetchUsers} errorSet={this.errorSet} />
-                    </div>
-                    
-                </div> 
-            )
-        }
-
+            </div>
+        )
 
     }
-
 }
 
 const mapStateToProps = (state) => {
     return {
-        status: state.authentication.status
+        status: state.authentication.status,
     };
 };
  
@@ -266,7 +251,7 @@ const mapDispatchToProps = (dispatch) => {
         },
         logoutRequest: () => {
             return dispatch(logoutRequest());
-        }
+        },
     };
 };
 

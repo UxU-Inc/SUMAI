@@ -289,7 +289,7 @@ class Header extends Component{
   render() { 
     const { classes } = this.props;
     const loginButton = (
-      <Button onClick={this.onClickLink("Login")} style={this.getLocation() === "/Login"? { display: "none" }: {background: "#2196f3", color: "#fff", padding: "5px", minWidth: "78px"}} >
+      <Button onClick={this.onClickLink("login")} style={this.getLocation() === "/login"? { display: "none" }: {background: "#2196f3", color: "#fff", padding: "5px", minWidth: "78px"}} >
         <AccountIcon style={{marginRight: "5px"}}/>
         로그인
       </Button>
