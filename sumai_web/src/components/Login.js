@@ -13,6 +13,7 @@ import Box from '@material-ui/core/Box';
 import axios from 'axios';
 import imgLogo from '../images/sumai_logo_blue.png';
 import Typography from '@material-ui/core/Typography';
+import * as root from '../rootValue';
 
 const useStyles = theme => ({
     root: {
@@ -48,9 +49,9 @@ const useStyles = theme => ({
     loginButton: {
         variant: 'contained',
         color: '#ffffff',
-        background: '#2196f3',
+        background: root.PrimaryColor,
         "&:hover": {
-          background: "#42a5f5"
+          background: root.HoberColor,
         },
         width: '100%',
         height: '50px',
@@ -58,7 +59,17 @@ const useStyles = theme => ({
         fontWeight: 'bold',
         borderRadius: '0px',
     },
+    accountCreateButton: {
+        padding: "5px 10px", 
+        fontSize: "15px", 
+        color: root.PrimaryColor,
+        "&:hover": {
+          background: "none"
+        },
+    },
 })
+
+
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -149,13 +160,13 @@ class Login extends Component{
                         />
                         <CardContent style={{padding: "16px 10%"}}>
                             <TextField variant="outlined" autoFocus value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.emailerror || this.state.signupEmailExist}
-                                fullWidth label="이메일" placeholder="이메일을 입력해주세요." style={{height: "70px", marginTop: "15px", fontFamily: "NotoSansKR-Thin"}} inputRef={this.textFieldRef[0]}
+                                fullWidth label="이메일" placeholder="이메일을 입력해주세요." color="primary" style={{height: "70px", marginTop: "15px", fontFamily: "NotoSansKR-Thin"}} inputRef={this.textFieldRef[0]}
                                 onKeyPress={this.onKeyPress}/>
                             <TextField variant="outlined" value={this.state.password} onChange={this.handleChange.bind(this, "password")} error={this.state.passworderror}
                                 fullWidth label="비밀번호" placeholder="비밀번호를 입력해주세요." type="password" style={{height: "70px"}} inputRef={this.textFieldRef[1]}
                                 onKeyPress={this.onKeyPress}/>
                             <Box textAlign="right" fontSize={13}>
-                                <Button onClick={this.props.startSignupFunction} size="small" color="primary" style={{padding: "0px"}}>계정 만들기</Button>
+                                <Button onClick={this.props.startSignupFunction} className={classes.accountCreateButton}>계정 만들기</Button>
                             </Box>
                         </CardContent>
                         <CardActions className={classes.loginButtonLayout}>

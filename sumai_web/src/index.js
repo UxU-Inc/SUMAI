@@ -10,6 +10,8 @@ import thunk from 'redux-thunk';
 
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
+import * as root from './rootValue';
+
 const theme = createMuiTheme({
   typography: {
     fontFamily: 'NotoSansKR-Medium',
@@ -21,6 +23,14 @@ const theme = createMuiTheme({
       md: 960,
       lg: 1280,
       xl: 1920,
+    },
+  },
+  palette: {
+    primary: {
+      main: root.PrimaryColor,
+    },
+    secondary: {
+      main: root.SecondaryColor,
     },
   },
 });

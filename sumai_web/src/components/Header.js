@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, { Component } from 'react'; 
+import React, { Component, useEffect } from 'react'; 
 import { withStyles } from '@material-ui/core/styles';
 import './Header.css';
 import AppBar from '@material-ui/core/AppBar';
@@ -33,6 +33,8 @@ import MuiDialogActions from '@material-ui/core/DialogActions';
 import CloseIcon from '@material-ui/icons/Close';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 
+import html2canvas from 'html2canvas';
+
 
 const useStyles = theme => ({
   root: {
@@ -65,6 +67,7 @@ const useStyles = theme => ({
     width: 'auto',
   },
   listText: {
+    fontFamily: "NotoSansKR-Regular",
     padding: theme.spacing(0.5),
     paddingLeft: theme.spacing(5),
     fontSize: 13,
@@ -107,19 +110,42 @@ const DialogActions = withStyles((theme) => ({
 }))(MuiDialogActions);
 
 
-
-
 function FeedbackDialog(props) {
-    
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const {open, setOpen, classes} = props
+  const [screen, setScreen] = React.useState(null)
+
+  const screenShot = () => {
+    document.getElementById('feedback').hidden = true
+    html2canvas(document.body, {removeContainer: false, }).then(function(canvas) {
+      // return(canvas)
+    // setScreen(document.getElementById('capture').appendChild(canvas))
+    document.getElementById('feedback').hidden = false
+    setScreen(canvas)
+    })
+  }
+  const showCanvas = () => {
+    console.log('미구현')
+  }
+
+  useEffect(() => {
+    if(screen!==null){
+      let t=document.getElementById('screenshotPreview')
+      t.src=screen.toDataURL()
+      t.height=300
+
+      
+      // let context = screen.getContext("2d")
+      // context.fillStyle = "#FF0000";
+      // context.fillRect(0,0,150,75)
+    }
+  },[screen])
 
   const handleClose = () => {
     setOpen(false);
   };
 
   return (
-    <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}
+    <Dialog id='feedback' onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}
         style={{
           width: '460px',
           justifyContent: 'center',
@@ -135,8 +161,8 @@ function FeedbackDialog(props) {
           </DialogTitle>
           <Box
           style={{
-            minHeight: '200px',
-            maxHeight: '250px',
+            minHeight: '100px',
+            maxHeight: '150px',
             display: 'flex',
             padding: "10px 15px"
           }}>
@@ -152,6 +178,36 @@ function FeedbackDialog(props) {
               outline: 'none',
               font: "400 16px Roboto, RobotoDraft, Helvetica, Arial, sans-serif",
             }}/>
+          </Box>
+          <Box style={{
+            display: 'block',
+            background: 'WhiteSmoke',
+            padding: '0 10px'
+          }}>
+            <Box id='screenshotButton' style={{
+              display: 'flex',
+              width: '400'
+            }}>
+            <Button onClick={(event) => {
+              screenShot()
+              document.getElementById('screenshotButton').remove()
+            }} 
+            style={{
+              marginLeft:'auto',
+              marginRight:'auto'
+            }}>스크린샷 첨부하기</Button>
+            </Box>
+            <Box style={{
+              display: 'flex'
+            }}>
+              <img id="screenshotPreview" src='' alt='' style={{
+                marginLeft: 'auto',
+                marginRight: 'auto',
+              }}
+              onClick={showCanvas}
+              >
+              </img>
+            </Box>
           </Box>
           <small
           style={{
@@ -294,8 +350,8 @@ class Header extends Component{
   render() { 
     const { classes } = this.props;
     const loginButton = (
-      <Button onClick={this.onClickLink("Login")} style={this.getLocation() === "/Login"? { display: "none" }: { background: "#2196f3", color: "#fff", padding: "7.5px 15px" }}>
-        <AccountIcon style={{marginRight: "5px"}}/>
+      <Button onClick={this.onClickLink("login")} style={this.getLocation() === "/login"? { display: "none" }: { background: "#2196f3", color: "#fff", padding: "7.5px 15px" }}>
+        <AccountIcon style={{marginRight: "5px",}}/>
         로그인
       </Button>
     )
@@ -378,7 +434,7 @@ class Header extends Component{
           </Toolbar>
         </AppBar>
 
-        <FeedbackDialog open={this.state.dialogOpen} setOpen={this.dialogOpen} classes={classes} />        
+        <FeedbackDialog open={this.state.dialogOpen} setOpen={this.dialogOpen} classes={classes}/>        
 
 
       </div>
