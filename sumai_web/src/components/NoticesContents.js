@@ -212,13 +212,16 @@ export default function NoticesContents() {
     setCount(res.data[0]['COUNT(*)'])
     await queryData(0)
     
-    // setEmptyRows(rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage));
   }
 
   useEffect(() => {
     mountFunc()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+  
+  useEffect(() => {
+    setEmptyRows(rowsPerPage - rows.length);
+  }, [rows])
   
   return (
     <Box
