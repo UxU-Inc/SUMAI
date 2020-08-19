@@ -3,12 +3,12 @@ import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import imgLogo from '../images/sumai_logo.png';
+import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
+import {createBrowserHistory} from 'history';
 import NoticesContents from "./NoticesContents"; 
 import PolicyFooter from "./PolicyFooter"; 
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import {createBrowserHistory} from 'history';
-import Divider from '@material-ui/core/Divider';
+import Box from '@material-ui/core/Box';
 
 const useStyles = theme => ({
     root: {
@@ -38,6 +38,7 @@ const useStyles = theme => ({
         height: '50px',
         fontSize: '15px',
         borderRadius: '0px',
+        minWidth: "80px",
         
         "&:hover": {
           fontWeight: "bold",
@@ -54,6 +55,7 @@ const useStyles = theme => ({
       fontSize: '15px',
       borderRadius: '0px',
       background: "#1e1e1e",
+      minWidth: "80px",
       
       "&:hover": {
         fontWeight: "bold",
@@ -63,7 +65,7 @@ const useStyles = theme => ({
   },
 });
 
-class Terms extends Component{ 
+class Notices extends Component{ 
 
     render(){ 
         const { classes } = this.props;
@@ -86,31 +88,29 @@ class Terms extends Component{
                     </Toolbar>
                 </AppBar> 
 
-                <div className="Main">
-                    
-                    <Grid container direction="row" justify="center" style={{marginTop: "16px"}}>
-                      <Grid item xs={4} sm={4} md={4} lg={4} xl={4} style={{marginRight: "-1px"}}>
+                <div style={{backgroundColor: "#fff", padding: "50px 10%"}}>
+
+                    <Box display="flex" justifyContent="center">
+                      <Box flexGrow={1} style={{marginRight: "-1px"}}>
                         <Button className={classes.button} onClick={link("terms")}>
                           이용약관
                         </Button>
-                      </Grid>
-                      <Grid item xs={4} sm={4} md={4} lg={4} xl={4} style={{marginRight: "-1px"}}>
+                      </Box>
+                      <Box flexGrow={1} style={{marginRight: "-1px"}}>
                         <Button className={classes.button} onClick={link("privacy")}>
                           개인정보처리방침
                         </Button>
-                      </Grid>
-                      <Grid item xs={4} sm={4} md={4} lg={4} xl={4} >
+                      </Box>
+                      <Box flexGrow={1}>
                         <Button className={classes.buttonSelect} >
                           공지사항
                         </Button>
-                      </Grid>
-                    </Grid>
+                      </Box>
+                    </Box>
 
                     <Divider style={{marginTop: "50px", marginBottom: "50px"}}/>
 
-                    <div >
-                      <NoticesContents/>
-                    </div>
+                    <NoticesContents/>
                 </div>
                 
                 <PolicyFooter/>
@@ -120,6 +120,6 @@ class Terms extends Component{
     } 
 }
 
-export default withStyles(useStyles)(Terms);
+export default withStyles(useStyles)(Notices);
 
 
