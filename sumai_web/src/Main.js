@@ -208,7 +208,7 @@ class Main extends React.Component {
             <div>
                 {[''].map( (key) => {
                     return(
-                        isWidthUp('sm', this.props.width)? 
+                        isWidthUp('md', this.props.width)? 
                         <div key={key}> 
                             <Header isLoggedIn={this.props.status.isLoggedIn} currentUser={this.props.status.currentUser} 
                                     onLogout={this.handleLogout} props={this.props}/> 
@@ -228,7 +228,7 @@ class Main extends React.Component {
                         </div> 
                     )
                 })}
-                <div style={isWidthUp('sm', this.props.width)? null: {display:"none"}}>
+                <div style={isWidthUp('md', this.props.width)? null: {display:"none"}}>
                     {this.state.convertSort? <RecordRecommend convertSortFunction={this.convertSortFunction} isLoggedIn={this.props.status.isLoggedIn}/>:
                     <RecordLastest convertSortFunction={this.convertSortFunction} isLoggedIn={this.props.status.isLoggedIn}/>}
                 </div> 

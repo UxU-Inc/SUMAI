@@ -77,7 +77,7 @@ class Notices extends Component{
 
 
         /**************************************************** PC *****************************************************/
-        if(isWidthUp('sm', this.props.width)) {
+        if(isWidthUp('md', this.props.width)) {
           return ( 
               <div className={classes.root}>
                   <AppBar position="static" className={classes.AppBarStyle}>
