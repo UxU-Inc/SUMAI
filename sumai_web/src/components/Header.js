@@ -26,6 +26,7 @@ import MenuList from '@material-ui/core/MenuList';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import AccountIcon from '@material-ui/icons/AccountCircle';
 import NewsIcon from '@material-ui/icons/ChromeReaderMode';
+import * as root from '../rootValue';
 
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
@@ -168,7 +169,7 @@ function FeedbackDialog(props) {
   return (
     <Dialog id='feedback' onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}
     style={{width: '460px', justifyContent: 'center', margin: '0 auto'}}>
-      <DialogTitle id="customized-dialog-title" onClose={handleClose} style={{backgroundColor: '#2196f3', color: 'white', padding: "10px 15px"}}>
+      <DialogTitle id="customized-dialog-title" onClose={handleClose} style={{backgroundColor: root.PrimaryColor, color: 'white', padding: "10px 15px"}}>
         의견 보내기
       </DialogTitle>
       <Box style={{minHeight: '100px', maxHeight: '150px', display: 'flex', padding: "10px 15px"}}>
@@ -331,7 +332,7 @@ class Header extends Component{
   render() { 
     const { classes } = this.props;
     const loginButton = (
-      <Button onClick={this.onClickLink("login")} style={this.getLocation() === "/login"? { display: "none" }: { background: "#2196f3", color: "#fff", padding: "7.5px 15px" }}>
+      <Button onClick={this.onClickLink("login")} style={this.getLocation() === "/login"? { display: "none" }: { background: root.PrimaryColor, color: "#fff", padding: "7.5px 15px" }}>
         <AccountIcon style={{marginRight: "5px",}}/>
         로그인
       </Button>
@@ -407,7 +408,7 @@ class Header extends Component{
             <div style={{flexGrow: 1}}/>
 
             <IconButton style={{marginRight: "10px"}}>
-                <NewsIcon style={{color: "#2196f3"}}/>
+                <NewsIcon style={{color: root.PrimaryColor}}/>
             </IconButton>
 
             {this.props.isLoggedIn ? loginLayout : loginButton}
