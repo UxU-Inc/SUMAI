@@ -14,11 +14,12 @@ import Box from '@material-ui/core/Box';
 import imgLogo from '../images/sumai_logo_blue.png';
 import Typography from '@material-ui/core/Typography';
 import * as root from '../rootValue';
+import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 
 const useStyles = theme => ({
     root: {
-        flexGrow: 1,
-        padding: theme.spacing(3),
+        marginTop: "-75px",
+        padding: "40px",
     },
     cardTitleText: {
         borderBottom: '1px solid #e0e0e0',
@@ -59,13 +60,36 @@ const useStyles = theme => ({
         fontWeight: 'bold',
         borderRadius: '0px',
     },
+    loginButtonMob: {
+        variant: 'contained',
+        color: '#ffffff',
+        background: root.PrimaryColor,
+        "&:hover": {
+          background: root.HoberColor,
+        },
+        width: '100%',
+        height: '50px',
+        fontSize: '20px',
+        fontWeight: 'bold',
+    },
     accountCreateButton: {
-        padding: "5px 10px", 
+        padding: "7.5px 10px", 
         fontSize: "15px", 
         color: root.PrimaryColor,
         "&:hover": {
           background: "none"
         },
+        marginTop: "10px",
+    },
+    termsButton: {
+        padding: "7.5px 10px", 
+        fontSize: "12px", 
+        color: "#757575",
+        fontFamily: "NotoSansKR-Light",
+        "&:hover": {
+          background: "none"
+        },
+        marginTop: "10px",
     },
 })
 
@@ -139,48 +163,99 @@ class Login extends Component{
     }
     render() { 
         const { classes } = this.props;
-        return ( 
-            <div className={classes.root} >
-                <Grid container justify="center" spacing={1}>
-                    <Card elevation={3} style={{minWidth: "250px",maxWidth: "450px"}}>
-                        <CardHeader className={classes.cardTitleText}
-                                    title={
-                                            <Box display="flex" alignItems="center">
-                                                <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
 
-                                                <Typography style={{color: "#0000008A", fontSize: "28px", marginLeft: "10px"}}>
-                                                    로그인
-                                                </Typography>
-                                            </Box>
-                                        }  
-                        />
-                        <CardContent style={{padding: "16px 10%"}}>
-                            <TextField variant="outlined" autoFocus value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.emailerror || this.state.signupEmailExist}
-                                fullWidth label="이메일" placeholder="이메일을 입력해주세요." color="primary" style={{height: "70px", marginTop: "15px", fontFamily: "NotoSansKR-Thin"}} inputRef={this.textFieldRef[0]}
+        
+        /**************************************************** PC *****************************************************/
+        if(isWidthUp('sm', this.props.width)) {
+            return ( 
+                <div className={classes.root} >
+                    <Grid container justify="center" spacing={1}>
+                        <Card elevation={3} style={{minWidth: "450px", maxWidth: "450px"}}>
+                            <CardHeader className={classes.cardTitleText}
+                                        title={
+                                                <Box display="flex" alignItems="center">
+                                                    <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
+    
+                                                    <Typography style={{color: "#0000008A", fontSize: "28px", marginLeft: "10px"}}>
+                                                        로그인
+                                                    </Typography>
+                                                </Box>
+                                            }  
+                            />
+                            <CardContent style={{padding: "16px 10%"}}>
+                                <TextField variant="outlined" autoFocus value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.emailerror || this.state.signupEmailExist}
+                                    fullWidth label="이메일" placeholder="이메일을 입력해주세요." color="primary" style={{height: "70px", marginTop: "15px", fontFamily: "NotoSansKR-Thin"}} inputRef={this.textFieldRef[0]}
+                                    onKeyPress={this.onKeyPress}/>
+                                <TextField variant="outlined" value={this.state.password} onChange={this.handleChange.bind(this, "password")} error={this.state.passworderror}
+                                    fullWidth label="비밀번호" placeholder="비밀번호를 입력해주세요." type="password" style={{height: "70px"}} inputRef={this.textFieldRef[1]}
+                                    onKeyPress={this.onKeyPress}/>
+                                <Box textAlign="right" fontSize={13}>
+                                    <Link to="/login/signup" style={{textDecoration: 'none'}}><Button className={classes.accountCreateButton}>계정 만들기</Button></Link>
+                                </Box>
+                            </CardContent>
+                            <CardActions className={classes.loginButtonLayout}>
+                                <Button onClick={this.onClickLogin} className={classes.loginButton}>
+                                    로그인
+                                </Button>
+                            </CardActions>
+                            
+                        </Card >
+                    </Grid >
+                    <Snackbar open={this.state.emailerror || this.state.passworderror}>
+                        <Alert severity="error">
+                            {this.state.emailerror? "SUMAI 계정을 찾을 수 없습니다.":null}
+                            {this.state.passworderror? "비밀번호가 틀렸습니다.":null}
+                        </Alert>
+                    </Snackbar>
+                </div> 
+            ) 
+        }
+
+
+        /*************************************************** 모바일 ***************************************************/
+        else {
+            return ( 
+                <div className={classes.root} >
+                    <Box display="flex" alignItems="center" justifyContent="center">
+                        <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
+                    </Box>
+
+                    <Box display="flex" justifyContent="center" style={{paddingTop: "10px"}}>
+                        <Typography style={{color: "#0000008A", fontSize: "28px"}}>
+                            로그인
+                        </Typography>
+                    </Box>
+
+                    <TextField variant="outlined" autoFocus value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.emailerror || this.state.signupEmailExist}
+                                fullWidth label="이메일" placeholder="이메일을 입력해주세요." style={{height: "70px", marginTop: "30px"}} inputRef={this.textFieldRef[0]}
                                 onKeyPress={this.onKeyPress}/>
-                            <TextField variant="outlined" value={this.state.password} onChange={this.handleChange.bind(this, "password")} error={this.state.passworderror}
-                                fullWidth label="비밀번호" placeholder="비밀번호를 입력해주세요." type="password" style={{height: "70px"}} inputRef={this.textFieldRef[1]}
-                                onKeyPress={this.onKeyPress}/>
-                            <Box textAlign="right" fontSize={13}>
-                                <Link to="/login/signup" style={{textDecoration: 'none'}}><Button className={classes.accountCreateButton}>계정 만들기</Button></Link>
-                            </Box>
-                        </CardContent>
-                        <CardActions className={classes.loginButtonLayout}>
-                            <Button onClick={this.onClickLogin} className={classes.loginButton}>
-                                로그인
-                            </Button>
-                        </CardActions>
-                        
-                    </Card >
-                </Grid >
-                <Snackbar open={this.state.emailerror || this.state.passworderror}>
-                    <Alert severity="error">
-                        {this.state.emailerror? "SUMAI 계정을 찾을 수 없습니다.":null}
-                        {this.state.passworderror? "비밀번호가 틀렸습니다.":null}
-                    </Alert>
-                </Snackbar>
-            </div> 
-        ) 
+                    <TextField variant="outlined" value={this.state.password} onChange={this.handleChange.bind(this, "password")} error={this.state.passworderror}
+                        fullWidth label="비밀번호" placeholder="비밀번호를 입력해주세요." type="password" style={{height: "70px"}} inputRef={this.textFieldRef[1]}
+                        onKeyPress={this.onKeyPress}/>
+
+                    <Button onClick={this.onClickLogin} className={classes.loginButtonMob}>
+                        로그인
+                    </Button>
+
+                    <Box textAlign="right">
+                        <Link to="/login/signup" style={{textDecoration: 'none'}}><Button className={classes.accountCreateButton}>계정 만들기</Button></Link>
+                    </Box>
+
+                    <Box style={{position: "absolute", bottom: "20px", right: "40px"}}>
+                        <Link to="/terms" style={{textDecoration: 'none'}}><Button className={classes.termsButton}>이용약관</Button></Link>
+                        <Link to="/privacy" style={{textDecoration: 'none'}}><Button className={classes.termsButton}>개인정보처리방침</Button></Link>
+                    </Box>
+
+                    <Snackbar open={this.state.emailerror || this.state.passworderror}>
+                        <Alert severity="error">
+                            {this.state.emailerror? "SUMAI 계정을 찾을 수 없습니다.":null}
+                            {this.state.passworderror? "비밀번호가 틀렸습니다.":null}
+                        </Alert>
+                    </Snackbar>
+                </div> 
+            ) 
+        }
+        
     }
 }
-export default withStyles(useStyles)(Login);
+export default withStyles(useStyles)(withWidth()(Login));
