@@ -24,6 +24,7 @@ import Popper from '@material-ui/core/Popper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import * as root from '../rootValue';
 
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
@@ -134,7 +135,7 @@ function FeedbackDialog(props) {
   return (
     <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}
     style={{width: '460px', justifyContent: 'center', margin: '0 auto'}}>
-      <DialogTitle id="customized-dialog-title" onClose={handleClose} style={{backgroundColor: '#2196f3', color: 'white', padding: "10px 15px"}}>의견 보내기</DialogTitle>
+      <DialogTitle id="customized-dialog-title" onClose={handleClose} style={{backgroundColor: root.PrimaryColor, color: 'white', padding: "10px 15px"}}>의견 보내기</DialogTitle>
       <Box style={{minHeight: '200px', maxHeight: '250px', display: 'flex', padding: "10px 15px"}}>
         <TextareaAutosize className={classes.textInput} maxLength="5000" autoFocus={true} onChange={handleMessage} id={'message'}
         placeholder="의견을 보내고 싶으신가요? 보내 주신 의견은 소중하게 활용되지만, 민감한 정보는 공유하지 말아 주세요. 궁금하신 점이 있나요? 도움말을 참조하시거나 지원팀에 문의해 보세요."
@@ -283,7 +284,7 @@ class Header extends Component{
   render() { 
     const { classes } = this.props;
     const loginButton = (
-      <Button onClick={this.onClickLink("login")} style={this.getLocation() === "/login"? { display: "none" }: {background: "#2196f3", color: "#fff", padding: "5px", minWidth: "78px"}} >
+      <Button onClick={this.onClickLink("login")} style={this.getLocation() === "/login"? { display: "none" }: {background: root.PrimaryColor, color: "#fff", padding: "5px", minWidth: "78px"}} >
         <AccountIcon style={{marginRight: "5px"}}/>
         로그인
       </Button>
