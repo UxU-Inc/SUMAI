@@ -90,17 +90,17 @@ class Terms extends Component{
                   <div style={{backgroundColor: "#fff", padding: "50px 10%"}}>
                       
                       <Box display="flex" justifyContent="center">
-                        <Box flexGrow={1} style={{marginRight: "-1px"}}>
+                        <Box flex={1} style={{marginRight: "-1px"}}>
                           <Button className={classes.buttonSelect}>
                             이용약관
                           </Button>
                         </Box>
-                        <Box flexGrow={1} style={{marginRight: "-1px"}}>
+                        <Box flex={1} style={{marginRight: "-1px"}}>
                           <Button className={classes.button} onClick={link("privacy")}>
                             개인정보처리방침
                           </Button>
                         </Box>
-                        <Box flexGrow={1} >
+                        <Box flex={1} >
                           <Button className={classes.button} onClick={link("notices")}>
                             공지사항
                           </Button>
@@ -138,17 +138,17 @@ class Terms extends Component{
                 <div style={{backgroundColor: "#fff", margin: "-1px -1px 0px -1px"}}>
                     
                     <Box display="flex" justifyContent="center">
-                      <Box flexGrow={1} style={{marginRight: "-1px"}}>
+                      <Box flex={1} style={{marginRight: "-1px"}}>
                         <Button className={classes.buttonSelect}>
                           이용약관
                         </Button>
                       </Box>
-                      <Box flexGrow={1} style={{marginRight: "-1px"}}>
+                      <Box flex={1} style={{marginRight: "-1px"}}>
                         <Button className={classes.button} onClick={link("privacy")}>
                           개인정보처리방침
                         </Button>
                       </Box>
-                      <Box flexGrow={1} >
+                      <Box flex={1} >
                         <Button className={classes.button} onClick={link("notices")}>
                           공지사항
                         </Button>
