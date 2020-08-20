@@ -164,25 +164,22 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-export default function NoticesContents() {
+function NoticesTable() {
   const classes = useStyles();
   const [selectId, setSelectId] = React.useState(-1)
-  const [page, setPage] = React.useState(0);
+  const [page, setPage] = React.useState(-1);
   const [count, setCount] = React.useState(0);
   const [rows, setRows] = React.useState([]);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [emptyRows, setEmptyRows] = React.useState(0)
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
   const handleChangePage = async (newPage) => {
     let end=Math.max(0, Math.ceil(count / rowsPerPage) - 1)
     if(newPage>end){
-      await queryData(end)
       setPage(end)
     } else if(newPage<0){
-      await queryData(0)
       setPage(0)
     } else {
-      await queryData(newPage)
       setPage(newPage)
     }
   };
@@ -200,28 +197,156 @@ export default function NoticesContents() {
   }
   
   const queryData = async (page, rowsPPage=rowsPerPage) => {
-    let t
-    await axios.post('/api/notices/notices', {page, rowsPPage}).then((response) => {
-      t=response.data.map(data => ({ ...data, date: data.date.split('T')[0]}))
-      setRows(t)
-    })
-  }
-
-  const mountFunc = async () => {
-    const res = await axios.get('/api/notices/noticesCount');
-    setCount(res.data[0]['COUNT(*)'])
-    await queryData(0)
-    
+    if(rows.length!==0){
+      let emptyArray=[]
+      let emptyPoint=[]
+      let start
+      for(start=page*rowsPPage; start<rows.length && start<(page+1)*rowsPPage; start++){
+        if(rows[start].index===0 && emptyPoint.length===0) {
+          emptyPoint=emptyPoint.concat([start])
+        }else if(rows[start].index!==0 && emptyPoint.length===1) {
+          emptyArray=emptyArray.concat([emptyPoint.concat([start-emptyPoint[0]])])
+          emptyPoint=[]
+        }
+      }
+      if(emptyPoint.length===1){
+        emptyArray=emptyArray.concat([emptyPoint.concat([start-emptyPoint[0]])])
+        emptyPoint=[]
+      }
+      if(emptyArray.length!==0)console.log('request', emptyArray)
+      emptyArray.map((emptyPoint) => {
+        axios.post('/api/notices/notices', {emptyPoint}).then((res) => {
+          let t=res.data.map(data => ({ ...data, date: data.date.split('T')[0]}))
+          for(let i=emptyPoint[0], j=0; i<emptyPoint[0]+emptyPoint[1]; i++, j++) {
+            rows[i]=t[j]
+          }
+          setRows([...rows])
+        })
+      })
+    }
   }
 
   useEffect(() => {
-    mountFunc()
+    axios.get('/api/notices/noticesCount').then((res) => {
+      setCount(res.data[0]['COUNT(*)'])
+      setPage(0)
+    })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   
   useEffect(() => {
-    setEmptyRows(rowsPerPage - rows.length);
   }, [rows])
+
+  useEffect(() => {
+    queryData(page);
+  }, [page])
+
+  useEffect(() => {
+    let emptyArray=[]
+    for(let i=0; i<count; i++) {
+      emptyArray=emptyArray.concat([{index: 0, title: '', context: '', date: ''}])
+    }
+    setRows(emptyArray)
+  }, [count])
+
+  
+  return(
+    <Table aria-label="collapsible table"
+    style={{
+      width: '100%',
+      borderTop: '1px solid black'
+    }}>
+      <TableHead>
+        <TableRow>
+          <TableCell align="center"
+          style={{
+            width: '90%',
+          }}>내용</TableCell>
+          <TableCell align="center"
+          style={{
+            minWidth: '100px'
+          }}>등록일</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {(rowsPerPage > 0
+          ? rows.slice(page*rowsPerPage, (page+1)*rowsPerPage)
+          : rows
+        ).map((row, index) => {
+          return (
+            <React.Fragment key={index}>
+                <TableRow className={classes.table}
+                onClick={
+                  () => handleChangeSelectId(row.index)
+                }
+                style={{
+                  backgroundColor: selectId===row.index ? 'WhiteSmoke': '',
+                }}
+                >
+                  <TableCell component="th" scope="row" 
+                  style={{
+                    fontSize: '16px'
+                  }}>
+                    {row.title}
+                  </TableCell>
+                  <TableCell align="center">{row.date}</TableCell>
+                </TableRow>
+              <TableRow >
+                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={2}>
+                  <Collapse in={selectId===row.index} timeout="auto" unmountOnExit>
+                    <Box margin={1}>
+                      <Typography variant="h6" gutterBottom component="div" dangerouslySetInnerHTML={{__html: row.content}}>
+                      </Typography>
+                    </Box>
+                  </Collapse>
+                </TableCell>
+              </TableRow>
+            </React.Fragment>
+          );
+        })}
+        {emptyRows > 0 && (
+          <TableRow style={{ height: 56 * emptyRows }}>
+            <TableCell colSpan={2} />
+          </TableRow>
+        )}
+      </TableBody>
+      <TableFooter>
+        <TableRow>
+          <TableCell colSpan={2}>
+          {page >= 0 && (
+            <TablePagination 
+              classes={{
+                selectRoot: classes.tablePagination
+              }}
+              rowsPerPageOptions={[5, 10, 25]}
+              rowsPerPage={rowsPerPage}
+              component="div"
+              count={count}
+              page={page}
+              onChangePage={handleChangePage}
+              onChangeRowsPerPage={handleChangeRowsPerPage}
+              ActionsComponent={TablePaginationActions}
+              labelRowsPerPage='페이지 당 개수'
+
+              labelDisplayedRows={({ from, to, count }) => ``}
+              SelectProps={{
+              inputProps: { 'aria-label': 'rows per page' },
+              native: true,
+            }} />
+          )}
+            
+          </TableCell>
+        </TableRow>
+      </TableFooter>
+    </Table>
+  )
+}
+
+
+export default function NoticesContents() {
+  const classes = useStyles();
+
+
   
   return (
     <Box
@@ -234,7 +359,7 @@ export default function NoticesContents() {
       style={{
         flexGrow : 1,
       }}>
-        <Typography className={classes.subtitle} onClick={() =>setPage(0)}>
+        <Typography className={classes.subtitle}>
         
           공지사항
 
@@ -245,94 +370,7 @@ export default function NoticesContents() {
         flexGrow: 10,
         width: 0
       }}>
-        <TableContainer >
-          <Table aria-label="collapsible table"
-          style={{
-            width: '100%',
-            borderTop: '1px solid black'
-          }}>
-            <TableHead>
-              <TableRow>
-                <TableCell align="center"
-                style={{
-                  width: '90%',
-                }}>내용</TableCell>
-                <TableCell align="center"
-                style={{
-                  minWidth: '100px'
-                }}>등록일</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {(rowsPerPage > 0
-                ? rows.slice(0, rowsPerPage)
-                : rows
-              ).map((row, index) => {
-                return (
-                  <React.Fragment key={index}>
-                      <TableRow className={classes.table}
-                      onClick={
-                        () => handleChangeSelectId(row.index)
-                      }
-                      style={{
-                        backgroundColor: selectId===row.index ? 'WhiteSmoke': '',
-                      }}
-                      >
-                        <TableCell component="th" scope="row" 
-                        style={{
-                          fontSize: '16px'
-                        }}>
-                          {row.title}
-                        </TableCell>
-                        <TableCell align="center">{row.date}</TableCell>
-                      </TableRow>
-                    <TableRow >
-                      <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={2}>
-                        <Collapse in={selectId===row.index} timeout="auto" unmountOnExit>
-                          <Box margin={1}>
-                            <Typography variant="h6" gutterBottom component="div" dangerouslySetInnerHTML={{__html: row.content}}>
-                            </Typography>
-                          </Box>
-                        </Collapse>
-                      </TableCell>
-                    </TableRow>
-                  </React.Fragment>
-                );
-              })}
-              {emptyRows > 0 && (
-                <TableRow style={{ height: 56 * emptyRows }}>
-                  <TableCell colSpan={2} />
-                </TableRow>
-              )}
-            </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TableCell colSpan={2}>
-                  <TablePagination 
-                    classes={{
-                      selectRoot: classes.tablePagination
-                    }}
-                    rowsPerPageOptions={[5, 10, 25]}
-                    rowsPerPage={rowsPerPage}
-                    component="div"
-                    count={count}
-                    page={page}
-                    onChangePage={handleChangePage}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                    ActionsComponent={TablePaginationActions}
-                    labelRowsPerPage='페이지 당 개수'
-
-                    labelDisplayedRows={({ from, to, count }) => ``}
-                    SelectProps={{
-                      inputProps: { 'aria-label': 'rows per page' },
-                      native: true,
-                    }}
-                  />
-                </TableCell>
-              </TableRow>
-            </TableFooter>
-          </Table>
-        </TableContainer>
+        <NoticesTable />
       </Box>
     </Box>
   );
