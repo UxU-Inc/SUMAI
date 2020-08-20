@@ -74,7 +74,7 @@ class Terms extends Component{
 
 
         /**************************************************** PC *****************************************************/
-        if(isWidthUp('sm', this.props.width)) {
+        if(isWidthUp('md', this.props.width)) {
           return ( 
               <div>
                   <AppBar position="static" className={classes.AppBarStyle}>
