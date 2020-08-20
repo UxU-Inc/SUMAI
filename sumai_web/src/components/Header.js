@@ -58,7 +58,8 @@ const useStyles = theme => ({
   link: {
     display: 'flex',
     alignItems: "center",
-    textDecoration: 'none'
+    textDecoration: 'none',
+    minWidth: "142px",
   },
   list: {
     width: 280,
