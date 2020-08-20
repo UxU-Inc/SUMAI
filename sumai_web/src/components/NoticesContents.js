@@ -20,6 +20,7 @@ import FirstPageIcon from '@material-ui/icons/FirstPage';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 //db
 import axios from 'axios';
@@ -165,12 +166,14 @@ TablePaginationActions.propTypes = {
 };
 
 function NoticesTable() {
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.up('sm'));
   const classes = useStyles();
   const [selectId, setSelectId] = React.useState(-1)
   const [page, setPage] = React.useState(-1);
   const [count, setCount] = React.useState(0);
   const [rows, setRows] = React.useState([]);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(1);
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
   const handleChangePage = async (newPage) => {
@@ -184,7 +187,6 @@ function NoticesTable() {
     }
   };
   const handleChangeRowsPerPage = (event) => {
-    queryData(0, parseInt(event.target.value, 10))
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -235,11 +237,8 @@ function NoticesTable() {
   }, [])
   
   useEffect(() => {
-  }, [rows])
-
-  useEffect(() => {
     queryData(page);
-  }, [page])
+  }, [page, rowsPerPage])
 
   useEffect(() => {
     let emptyArray=[]
@@ -247,7 +246,26 @@ function NoticesTable() {
       emptyArray=emptyArray.concat([{index: 0, title: '', context: '', date: ''}])
     }
     setRows(emptyArray)
+    setRowsPerPage(10)
+
   }, [count])
+
+  useEffect(() => {
+    if(!matches) {
+      const handleScroll = () => {
+        const {innerHeight} = window;
+        const {scrollHeight} = document.body;
+        // IE에서는 document.documentElement 를 사용.
+        const scrollTop = document.documentElement.scrollTop
+        if (scrollHeight - innerHeight - scrollTop < 100 && rowsPerPage<count) {
+          setRowsPerPage(rowsPerPage+10)
+        }
+      };
+      window.addEventListener("scroll", handleScroll)
+  
+      return () => window.removeEventListener("scroll", handleScroll);
+    }
+  }, [rowsPerPage, count, matches])
 
   
   return(
@@ -304,7 +322,7 @@ function NoticesTable() {
             </React.Fragment>
           );
         })}
-        {emptyRows > 0 && (
+        {matches && emptyRows > 0 && (
           <TableRow style={{ height: 56 * emptyRows }}>
             <TableCell colSpan={2} />
           </TableRow>
@@ -312,30 +330,31 @@ function NoticesTable() {
       </TableBody>
       <TableFooter>
         <TableRow>
-          <TableCell colSpan={2}>
-          {page >= 0 && (
-            <TablePagination 
-              classes={{
-                selectRoot: classes.tablePagination
-              }}
-              rowsPerPageOptions={[5, 10, 25]}
-              rowsPerPage={rowsPerPage}
-              component="div"
-              count={count}
-              page={page}
-              onChangePage={handleChangePage}
-              onChangeRowsPerPage={handleChangeRowsPerPage}
-              ActionsComponent={TablePaginationActions}
-              labelRowsPerPage='페이지 당 개수'
+          {matches && (
+            <TableCell colSpan={2}>
+            {page >= 0 && (
+              <TablePagination 
+                classes={{
+                  selectRoot: classes.tablePagination
+                }}
+                rowsPerPageOptions={[5, 10, 25]}
+                rowsPerPage={rowsPerPage}
+                component="div"
+                count={count}
+                page={page}
+                onChangePage={handleChangePage}
+                onChangeRowsPerPage={handleChangeRowsPerPage}
+                ActionsComponent={TablePaginationActions}
+                labelRowsPerPage='페이지 당 개수'
 
-              labelDisplayedRows={({ from, to, count }) => ``}
-              SelectProps={{
-              inputProps: { 'aria-label': 'rows per page' },
-              native: true,
-            }} />
+                labelDisplayedRows={({ from, to, count }) => ``}
+                SelectProps={{
+                inputProps: { 'aria-label': 'rows per page' },
+                native: true,
+              }}/>
+            )}
+            </TableCell>
           )}
-            
-          </TableCell>
         </TableRow>
       </TableFooter>
     </Table>
