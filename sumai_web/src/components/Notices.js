@@ -158,7 +158,7 @@ class Notices extends Component{
                       </Box>
                     </Box>
 
-                    <div style={{padding: "20px"}}>
+                    <div>
                         <NoticesContents/>
                     </div>
                 </div>
