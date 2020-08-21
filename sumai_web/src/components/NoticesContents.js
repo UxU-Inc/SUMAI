@@ -64,7 +64,16 @@ const useStyles = makeStyles((theme) => ({
   },
   tablePagination: {
     margin: 0
-  }
+  },
+  noticesBoxPC: {
+    display: 'flex',
+    margin: '50px 0',
+    minHeight: '500px'
+  },
+  noticesBoxMobile: {
+    display: 'flex',
+    minHeight: '500px'
+  },
 }));
 
 const useStyles1 = makeStyles((theme) => ({
@@ -199,6 +208,7 @@ function NoticesTable(props) {
     if(eventType==='scroll') {
         setRowsPerPage(rowsPerPage+5)
       }else if(eventType==='change') {
+        setPage(0)
         setRowsPerPage(parseInt(eventTargetValue, 10))
       }
     }, 500);
@@ -239,7 +249,7 @@ function NoticesTable(props) {
         })
       })
     }
-    document.getElementById('topLoadingBar').style.visibility= 'hidden'
+    document.getElementById('topLoadingBar').style.visibility='hidden'
   }
 
   useEffect(() => {
@@ -267,6 +277,11 @@ function NoticesTable(props) {
 
   useEffect(() => {
     if(!matches) {
+      if(document.body.scrollHeight < window.innerHeight) {
+        setRowsPerPage(rowsPerPage+5)
+      }else{
+        console.log(document.body.scrollHeight, window.innerHeight)
+      }
       const handleScroll = (event) => {
         const {innerHeight} = window;
         const {scrollHeight} = document.body;
@@ -274,7 +289,6 @@ function NoticesTable(props) {
         const scrollTop = document.documentElement.scrollTop
         if (scrollHeight - innerHeight - scrollTop < 10 && rowsPerPage<count) {
           handleChangeRowsPerPage(event)
-        } else {
         }
       };
       window.addEventListener("scroll", handleScroll)
@@ -282,7 +296,7 @@ function NoticesTable(props) {
       return () => window.removeEventListener("scroll", handleScroll);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rowsPerPage, count, matches])
+  }, [rows, count, matches])
 
   
   return(
@@ -290,9 +304,9 @@ function NoticesTable(props) {
       <Table aria-label="collapsible table"
       style={{
         width: '100%',
-        borderTop: '1px solid black'
+        borderTop: matches?'1px solid black':''
       }}>
-        <TableHead>
+        <TableHead style={{display: matches?'table-header-group':'none'}}>
           <TableRow>
             <TableCell align="center"
             style={{
@@ -320,12 +334,10 @@ function NoticesTable(props) {
                   }}
                   >
                     <TableCell component="th" scope="row" 
-                    style={{
-                      fontSize: '16px'
-                    }}>
+                    style={{fontSize: '16px', width: '90%',}}>
                       {row.title}
                     </TableCell>
-                    <TableCell align="center">{row.date}</TableCell>
+                    <TableCell style={{align: "center", minWidth: '100px'}}>{row.date}</TableCell>
                   </TableRow>
                 <TableRow >
                   <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={2}>
@@ -355,7 +367,7 @@ function NoticesTable(props) {
                   classes={{
                     selectRoot: classes.tablePagination
                   }}
-                  rowsPerPageOptions={[5, 10, 25]}
+                  rowsPerPageOptions={[5, 10]}
                   rowsPerPage={rowsPerPage}
                   component="div"
                   count={count}
@@ -380,7 +392,6 @@ function NoticesTable(props) {
   )
 }
 
-
 export default function NoticesContents() {
   const theme = useTheme();
   const classes = useStyles();
@@ -392,8 +403,8 @@ export default function NoticesContents() {
     <Box
     style={{
       display: 'flex',
-      margin: '50px 0',
-      minHeight: '500px'
+      minHeight: '500px',
+      margin: (matches?'50px 0':'')
     }}>
       {matches && (
         <Box

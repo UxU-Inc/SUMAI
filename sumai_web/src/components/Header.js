@@ -36,6 +36,7 @@ import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 
 import html2canvas from 'html2canvas';
 import emailjs from 'emailjs-com';
+import axios from 'axios';
 
 
 const useStyles = theme => ({
@@ -140,13 +141,9 @@ function FeedbackDialog(props) {
     e.preventDefault();
     console.log(message)
 
-    emailjs.send('gmail', 'helptemplates', {email: '', message: message, content: (screen!==null?screen.toDataURL():'')}, 'user_zQPp45WdDWidiikwl7X73')
-      .then((result) => {
-          console.log(result.text);
-          handleClose()
-      }, (error) => {
-          console.log(error.text);
-      });
+    axios.post('/api/sendEmail/sendEmail', {message: message}).then((res) => {
+      console.log('go')
+    })
   }
 
   useEffect(() => {
