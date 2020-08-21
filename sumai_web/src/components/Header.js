@@ -35,8 +35,12 @@ import CloseIcon from '@material-ui/icons/Close';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 
 import html2canvas from 'html2canvas';
-import emailjs from 'emailjs-com';
 import axios from 'axios';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 
 const useStyles = theme => ({
@@ -113,11 +117,15 @@ const DialogActions = withStyles((theme) => ({
   },
 }))(MuiDialogActions);
 
-
 function FeedbackDialog(props) {
   const {open, setOpen, classes} = props
   const [screen, setScreen] = React.useState(null)
   const [message, setMessage] = React.useState('')
+  
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false)
+
+  const [sendEmailButton, setSendEmailButton] = React.useState(true)
+  const [sendEmailStatus, setSendEmailStatus] = React.useState(null)
 
   const screenShot = () => {
     document.getElementById('feedback').hidden = true
@@ -128,22 +136,33 @@ function FeedbackDialog(props) {
     setScreen(canvas)
     })
   }
+  
   const showCanvas = () => {
     console.log('미구현')
   }
-
   
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false)
+    // if(sendEmail)
+    handleClose()
+  }
 
   const handleMessage = (event) => {
     setMessage(event.target.value)
   }
   function sendEmail(e) {
+    setSendEmailButton(false)
+    console.log(sendEmailButton)
     e.preventDefault();
-    console.log(message)
-
-    axios.post('/api/sendEmail/sendEmail', {message: message}).then((res) => {
-      console.log('go')
-    })
+    axios.post('/api/sendEmail/sendEmail', {message: message}).then((res) => { // email을 추가하려면 {massage: message, email: 변수}
+      setSendEmailStatus(res.status)
+      setSnackbarOpen(true)
+      
+    }, (res) => {
+      setSendEmailButton(true)
+      setSendEmailStatus(res.status)
+      setSnackbarOpen(true)
+    });
   }
 
   useEffect(() => {
@@ -151,8 +170,6 @@ function FeedbackDialog(props) {
       let t=document.getElementById('screenshotPreview')
       t.src=screen.toDataURL()
       t.height=300
-
-      
       // let context = screen.getContext("2d")
       // context.fillStyle = "#FF0000";
       // context.fillRect(0,0,150,75)
@@ -161,6 +178,8 @@ function FeedbackDialog(props) {
 
   const handleClose = () => {
     setOpen(false);
+    setMessage('');
+    setSendEmailButton(true);
   };
 
   return (
@@ -210,10 +229,25 @@ function FeedbackDialog(props) {
       </small>
       <DialogActions
       style={{borderTop: '1px solid rgb(224, 224, 224)', backgroundColor: 'rgb(250, 250, 250)', padding: '5px 15px'}}>
-        <Button autoFocus onClick={handleClose} color="primary" style={{font: "16px NotoSansKR-Regular",}} onClick={sendEmail}>
+        <Button id='sendEmailButton' autoFocus onClick={handleClose} color="primary" style={{font: "16px NotoSansKR-Regular",}} onClick={sendEmail} disabled={!sendEmailButton}>
           보내기
         </Button>
       </DialogActions>
+    <Box>
+      <Snackbar autoHideDuration={3000} open={snackbarOpen} onClose={handleCloseSnackbar}>
+        {
+          sendEmailStatus===200 && (
+            <Alert severity={"success"}>
+              소중한 의견 감사합니다.
+            </Alert>
+          ) || (
+            <Alert severity={"error"}>
+              죄송합니다. 의견 보내기 실패했습니다.
+            </Alert>
+          )
+        }
+      </Snackbar>
+    </Box>
     </Dialog>
   )
 }
