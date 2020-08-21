@@ -44,13 +44,13 @@ class LoginMain extends Component{
     render(){ 
         return ( 
             <div> 
-                <Header props={this.props}/> 
+                {/* <Header props={this.props}/>  */}
                 {this.props.signupStatus === "SUCCESS"? 
                     <Alert severity="success">
                         <AlertTitle>SUMAI 회원가입 완료!</AlertTitle>
                         <strong>로그인을 해주세요!</strong>
                     </Alert>: null}
-                <div className="Main">
+                <div style={{backgroundColor: "#fff"}}>
                     {this.props.match.path === "/login/signup"? <Signup onSignup={this.handleSignup}/>:<Login onLogin={this.handleLogin}/>}
                 </div>
             </div> 
