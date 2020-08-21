@@ -154,7 +154,7 @@ function FeedbackDialog(props) {
     setSendEmailButton(false)
     console.log(sendEmailButton)
     e.preventDefault();
-    axios.post('/api/sendEmail/sendEmail', {message: message}).then((res) => { // email을 추가하려면 {massage: message, email: 변수}
+    axios.post('/api/sendEmail/sendEmail', {message: message, }).then((res) => { // email을 추가하려면 {massage: message, email: 변수}
       setSendEmailStatus(res.status)
       setSnackbarOpen(true)
       
@@ -202,12 +202,12 @@ function FeedbackDialog(props) {
           font: "400 16px NotoSansKR-Regular",
         }}/>
       </Box>
-      <Box style={{display: 'block', background: 'WhiteSmoke', padding: '0 10px'}}>
+      <Box style={{display: 'block', background: 'WhiteSmoke', padding: '0'}}>
         <Box id='screenshotButton' style={{display: 'flex', width: '400'}}>
           <Button onClick={(event) => {
             screenShot()
             document.getElementById('screenshotButton').remove()
-          }} style={{marginLeft:'auto', marginRight:'auto'}}>
+          }} style={{marginLeft:'auto', marginRight:'auto', width:'100%', padding:'8px 0'}}>
             스크린샷 첨부하기
           </Button>
         </Box>
