@@ -35,7 +35,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 
 import html2canvas from 'html2canvas';
-import emailjs from 'emailjs-com';
+// import emailjs from 'emailjs-com';
 
 
 const useStyles = theme => ({
@@ -140,13 +140,13 @@ function FeedbackDialog(props) {
     e.preventDefault();
     console.log(message)
 
-    emailjs.send('gmail', 'helptemplates', {email: '', message: message, content: (screen!==null?screen.toDataURL():'')}, 'user_zQPp45WdDWidiikwl7X73')
-      .then((result) => {
-          console.log(result.text);
-          handleClose()
-      }, (error) => {
-          console.log(error.text);
-      });
+    // emailjs.send('gmail', 'helptemplates', {email: '', message: message, content: (screen!==null?screen.toDataURL():'')}, 'user_zQPp45WdDWidiikwl7X73')
+    //   .then((result) => {
+    //       console.log(result.text);
+    //       handleClose()
+    //   }, (error) => {
+    //       console.log(error.text);
+    //   });
   }
 
   useEffect(() => {
