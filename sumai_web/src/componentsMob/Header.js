@@ -31,7 +31,7 @@ import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import CloseIcon from '@material-ui/icons/Close';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
-import emailjs from 'emailjs-com';
+// import emailjs from 'emailjs-com';
 
 
 const useStyles = theme => ({
@@ -123,13 +123,13 @@ function FeedbackDialog(props) {
     e.preventDefault();
     console.log(message)
 
-    emailjs.send('gmail', 'helptemplates', {email: '', message: message, }, 'user_zQPp45WdDWidiikwl7X73')
-      .then((result) => {
-          console.log(result.text);
-          handleClose()
-      }, (error) => {
-          console.log(error.text);
-      });
+    // emailjs.send('gmail', 'helptemplates', {email: '', message: message, }, 'user_zQPp45WdDWidiikwl7X73')
+    //   .then((result) => {
+    //       console.log(result.text);
+    //       handleClose()
+    //   }, (error) => {
+    //       console.log(error.text);
+    //   });
   }
 
   return (
