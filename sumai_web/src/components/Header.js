@@ -26,6 +26,7 @@ import MenuList from '@material-ui/core/MenuList';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import AccountIcon from '@material-ui/icons/AccountCircle';
 import NewsIcon from '@material-ui/icons/ChromeReaderMode';
+import * as root from '../rootValue';
 
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
@@ -34,6 +35,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 
 import html2canvas from 'html2canvas';
+import emailjs from 'emailjs-com';
 
 
 const useStyles = theme => ({
@@ -114,6 +116,7 @@ const DialogActions = withStyles((theme) => ({
 function FeedbackDialog(props) {
   const {open, setOpen, classes} = props
   const [screen, setScreen] = React.useState(null)
+  const [message, setMessage] = React.useState('')
 
   const screenShot = () => {
     document.getElementById('feedback').hidden = true
@@ -126,6 +129,24 @@ function FeedbackDialog(props) {
   }
   const showCanvas = () => {
     console.log('미구현')
+  }
+
+  
+
+  const handleMessage = (event) => {
+    setMessage(event.target.value)
+  }
+  function sendEmail(e) {
+    e.preventDefault();
+    console.log(message)
+
+    emailjs.send('gmail', 'helptemplates', {email: '', message: message, content: (screen!==null?screen.toDataURL():'')}, 'user_zQPp45WdDWidiikwl7X73')
+      .then((result) => {
+          console.log(result.text);
+          handleClose()
+      }, (error) => {
+          console.log(error.text);
+      });
   }
 
   useEffect(() => {
@@ -147,96 +168,56 @@ function FeedbackDialog(props) {
 
   return (
     <Dialog id='feedback' onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}
+    style={{width: '460px', justifyContent: 'center', margin: '0 auto'}}>
+      <DialogTitle id="customized-dialog-title" onClose={handleClose} style={{backgroundColor: root.PrimaryColor, color: 'white', padding: "10px 15px"}}>
+        의견 보내기
+      </DialogTitle>
+      <Box style={{minHeight: '100px', maxHeight: '150px', display: 'flex', padding: "10px 15px"}}>
+        <TextareaAutosize className={classes.textInput} maxLength="5000" autoFocus={true} onChange={handleMessage}
+        placeholder="의견을 보내고 싶으신가요? 보내 주신 의견은 소중하게 활용되지만, 민감한 정보는 공유하지 말아 주세요. 궁금하신 점이 있나요? 도움말을 참조하시거나 지원팀에 문의해 보세요."
         style={{
-          width: '460px',
-          justifyContent: 'center',
-          margin: '0 auto'
-        }}>
-          <DialogTitle id="customized-dialog-title" onClose={handleClose}
-          style={{
-            backgroundColor: '#2196f3',
-            color: 'white',
-            padding: "10px 15px"
-          }}>
-            의견 보내기
-          </DialogTitle>
-          <Box
-          style={{
-            minHeight: '100px',
-            maxHeight: '150px',
-            display: 'flex',
-            padding: "10px 15px"
-          }}>
-            <TextareaAutosize className={classes.textInput} maxLength="5000" autoFocus={true}
-            placeholder="의견을 보내고 싶으신가요? 보내 주신 의견은 소중하게 활용되지만, 민감한 정보는 공유하지 말아 주세요. 궁금하신 점이 있나요? 도움말을 참조하시거나 지원팀에 문의해 보세요."
-            style={{
-              boxSizing: "border-box",
-              flexGrow: 1,
-              width: '100%',
-              height: 'auto',
-              resize: 'none',
-              border: 'none',
-              outline: 'none',
-              font: "400 16px Roboto, RobotoDraft, Helvetica, Arial, sans-serif",
-            }}/>
-          </Box>
-          <Box style={{
-            display: 'block',
-            background: 'WhiteSmoke',
-            padding: '0 10px'
-          }}>
-            <Box id='screenshotButton' style={{
-              display: 'flex',
-              width: '400'
-            }}>
-            <Button onClick={(event) => {
-              screenShot()
-              document.getElementById('screenshotButton').remove()
-            }} 
-            style={{
-              marginLeft:'auto',
-              marginRight:'auto'
-            }}>스크린샷 첨부하기</Button>
-            </Box>
-            <Box style={{
-              display: 'flex'
-            }}>
-              <img id="screenshotPreview" src='' alt='' style={{
-                marginLeft: 'auto',
-                marginRight: 'auto',
-              }}
-              onClick={showCanvas}
-              >
-              </img>
-            </Box>
-          </Box>
-          <small
-          style={{
-            borderTop: '1px solid rgb(224, 224, 224)',
-            color: 'rgb(168, 168, 168)',
-            backgroundColor: 'rgb(250, 250, 250)',
-            font: "12px Roboto, RobotoDraft, Helvetica, Arial, sans-serif",
-            padding: "15px 15px"
-          }}>
-              법적인 이유로 콘텐츠 변경을 요청하려면 법적 도움말 페이지로 이동하세요.
-              일부 계정 및 시스템 정보가 UxU에 전송될 수 있습니다. 
-              제공해 주신 정보는 개인정보처리방침 및 서비스 약관에 따라 기술 문제를 해결하고 서비스를 개선하는 데 사용됩니다.
-          </small>
-          <DialogActions
-          style={{
-            borderTop: '1px solid rgb(224, 224, 224)',
-            backgroundColor: 'rgb(250, 250, 250)',
-            padding: '5px 15px'
-          }}>
-            <Button autoFocus onClick={handleClose} color="primary"
-            style={{
-              
-              font: "16px Roboto, RobotoDraft, Helvetica, Arial, sans-serif",
-            }}>
-              보내기
-            </Button>
-          </DialogActions>
-        </Dialog>
+          boxSizing: "border-box",
+          flexGrow: 1,
+          width: '100%',
+          height: 'auto',
+          resize: 'none',
+          border: 'none',
+          outline: 'none',
+          font: "400 16px NotoSansKR-Regular",
+        }}/>
+      </Box>
+      <Box style={{display: 'block', background: 'WhiteSmoke', padding: '0 10px'}}>
+        <Box id='screenshotButton' style={{display: 'flex', width: '400'}}>
+          <Button onClick={(event) => {
+            screenShot()
+            document.getElementById('screenshotButton').remove()
+          }} style={{marginLeft:'auto', marginRight:'auto'}}>
+            스크린샷 첨부하기
+          </Button>
+        </Box>
+        <Box style={{display: 'flex'}}>
+          <img id="screenshotPreview" src='' alt='' style={{marginLeft: 'auto', marginRight: 'auto',}}onClick={showCanvas} />
+        </Box>
+      </Box>
+      <small
+      style={{
+        borderTop: '1px solid rgb(224, 224, 224)',
+        color: 'rgb(168, 168, 168)',
+        backgroundColor: 'rgb(250, 250, 250)',
+        font: "12px NotoSansKR-Regular",
+        padding: "15px 15px"
+      }}>
+          법적인 이유로 콘텐츠 변경을 요청하려면 법적 도움말 페이지로 이동하세요.
+          일부 계정 및 시스템 정보가 UxU에 전송될 수 있습니다. 
+          제공해 주신 정보는 개인정보처리방침 및 서비스 약관에 따라 기술 문제를 해결하고 서비스를 개선하는 데 사용됩니다.
+      </small>
+      <DialogActions
+      style={{borderTop: '1px solid rgb(224, 224, 224)', backgroundColor: 'rgb(250, 250, 250)', padding: '5px 15px'}}>
+        <Button autoFocus onClick={handleClose} color="primary" style={{font: "16px NotoSansKR-Regular",}} onClick={sendEmail}>
+          보내기
+        </Button>
+      </DialogActions>
+    </Dialog>
   )
 }
 
@@ -351,7 +332,7 @@ class Header extends Component{
   render() { 
     const { classes } = this.props;
     const loginButton = (
-      <Button onClick={this.onClickLink("login")} style={this.getLocation() === "/login"? { display: "none" }: { background: "#2196f3", color: "#fff", padding: "7.5px 15px" }}>
+      <Button onClick={this.onClickLink("login")} style={this.getLocation() === "/login"? { display: "none" }: { background: root.PrimaryColor, color: "#fff", padding: "7.5px 15px" }}>
         <AccountIcon style={{marginRight: "5px",}}/>
         로그인
       </Button>
@@ -427,7 +408,7 @@ class Header extends Component{
             <div style={{flexGrow: 1}}/>
 
             <IconButton style={{marginRight: "10px"}}>
-                <NewsIcon style={{color: "#2196f3"}}/>
+                <NewsIcon style={{color: root.PrimaryColor}}/>
             </IconButton>
 
             {this.props.isLoggedIn ? loginLayout : loginButton}
