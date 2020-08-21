@@ -4,6 +4,9 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import PropTypes from 'prop-types';
 
+
+import LinearProgress from '@material-ui/core/LinearProgress';
+
 // Table
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -20,6 +23,7 @@ import FirstPageIcon from '@material-ui/icons/FirstPage';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 //db
 import axios from 'axios';
@@ -164,32 +168,40 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-export default function NoticesContents() {
+function NoticesTable(props) {
+  const {matches} = props
   const classes = useStyles();
   const [selectId, setSelectId] = React.useState(-1)
-  const [page, setPage] = React.useState(0);
+  const [page, setPage] = React.useState(-1);
   const [count, setCount] = React.useState(0);
   const [rows, setRows] = React.useState([]);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [emptyRows, setEmptyRows] = React.useState(0)
+  const [rowsPerPage, setRowsPerPage] = React.useState(1);
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
   const handleChangePage = async (newPage) => {
+    document.getElementById('topLoadingBar').style.visibility= 'visible'
     let end=Math.max(0, Math.ceil(count / rowsPerPage) - 1)
-    if(newPage>end){
-      await queryData(end)
-      setPage(end)
-    } else if(newPage<0){
-      await queryData(0)
-      setPage(0)
-    } else {
-      await queryData(newPage)
-      setPage(newPage)
-    }
+    setTimeout(() => {
+      if(newPage>end){
+        setPage(end)
+      } else if(newPage<0){
+        setPage(0)
+      } else {
+        setPage(newPage)
+      }
+    }, 500);
   };
   const handleChangeRowsPerPage = (event) => {
-    queryData(0, parseInt(event.target.value, 10))
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    const eventType=event.type
+    const eventTargetValue=event.target.value
+    document.getElementById('topLoadingBar').style.visibility= 'visible'
+    setTimeout(() => {
+    if(eventType==='scroll') {
+        setRowsPerPage(rowsPerPage+5)
+      }else if(eventType==='change') {
+        setRowsPerPage(parseInt(eventTargetValue, 10))
+      }
+    }, 500);
   };
   const handleChangeSelectId = (newSelect) => {
     if (newSelect!==selectId) {
@@ -200,28 +212,181 @@ export default function NoticesContents() {
   }
   
   const queryData = async (page, rowsPPage=rowsPerPage) => {
-    let t
-    await axios.post('/api/notices/notices', {page, rowsPPage}).then((response) => {
-      t=response.data.map(data => ({ ...data, date: data.date.split('T')[0]}))
-      setRows(t)
-    })
-  }
-
-  const mountFunc = async () => {
-    const res = await axios.get('/api/notices/noticesCount');
-    setCount(res.data[0]['COUNT(*)'])
-    await queryData(0)
-    
+    if(rows.length!==0){
+      let emptyArray=[]
+      let emptyPoint=[]
+      let start
+      for(start=page*rowsPPage; start<rows.length && start<(page+1)*rowsPPage; start++){
+        if(rows[start].index===0 && emptyPoint.length===0) {
+          emptyPoint=emptyPoint.concat([start])
+        }else if(rows[start].index!==0 && emptyPoint.length===1) {
+          emptyArray=emptyArray.concat([emptyPoint.concat([start-emptyPoint[0]])])
+          emptyPoint=[]
+        }
+      }
+      if(emptyPoint.length===1){
+        emptyArray=emptyArray.concat([emptyPoint.concat([start-emptyPoint[0]])])
+        emptyPoint=[]
+      }
+      if(emptyArray.length!==0)console.log('request', emptyArray)
+      emptyArray.forEach((emptyPoint) => {
+        axios.post('/api/notices/notices', {emptyPoint}).then((res) => {
+          let t=res.data.map(data => ({ ...data, date: data.date.split('T')[0]}))
+          for(let i=emptyPoint[0], j=0; i<emptyPoint[0]+emptyPoint[1]; i++, j++) {
+            rows[i]=t[j]
+          }
+          setRows([...rows])
+        })
+      })
+    }
+    document.getElementById('topLoadingBar').style.visibility= 'hidden'
   }
 
   useEffect(() => {
-    mountFunc()
+    axios.get('/api/notices/noticesCount').then((res) => {
+      setCount(res.data[0]['COUNT(*)'])
+      setPage(0)
+    })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-  
+
   useEffect(() => {
-    setEmptyRows(rowsPerPage - rows.length);
-  }, [rows])
+    queryData(page);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, rowsPerPage])
+
+  useEffect(() => {
+    let emptyArray=[]
+    for(let i=0; i<count; i++) {
+      emptyArray=emptyArray.concat([{index: 0, title: '', context: '', date: ''}])
+    }
+    setRows(emptyArray)
+    setRowsPerPage(10)
+
+  }, [count])
+
+  useEffect(() => {
+    if(!matches) {
+      const handleScroll = (event) => {
+        const {innerHeight} = window;
+        const {scrollHeight} = document.body;
+        // IE에서는 document.documentElement 를 사용.
+        const scrollTop = document.documentElement.scrollTop
+        if (scrollHeight - innerHeight - scrollTop < 10 && rowsPerPage<count) {
+          handleChangeRowsPerPage(event)
+        } else {
+        }
+      };
+      window.addEventListener("scroll", handleScroll)
+  
+      return () => window.removeEventListener("scroll", handleScroll);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rowsPerPage, count, matches])
+
+  
+  return(
+    <TableContainer >
+      <Table aria-label="collapsible table"
+      style={{
+        width: '100%',
+        borderTop: '1px solid black'
+      }}>
+        <TableHead>
+          <TableRow>
+            <TableCell align="center"
+            style={{
+              width: '90%',
+            }}>내용</TableCell>
+            <TableCell align="center"
+            style={{
+              minWidth: '100px'
+            }}>등록일</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {(rowsPerPage > 0
+            ? rows.slice(page*rowsPerPage, (page+1)*rowsPerPage)
+            : rows
+          ).map((row, index) => {
+            return (
+              <React.Fragment key={index}>
+                  <TableRow className={classes.table}
+                  onClick={
+                    () => handleChangeSelectId(row.index)
+                  }
+                  style={{
+                    backgroundColor: selectId===row.index ? 'WhiteSmoke': '',
+                  }}
+                  >
+                    <TableCell component="th" scope="row" 
+                    style={{
+                      fontSize: '16px'
+                    }}>
+                      {row.title}
+                    </TableCell>
+                    <TableCell align="center">{row.date}</TableCell>
+                  </TableRow>
+                <TableRow >
+                  <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={2}>
+                    <Collapse in={selectId===row.index} timeout="auto" unmountOnExit>
+                      <Box margin={1}>
+                        <Typography variant="h6" gutterBottom component="div" dangerouslySetInnerHTML={{__html: row.content}}>
+                        </Typography>
+                      </Box>
+                    </Collapse>
+                  </TableCell>
+                </TableRow>
+              </React.Fragment>
+            );
+          })}
+          {matches && emptyRows > 0 && (
+            <TableRow style={{ height: 56 * emptyRows }}>
+              <TableCell colSpan={2} />
+            </TableRow>
+          )}
+        </TableBody>
+        <TableFooter>
+          <TableRow>
+            {matches && (
+              <TableCell colSpan={2}>
+              {page >= 0 && (
+                <TablePagination 
+                  classes={{
+                    selectRoot: classes.tablePagination
+                  }}
+                  rowsPerPageOptions={[5, 10, 25]}
+                  rowsPerPage={rowsPerPage}
+                  component="div"
+                  count={count}
+                  page={page}
+                  onChangePage={handleChangePage}
+                  onChangeRowsPerPage={handleChangeRowsPerPage}
+                  ActionsComponent={TablePaginationActions}
+                  labelRowsPerPage='페이지 당 개수'
+
+                  labelDisplayedRows={({ from, to, count }) => ``}
+                  SelectProps={{
+                  inputProps: { 'aria-label': 'rows per page' },
+                  native: true,
+                }}/>
+              )}
+              </TableCell>
+            )}
+          </TableRow>
+        </TableFooter>
+      </Table>
+    </TableContainer>
+  )
+}
+
+
+export default function NoticesContents() {
+  const theme = useTheme();
+  const classes = useStyles();
+  const matches = useMediaQuery(theme.breakpoints.up('md'));
+
+
   
   return (
     <Box
@@ -230,109 +395,33 @@ export default function NoticesContents() {
       margin: '50px 0',
       minHeight: '500px'
     }}>
-      <Box
-      style={{
-        flexGrow : 1,
-      }}>
-        <Typography className={classes.subtitle} onClick={() =>setPage(0)}>
-        
-          공지사항
+      {matches && (
+        <Box
+        style={{
+          flexGrow : 1,
+        }}>
+          <Typography className={classes.subtitle}>
+          
+            공지사항
 
-        </Typography>
-      </Box>
+          </Typography>
+        </Box>
+      )}
       <Box
       style={{
         flexGrow: 10,
         width: 0
       }}>
-        <TableContainer >
-          <Table aria-label="collapsible table"
-          style={{
-            width: '100%',
-            borderTop: '1px solid black'
-          }}>
-            <TableHead>
-              <TableRow>
-                <TableCell align="center"
-                style={{
-                  width: '90%',
-                }}>내용</TableCell>
-                <TableCell align="center"
-                style={{
-                  minWidth: '100px'
-                }}>등록일</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {(rowsPerPage > 0
-                ? rows.slice(0, rowsPerPage)
-                : rows
-              ).map((row, index) => {
-                return (
-                  <React.Fragment key={index}>
-                      <TableRow className={classes.table}
-                      onClick={
-                        () => handleChangeSelectId(row.index)
-                      }
-                      style={{
-                        backgroundColor: selectId===row.index ? 'WhiteSmoke': '',
-                      }}
-                      >
-                        <TableCell component="th" scope="row" 
-                        style={{
-                          fontSize: '16px'
-                        }}>
-                          {row.title}
-                        </TableCell>
-                        <TableCell align="center">{row.date}</TableCell>
-                      </TableRow>
-                    <TableRow >
-                      <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={2}>
-                        <Collapse in={selectId===row.index} timeout="auto" unmountOnExit>
-                          <Box margin={1}>
-                            <Typography variant="h6" gutterBottom component="div" dangerouslySetInnerHTML={{__html: row.content}}>
-                            </Typography>
-                          </Box>
-                        </Collapse>
-                      </TableCell>
-                    </TableRow>
-                  </React.Fragment>
-                );
-              })}
-              {emptyRows > 0 && (
-                <TableRow style={{ height: 56 * emptyRows }}>
-                  <TableCell colSpan={2} />
-                </TableRow>
-              )}
-            </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TableCell colSpan={2}>
-                  <TablePagination 
-                    classes={{
-                      selectRoot: classes.tablePagination
-                    }}
-                    rowsPerPageOptions={[5, 10, 25]}
-                    rowsPerPage={rowsPerPage}
-                    component="div"
-                    count={count}
-                    page={page}
-                    onChangePage={handleChangePage}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                    ActionsComponent={TablePaginationActions}
-                    labelRowsPerPage='페이지 당 개수'
-
-                    labelDisplayedRows={({ from, to, count }) => ``}
-                    SelectProps={{
-                      inputProps: { 'aria-label': 'rows per page' },
-                      native: true,
-                    }}
-                  />
-                </TableCell>
-              </TableRow>
-            </TableFooter>
-          </Table>
-        </TableContainer>
+        <NoticesTable matches={matches}/>
+      </Box>
+      <Box style={{
+        position: 'fixed',
+        width: '100%',
+        zIndex: 100,
+        top: 0,
+        left: 0,
+      }}>
+        <LinearProgress id='topLoadingBar' style={{marginBottom: "10px",visibility: 'hidden'}}/>
       </Box>
     </Box>
   );
