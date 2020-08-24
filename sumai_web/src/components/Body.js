@@ -47,7 +47,7 @@ const useStyles = theme => ({
     lineHeight: '35px',
     minHeight: theme.spacing(20),
     fontSize: '24px',
-    fontFamily: 'NotoSansKR-Black',
+    fontFamily: 'NotoSansKR-Regular',
     border: 'none',
     outline: 'none',
     resize: 'none',
