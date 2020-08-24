@@ -3,6 +3,8 @@ const account = require('./account');
 const record = require('./record');
 const notices = require('./notices');
 const snslogin = require('./snslogin');
+const sendEmail = require('./sendEmail')
+const connectLog = require('./connectLog')
 
 const router = express.Router();
  
@@ -15,5 +17,9 @@ router.use('/notices', notices);
 // SNS로그인 관련
 router.use('/snslogin', snslogin);
 
+// 이메일 보내기 관련
+router.use('/sendEmail', sendEmail);
+// 로그 관련
+router.use('/connectLog', connectLog);
  
 module.exports = router;

@@ -37,6 +37,11 @@ import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import html2canvas from 'html2canvas';
 // import emailjs from 'emailjs-com';
 import { Link } from 'react-router-dom';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 
 const useStyles = theme => ({
@@ -113,11 +118,15 @@ const DialogActions = withStyles((theme) => ({
   },
 }))(MuiDialogActions);
 
-
 function FeedbackDialog(props) {
   const {open, setOpen, classes} = props
   const [screen, setScreen] = React.useState(null)
   const [message, setMessage] = React.useState('')
+  
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false)
+
+  const [sendEmailButton, setSendEmailButton] = React.useState(true)
+  const [sendEmailStatus, setSendEmailStatus] = React.useState(null)
 
   const screenShot = () => {
     document.getElementById('feedback').hidden = true
@@ -128,16 +137,23 @@ function FeedbackDialog(props) {
     setScreen(canvas)
     })
   }
+  
   const showCanvas = () => {
     console.log('미구현')
   }
-
   
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false)
+    // if(sendEmail)
+    handleClose()
+  }
 
   const handleMessage = (event) => {
     setMessage(event.target.value)
   }
   function sendEmail(e) {
+    setSendEmailButton(false)
+    console.log(sendEmailButton)
     e.preventDefault();
     console.log(message)
 
@@ -155,8 +171,6 @@ function FeedbackDialog(props) {
       let t=document.getElementById('screenshotPreview')
       t.src=screen.toDataURL()
       t.height=300
-
-      
       // let context = screen.getContext("2d")
       // context.fillStyle = "#FF0000";
       // context.fillRect(0,0,150,75)
@@ -165,6 +179,8 @@ function FeedbackDialog(props) {
 
   const handleClose = () => {
     setOpen(false);
+    setMessage('');
+    setSendEmailButton(true);
   };
 
   return (
@@ -187,12 +203,12 @@ function FeedbackDialog(props) {
           font: "400 16px NotoSansKR-Regular",
         }}/>
       </Box>
-      <Box style={{display: 'block', background: 'WhiteSmoke', padding: '0 10px'}}>
+      <Box style={{display: 'block', background: 'WhiteSmoke', padding: '0'}}>
         <Box id='screenshotButton' style={{display: 'flex', width: '400'}}>
           <Button onClick={(event) => {
             screenShot()
             document.getElementById('screenshotButton').remove()
-          }} style={{marginLeft:'auto', marginRight:'auto'}}>
+          }} style={{marginLeft:'auto', marginRight:'auto', width:'100%', padding:'8px 0'}}>
             스크린샷 첨부하기
           </Button>
         </Box>
@@ -214,10 +230,25 @@ function FeedbackDialog(props) {
       </small>
       <DialogActions
       style={{borderTop: '1px solid rgb(224, 224, 224)', backgroundColor: 'rgb(250, 250, 250)', padding: '5px 15px'}}>
-        <Button autoFocus onClick={handleClose} color="primary" style={{font: "16px NotoSansKR-Regular",}} onClick={sendEmail}>
+        <Button id='sendEmailButton' autoFocus color="primary" style={{font: "16px NotoSansKR-Regular",}} onClick={sendEmail} disabled={!sendEmailButton}>
           보내기
         </Button>
       </DialogActions>
+    <Box>
+      <Snackbar autoHideDuration={3000} open={snackbarOpen} onClose={handleCloseSnackbar}>
+        {
+          ( sendEmailStatus===200 && 
+            <Alert severity={"success"}>
+              소중한 의견 감사합니다.
+            </Alert>
+          ) || (
+            <Alert severity={"error"}>
+              죄송합니다. 의견 보내기 실패했습니다.
+            </Alert>
+          )
+        }
+      </Snackbar>
+    </Box>
     </Dialog>
   )
 }

@@ -28,6 +28,10 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 //db
 import axios from 'axios';
 
+//redux
+import {ClientInfo} from '../reducers/clientInfo'
+
+
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -64,7 +68,16 @@ const useStyles = makeStyles((theme) => ({
   },
   tablePagination: {
     margin: 0
-  }
+  },
+  noticesBoxPC: {
+    display: 'flex',
+    margin: '50px 0',
+    minHeight: '500px'
+  },
+  noticesBoxMobile: {
+    display: 'flex',
+    minHeight: '500px'
+  },
 }));
 
 const useStyles1 = makeStyles((theme) => ({
@@ -168,55 +181,48 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-function NoticesTable(props) {
-  const {matches} = props
-  const classes = useStyles();
-  const [selectId, setSelectId] = React.useState(-1)
-  const [page, setPage] = React.useState(-1);
-  const [count, setCount] = React.useState(0);
-  const [rows, setRows] = React.useState([]);
-  const [rowsPerPage, setRowsPerPage] = React.useState(1);
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+function useQueryCount() {
+  const [rows, setRows] = React.useState([])
 
-  const handleChangePage = async (newPage) => {
-    document.getElementById('topLoadingBar').style.visibility= 'visible'
-    let end=Math.max(0, Math.ceil(count / rowsPerPage) - 1)
-    setTimeout(() => {
-      if(newPage>end){
-        setPage(end)
-      } else if(newPage<0){
-        setPage(0)
-      } else {
-        setPage(newPage)
-      }
-    }, 500);
-  };
-  const handleChangeRowsPerPage = (event) => {
-    const eventType=event.type
-    const eventTargetValue=event.target.value
-    document.getElementById('topLoadingBar').style.visibility= 'visible'
-    setTimeout(() => {
-    if(eventType==='scroll') {
-        setRowsPerPage(rowsPerPage+5)
-      }else if(eventType==='change') {
-        setRowsPerPage(parseInt(eventTargetValue, 10))
-      }
-    }, 500);
-  };
-  const handleChangeSelectId = (newSelect) => {
-    if (newSelect!==selectId) {
-      setSelectId(newSelect)
+  useEffect(() => {
+    axios.get('/api/notices/noticesCount').then((res) => {
+      const t=res.data[0]['COUNT(*)']
+      setRows(Array.from({length: t}, () => ({index: 0, title: '', content: '', date: ''})))
+    })
+  }, [])
+
+  return [rows, setRows]
+}
+
+function useQueryData(queryRows) {
+  const [rows, setRows] = useQueryCount()
+  const count = rows.length
+  const [loading, setLoading] = React.useState(false)
+
+  const process = (emptyArray) => {
+    if(emptyArray.length!==0) {
+      emptyArray.forEach(async(emptyPoint) => {
+        await axios.post('/api/notices/notices', {emptyPoint}).then((res) => {
+          let t=res.data.map(data => ({ ...data, date: data.date.split('T')[0]}))
+          for(let i=emptyPoint[0], j=0; i<emptyPoint[0]+emptyPoint[1]; i++, j++) {
+            rows[i]=t[j]
+          }
+          setRows([...rows])
+          setLoading(false)
+        })
+      })
     } else {
-      setSelectId(-1)
+      setLoading(false)
     }
   }
-  
-  const queryData = async (page, rowsPPage=rowsPerPage) => {
+
+  useEffect(() => {
     if(rows.length!==0){
+      setLoading(true)
       let emptyArray=[]
       let emptyPoint=[]
       let start
-      for(start=page*rowsPPage; start<rows.length && start<(page+1)*rowsPPage; start++){
+      for(start=queryRows[0]; start<rows.length && start<queryRows[1]; start++){
         if(rows[start].index===0 && emptyPoint.length===0) {
           emptyPoint=emptyPoint.concat([start])
         }else if(rows[start].index!==0 && emptyPoint.length===1) {
@@ -229,44 +235,87 @@ function NoticesTable(props) {
         emptyPoint=[]
       }
       if(emptyArray.length!==0)console.log('request', emptyArray)
-      emptyArray.forEach((emptyPoint) => {
-        axios.post('/api/notices/notices', {emptyPoint}).then((res) => {
-          let t=res.data.map(data => ({ ...data, date: data.date.split('T')[0]}))
-          for(let i=emptyPoint[0], j=0; i<emptyPoint[0]+emptyPoint[1]; i++, j++) {
-            rows[i]=t[j]
-          }
-          setRows([...rows])
-        })
-      })
+      setTimeout(() => {
+        process(emptyArray)
+      }, 200);
     }
-    document.getElementById('topLoadingBar').style.visibility= 'hidden'
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[queryRows, count])
+
+  return [loading, rows, count]
+}
+
+function NoticesTable(props) {
+  const {matches} = props
+  const classes = useStyles();
+  const [selectId, setSelectId] = React.useState(-1)
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(0);
+  const [queryRows, setQueryRows] = React.useState([0, 5])
+  const [loading, rows, count] = useQueryData(queryRows)
+  const [changePage, setChangePage] = React.useState(0)
+  const [changeRowsPerPage, setChangeRowsPerPage] = React.useState(5)
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, count - page * rowsPerPage);
+
+  const handleChangePage = async (newPage) => {
+    let end=Math.max(0, Math.ceil(count / rowsPerPage) - 1)
+    if(newPage>end){
+      setQueryRows([end*rowsPerPage, (end+1)*rowsPerPage])
+      setChangePage(end)
+    } else if(newPage<0){
+      setQueryRows([0, rowsPerPage])
+      setChangePage(0)
+    } else {
+      setQueryRows([newPage*rowsPerPage, (newPage+1)*rowsPerPage])
+      setChangePage(newPage)
+    }
+  };
+  const handleChangeRowsPerPage = (event) => {
+    if(event!==undefined) {
+      const eventType=event.type
+      const eventTargetValue=event.target.value
+      if(eventType==='scroll') {
+        setQueryRows([0, rowsPerPage+5])
+        setChangeRowsPerPage(rowsPerPage+5)
+      }else if(eventType==='change') {
+        setQueryRows([0, parseInt(eventTargetValue, 10)])
+        setChangePage(0)
+        setChangeRowsPerPage(parseInt(eventTargetValue, 10))
+      }
+    } else {
+      setQueryRows([0, rowsPerPage+5])
+      setChangeRowsPerPage(rowsPerPage+5)
+    }
+  };
+  const handleChangeSelectId = (newSelect) => {
+    if (newSelect!==selectId) {
+      setSelectId(newSelect)
+    } else {
+      setSelectId(-1)
+    }
   }
 
   useEffect(() => {
-    axios.get('/api/notices/noticesCount').then((res) => {
-      setCount(res.data[0]['COUNT(*)'])
-      setPage(0)
-    })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    setRowsPerPage(10)
   }, [])
 
   useEffect(() => {
-    queryData(page);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, rowsPerPage])
-
-  useEffect(() => {
-    let emptyArray=[]
-    for(let i=0; i<count; i++) {
-      emptyArray=emptyArray.concat([{index: 0, title: '', context: '', date: ''}])
+    if(!loading) {
+      setPage(changePage)
+      setRowsPerPage(changeRowsPerPage)
+      document.getElementById('topLoadingBar').style.visibility='hidden'
+    }else{
+      document.getElementById('topLoadingBar').style.visibility='visible'
     }
-    setRows(emptyArray)
-    setRowsPerPage(10)
-
-  }, [count])
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading])
+  
   useEffect(() => {
     if(!matches) {
+      if(document.body.scrollHeight < window.innerHeight) {
+        handleChangeRowsPerPage()
+      }else{
+      }
       const handleScroll = (event) => {
         const {innerHeight} = window;
         const {scrollHeight} = document.body;
@@ -274,7 +323,6 @@ function NoticesTable(props) {
         const scrollTop = document.documentElement.scrollTop
         if (scrollHeight - innerHeight - scrollTop < 10 && rowsPerPage<count) {
           handleChangeRowsPerPage(event)
-        } else {
         }
       };
       window.addEventListener("scroll", handleScroll)
@@ -282,7 +330,7 @@ function NoticesTable(props) {
       return () => window.removeEventListener("scroll", handleScroll);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rowsPerPage, count, matches])
+  }, [rows, count, matches])
 
   
   return(
@@ -290,9 +338,9 @@ function NoticesTable(props) {
       <Table aria-label="collapsible table"
       style={{
         width: '100%',
-        borderTop: '1px solid black'
+        borderTop: matches?'1px solid black':''
       }}>
-        <TableHead>
+        <TableHead style={{display: matches?'table-header-group':'none'}}>
           <TableRow>
             <TableCell align="center"
             style={{
@@ -305,7 +353,7 @@ function NoticesTable(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {(rowsPerPage > 0
+          {rows && (rowsPerPage > 0
             ? rows.slice(page*rowsPerPage, (page+1)*rowsPerPage)
             : rows
           ).map((row, index) => {
@@ -320,12 +368,10 @@ function NoticesTable(props) {
                   }}
                   >
                     <TableCell component="th" scope="row" 
-                    style={{
-                      fontSize: '16px'
-                    }}>
+                    style={{fontSize: '16px', width: '90%',}}>
                       {row.title}
                     </TableCell>
-                    <TableCell align="center">{row.date}</TableCell>
+                    <TableCell style={{align: "center", minWidth: '100px'}}>{row.date}</TableCell>
                   </TableRow>
                 <TableRow >
                   <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={2}>
@@ -355,7 +401,7 @@ function NoticesTable(props) {
                   classes={{
                     selectRoot: classes.tablePagination
                   }}
-                  rowsPerPageOptions={[5, 10, 25]}
+                  rowsPerPageOptions={[5, 10]}
                   rowsPerPage={rowsPerPage}
                   component="div"
                   count={count}
@@ -380,20 +426,17 @@ function NoticesTable(props) {
   )
 }
 
-
 export default function NoticesContents() {
   const theme = useTheme();
   const classes = useStyles();
   const matches = useMediaQuery(theme.breakpoints.up('md'));
-
-
   
   return (
     <Box
     style={{
       display: 'flex',
-      margin: '50px 0',
-      minHeight: '500px'
+      minHeight: '500px',
+      margin: (matches?'50px 0':'')
     }}>
       {matches && (
         <Box
