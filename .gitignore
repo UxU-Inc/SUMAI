@@ -52,7 +52,7 @@ sumai_web/yarn-debug.log*
 sumai_web/yarn-error.log*
 
 # security
-sumai_web/src/server/security
+sumai_web/src/server/security/
 
 
 
