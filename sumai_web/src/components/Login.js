@@ -216,25 +216,25 @@ class Login extends Component{
                     <Grid container justify="center">
                         <Box style={{margin: "24px 0px"}}>
                             <Box boxShadow={2} display="flex" justifyContent="center" style={{width: "450px", marginTop: "10px"}}>
-                                <Button style={{width: "100%", borderRadius: "0px", padding: "10px"}}>
+                                <Button onClick={this.props.onSNSLogin("google")} style={{width: "100%", borderRadius: "0px", padding: "10px"}}>
                                     <img src={googleLogo} alt="G" style={{width: "22.5px"}}/> 
                                     <Typography style={{color: "#757575", marginLeft: "10px", fontSize: "20px", fontFamily: "NotoSansKR-Medium"}}>구글 로그인</Typography>
                                 </Button>
                             </Box>
                             <Box boxShadow={2} display="flex" justifyContent="center" style={{width: "450px", marginTop: "10px"}}>
-                                <Button style={{width: "100%", borderRadius: "0px", padding: "10px", background: "#ffeb00"}}>
+                                <Button onClick={this.props.onSNSLogin("kakao")} style={{width: "100%", borderRadius: "0px", padding: "10px", background: "#ffeb00"}}>
                                     <img src={kakaoLogo} alt="G" style={{width: "30px"}}/> 
                                     <Typography style={{color: "#3c1e1e", marginLeft: "10px", fontSize: "20px", fontFamily: "NotoSansKR-Medium"}}>카카오 로그인</Typography>
                                 </Button>
                             </Box>
                             <Box boxShadow={2} display="flex" justifyContent="center" style={{width: "450px", marginTop: "10px"}}>
-                                <Button style={{width: "100%", borderRadius: "0px", padding: "10px", background: "#1ec800"}}>
+                                <Button onClick={this.props.onSNSLogin("naver")} style={{width: "100%", borderRadius: "0px", padding: "10px", background: "#1ec800"}}>
                                     <img src={naverLogo} alt="G" style={{width: "30px"}}/> 
                                     <Typography style={{color: "#fff", marginLeft: "10px", fontSize: "20px", fontFamily: "NotoSansKR-Medium"}}>네이버 로그인</Typography>
                                 </Button>
                             </Box>
                             <Box boxShadow={2} display="flex" justifyContent="center" style={{width: "450px", marginTop: "10px"}}>
-                                <Button style={{width: "100%", borderRadius: "0px", padding: "10px", background: "#3a5daa"}}>
+                                <Button onClick={this.props.onSNSLogin("facebook")} style={{width: "100%", borderRadius: "0px", padding: "10px", background: "#3a5daa"}}>
                                     <img src={facebookLogo} alt="G" style={{width: "25px"}}/> 
                                     <Typography style={{color: "#fff", marginLeft: "10px", fontSize: "20px", fontFamily: "NotoSansKR-Medium"}}>페이스북 로그인</Typography>
                                 </Button>
@@ -294,25 +294,25 @@ class Login extends Component{
                         
                         <Box style={{marginTop: "40px"}}>
                             <Box boxShadow={2} display="flex" justifyContent="center" style={{marginTop: "10px"}}>
-                                <Button style={{width: "100%", borderRadius: "0px", padding: "10px"}}>
+                                <Button onClick={this.props.onSNSLogin("google")} style={{width: "100%", borderRadius: "0px", padding: "10px"}}>
                                     <img src={googleLogo} alt="G" style={{width: "22.5px"}}/> 
                                     <Typography style={{color: "#757575", marginLeft: "10px", fontSize: "20px", fontFamily: "NotoSansKR-Medium"}}>구글 로그인</Typography>
                                 </Button>
                             </Box>
                             <Box boxShadow={2} display="flex" justifyContent="center" style={{marginTop: "10px"}}>
-                                <Button style={{width: "100%", borderRadius: "0px", padding: "10px", background: "#ffeb00"}}>
+                                <Button onClick={this.props.onSNSLogin("kakao")} style={{width: "100%", borderRadius: "0px", padding: "10px", background: "#ffeb00"}}>
                                     <img src={kakaoLogo} alt="G" style={{width: "30px"}}/> 
                                     <Typography style={{color: "#3c1e1e", marginLeft: "10px", fontSize: "20px", fontFamily: "NotoSansKR-Medium"}}>카카오 로그인</Typography>
                                 </Button>
                             </Box>
                             <Box boxShadow={2} display="flex" justifyContent="center" style={{marginTop: "10px"}}>
-                                <Button style={{width: "100%", borderRadius: "0px", padding: "10px", background: "#1ec800"}}>
+                                <Button onClick={this.props.onSNSLogin("naver")} style={{width: "100%", borderRadius: "0px", padding: "10px", background: "#1ec800"}}>
                                     <img src={naverLogo} alt="G" style={{width: "30px"}}/> 
                                     <Typography style={{color: "#fff", marginLeft: "10px", fontSize: "20px", fontFamily: "NotoSansKR-Medium"}}>네이버 로그인</Typography>
                                 </Button>
                             </Box>
                             <Box boxShadow={2} display="flex" justifyContent="center" style={{marginTop: "10px"}}>
-                                <Button style={{width: "100%", borderRadius: "0px", padding: "10px", background: "#3a5daa"}}>
+                                <Button onClick={this.props.onSNSLogin("facebook")} style={{width: "100%", borderRadius: "0px", padding: "10px", background: "#3a5daa"}}>
                                     <img src={facebookLogo} alt="G" style={{width: "25px"}}/> 
                                     <Typography style={{color: "#fff", marginLeft: "10px", fontSize: "20px", fontFamily: "NotoSansKR-Medium"}}>페이스북 로그인</Typography>
                                 </Button>

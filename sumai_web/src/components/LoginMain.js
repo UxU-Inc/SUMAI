@@ -1,12 +1,12 @@
 import React, { Component } from 'react'; 
 
-import Header from "../components/Header"; 
+// import Header from "../components/Header"; 
 import Signup from "../components/Signup";
 import Login from "../components/Login";
 import { Alert, AlertTitle } from '@material-ui/lab';
 
 import { connect } from 'react-redux';
-import { signupRequest, loginRequest  } from '../actions/authentication';
+import { signupRequest, loginRequest, snsloginRequest } from '../actions/authentication';
 
 class LoginMain extends Component{ 
     handleSignup = (email, name, password) => {
@@ -41,6 +41,26 @@ class LoginMain extends Component{
             }
         );
     }
+    handleSNSLogin = (type) => {
+        return this.props.snsloginRequest(type).then(
+            (email) => {
+                if(this.props.loginStatus === "SUCCESS") {
+                    // create session data
+                    let loginData = {
+                        isLoggedIn: true,
+                        email: email
+                    };
+ 
+                    document.cookie = 'key=' + btoa(JSON.stringify(loginData));
+ 
+                    this.props.history.push('/');
+                    return { success: true };
+                } else {
+                    return { success: false }
+                }
+            }
+        );
+    }
     render(){ 
         return ( 
             <div> 
@@ -51,7 +71,7 @@ class LoginMain extends Component{
                         <strong>로그인을 해주세요!</strong>
                     </Alert>: null}
                 <div style={{backgroundColor: "#fff"}}>
-                    {this.props.match.path === "/login/signup"? <Signup onSignup={this.handleSignup}/>:<Login onLogin={this.handleLogin}/>}
+                    {this.props.match.path === "/login/signup"? <Signup onSignup={this.handleSignup}/>:<Login onLogin={this.handleLogin} onSNSLogin={this.handleSNSLogin}/>}
                 </div>
             </div> 
         ) 
@@ -74,7 +94,10 @@ const mapDispatchToProps = (dispatch) => {
         },
         signupRequest: (email, name, password) => {
             return dispatch(signupRequest(email, name, password));
-        }
+        },
+        snsloginRequest: (type) => {
+            return dispatch(snsloginRequest(type));
+        },
     };
 };
 
