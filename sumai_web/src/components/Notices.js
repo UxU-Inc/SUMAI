@@ -74,8 +74,6 @@ class Notices extends Component{
           window.location.href=url
           browserHistory.push(url)
         };
-
-
         /**************************************************** PC *****************************************************/
         if(isWidthUp('md', this.props.width)) {
           return ( 

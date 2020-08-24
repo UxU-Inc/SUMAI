@@ -229,14 +229,14 @@ function FeedbackDialog(props) {
       </small>
       <DialogActions
       style={{borderTop: '1px solid rgb(224, 224, 224)', backgroundColor: 'rgb(250, 250, 250)', padding: '5px 15px'}}>
-        <Button id='sendEmailButton' autoFocus onClick={handleClose} color="primary" style={{font: "16px NotoSansKR-Regular",}} onClick={sendEmail} disabled={!sendEmailButton}>
+        <Button id='sendEmailButton' autoFocus color="primary" style={{font: "16px NotoSansKR-Regular",}} onClick={sendEmail} disabled={!sendEmailButton}>
           보내기
         </Button>
       </DialogActions>
     <Box>
       <Snackbar autoHideDuration={3000} open={snackbarOpen} onClose={handleCloseSnackbar}>
         {
-          sendEmailStatus===200 && (
+          ( sendEmailStatus===200 && 
             <Alert severity={"success"}>
               소중한 의견 감사합니다.
             </Alert>
