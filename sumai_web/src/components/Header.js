@@ -36,6 +36,7 @@ import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 
 import html2canvas from 'html2canvas';
 // import emailjs from 'emailjs-com';
+import { Link } from 'react-router-dom';
 
 
 const useStyles = theme => ({
@@ -301,7 +302,7 @@ class Header extends Component{
               <Paper>
                 <ClickAwayListener onClickAway={handleClose}>
                   <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
-                    <MenuItem onClick={handleClose}>계정 관리</MenuItem>
+                    <MenuItem onClick={handleClose}><Link to="/account" style={{textDecoration: 'none', marginLeft: "auto"}} >계정 관리</Link></MenuItem>
                     <MenuItem onClick={props.onLogout}>로그아웃</MenuItem>
                   </MenuList>
                 </ClickAwayListener>

@@ -8,6 +8,8 @@ import Terms from "./components/Terms";
 import Privacy from "./components/Privacy";
 import Notices from "./components/Notices";
 import LoginMain from "./components/LoginMain";
+import Account from "./components/Account";
+import AccountNameChange from "./components/AccountNameChange";
 
 class App extends Component { 
   render() { 
@@ -16,6 +18,11 @@ class App extends Component {
           <div> 
             <Route exact path="/" component={ Main } /> 
               
+            <Switch>
+              <Route path="/account/name" component={ AccountNameChange } />
+              <Route path="/account" component={ Account } />
+            </Switch>
+
             <Route path="/terms" component={ Terms } />
             <Route path="/privacy" component={ Privacy } />
             <Route path="/notices" component={ Notices } />
