@@ -52,28 +52,48 @@ export function loginRequest(email, password) {
             dispatch(loginFailure(error.response.data.code));
         });
     };
-  }
+}
+
+export function snsloginRequest(type) {
+    return (dispatch) => {
+        // Inform Login API is starting
+        dispatch(login());
    
-  export function login() {
-      return {
-          type: types.AUTH_LOGIN
-      };
-  }
+        // API REQUEST
+        window.open('api/snslogin/'+ type, type + "LOGIN", "width=500,height=700")
+        return axios.get('/api/snslogin/confirm')
+        .then((response) => {
+            console.log(response)
+            // SUCCEED
+            dispatch(loginSuccess(response.data.email))
+            return response.data.email
+        }).catch((error) => {
+            // FAILED
+            dispatch(loginFailure());
+        });
+    };
+}
    
-  export function loginSuccess(email) {
-      return {
-          type: types.AUTH_LOGIN_SUCCESS,
-          email: email
-      };
-  }
+export function login() {
+    return {
+        type: types.AUTH_LOGIN
+    };
+}
    
-  export function loginFailure(error) {
-      return {
-          type: types.AUTH_LOGIN_FAILURE,
-          error: error
-      };
-  }
-  
+export function loginSuccess(email) {
+    return {
+        type: types.AUTH_LOGIN_SUCCESS,
+        email: email
+    };
+}
+
+export function loginFailure(error) {
+    return {
+        type: types.AUTH_LOGIN_FAILURE,
+        error: error
+    };
+}
+
 export function getStatusRequest() {
     return (dispatch) => {
         // inform Get Status API is starting

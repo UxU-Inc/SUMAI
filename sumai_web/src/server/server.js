@@ -2,7 +2,7 @@ const express = require('express');
 const session = require('express-session')
 const dbconfig   = require('./security/database');
 const MySQLStore = require('express-mysql-session')(session);
-const bodyParser = require("body-parser");
+const passport = require('passport');
 const api = require('./routes/index');
 
 const app = express();
@@ -17,7 +17,7 @@ const sessionStore = new MySQLStore(dbconfig);
 //   };
 // app.use(cors(corsOptions));
 // app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(session({
     secret: 'keyboard cat',
     resave: false,
@@ -25,13 +25,10 @@ app.use(session({
     store: sessionStore 
 }))
 
-app.use('/api', api);
+app.use(passport.initialize());
+app.use(passport.session());
 
-app.all('/*', function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    next();
-});
+app.use('/api', api);
 
 app.listen(PORT, () => {
     console.log(`Server On : http://localhost:${PORT}/`);
