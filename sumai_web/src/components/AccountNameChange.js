@@ -41,7 +41,7 @@ class AccountNameChange extends React.Component {
         super(props)
         this.state = {
             currentName: "test",
-            changeName: "test2",
+            changeName: "test",
             nameerror: false,
         }
     }

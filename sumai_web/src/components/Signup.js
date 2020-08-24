@@ -19,7 +19,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 
 const useStyles = theme => ({
     root: {
-        padding: "10% 0px"
+        padding: "10% 0px",
     },
     rootMob: {
         padding: "40px",
@@ -266,7 +266,7 @@ class Signup extends Component{
         if(isWidthUp('sm', this.props.width)) {
             return ( 
                 <div className={classes.root}>
-                    <Box display="flex" justifyContent="center" >
+                    <Box display="flex" justifyContent="center">
                         <Card elevation={3} style={{minWidth: "450px",maxWidth: "450px"}} >
                             <CardHeader className={classes.cardTitleText} 
                                         title={
