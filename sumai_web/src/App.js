@@ -10,11 +10,13 @@ import Notices from "./components/Notices";
 import LoginMain from "./components/LoginMain";
 import Account from "./components/Account";
 import AccountNameChange from "./components/AccountNameChange";
+import { ClientInfoComponent } from './reducers/clientInfo';
 
 class App extends Component { 
   render() { 
     return ( 
-      <Router> 
+      <Router>
+        <ClientInfoComponent /> 
           <div> 
             <Route exact path="/" component={ Main } /> 
               
