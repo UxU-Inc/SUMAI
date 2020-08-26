@@ -53,7 +53,7 @@ router.post('/login', (req, res) => {
                         name: account[0].name
                     };
                     return req.session.save(() => {
-                        res.json({ success: true });
+                        res.json({ success: true, name: account[0].name });
                     })
                 } else {
                     return res.status(400).json({
