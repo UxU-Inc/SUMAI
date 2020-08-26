@@ -107,9 +107,9 @@ class RecordLastest extends Component{
     lastest = (idx) => {
         this.props.lastestRequest(idx).then(
             () => {
-                if(this.props.lastestStatus === "SUCCESS") {
+                if(this.props.lastest.status === "SUCCESS") {
                     this.setState({
-                        data: this.state.data.concat(this.props.lastestData),
+                        data: this.state.data.concat(this.props.lastest.data),
                     })
                     if(this.state.data[this.state.data.length-1] && this.state.data[this.state.data.length-1].idx === 1) {
                         this.setState({
@@ -123,7 +123,7 @@ class RecordLastest extends Component{
     like = (sign, idx) => {
         this.props.likeRequest(sign, idx).then(
             () => {
-                if(this.props.likeStatus === "SUCCESS") {
+                if(this.props.like.status === "SUCCESS") {
                     
                 }
             }
@@ -204,7 +204,7 @@ class RecordLastest extends Component{
         })
     }    
     onClickConvertSort = (convert) => {
-        if(this.props.lastestStatus !== "WAITING"){
+        if(this.props.lastest.status !== "WAITING"){
             this.props.convertSortFunction(convert); 
         }
     }
@@ -311,11 +311,8 @@ RecordLastest.defaultProps = {
 
 const mapStateToProps = (state) => {
     return {
-        lastestStatus: state.mainRecord.lastest.status,
-        lastestError: state.mainRecord.lastest.error,
-        lastestData: state.mainRecord.lastest.data,
-        likeStatus: state.mainRecord.like.status,
-        likeError: state.mainRecord.like.error
+        lastest: state.mainRecord.lastest,
+        like: state.mainRecord.like,
     };
 };
  
