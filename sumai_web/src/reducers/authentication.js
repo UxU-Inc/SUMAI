@@ -13,7 +13,8 @@ const initialState = {
     status: {
         valid: false,
         isLoggedIn: false,
-        currentUser: ''
+        currentEmail: '',
+        currentUser: '',
     }
 };
  
@@ -61,7 +62,8 @@ export default function authentication(state = initialState, action) {
         status: {
           ...state.status,
           isLoggedIn: true,
-          currentUser: action.email
+          currentEmail: action.email,
+          currentUser: action.name
         }
       }
     case types.AUTH_LOGIN_FAILURE:
@@ -87,7 +89,8 @@ export default function authentication(state = initialState, action) {
         status: {
           ...state.status,
           valid: true,
-          currentUser: action.name
+          currentEmail: action.email,
+          currentUser: action.name,
         }
       }
     case types.AUTH_GET_STATUS_FAILURE:
@@ -111,6 +114,34 @@ export default function authentication(state = initialState, action) {
           ...state.status,
           isLoggedIn: false,
           currentUser: ''
+        }
+      }
+    /* NAME_CHANGE */
+    case types.NAME_CHANGE:
+      return {
+        ...state,
+        status: {
+          ...state.staus,
+          isLoggedIn: true
+        }
+      }
+    case types.NAME_CHANGE_SUCCESS:
+      return {
+        ...state,
+        status: {
+          ...state.status,
+          valid: true,
+          currentEmail: action.email,
+          currentUser: action.name,
+        }
+      }
+    case types.NAME_CHANGE_FAILURE:
+      return {
+        ...state,
+        status: {
+          ...state.status,
+          valid: false,
+          isLoggedIn: false
         }
       }
     default:

@@ -115,6 +115,11 @@ class Body extends React.Component {
 
     handleChange = (e) => {
         this.props.handleChange(e)
+
+        let scrollLine = 250
+        if(scrollLine <= document.documentElement.scrollTop && e.target.value.length === 0) {
+          window.scrollTo({top:0, left:0})
+        }
     }
 
     onClick = (e) => {

@@ -46,7 +46,7 @@ export function loginRequest(email, password) {
         return axios.post('/api/account/login', { email, password })
         .then((response) => {
             // SUCCEED
-            dispatch(loginSuccess(email));
+            dispatch(loginSuccess(response.data.email, response.data.name));
         }).catch((error) => {
             // FAILED
             dispatch(loginFailure(error.response.data.code));
@@ -65,7 +65,7 @@ export function snsloginRequest(type) {
         .then((response) => {
             console.log(response)
             // SUCCEED
-            dispatch(loginSuccess(response.data.email))
+            dispatch(loginSuccess(response.data.email, response.data.name))
             return response.data.email
         }).catch((error) => {
             // FAILED
@@ -80,10 +80,11 @@ export function login() {
     };
 }
    
-export function loginSuccess(email) {
+export function loginSuccess(email, name) {
     return {
         type: types.AUTH_LOGIN_SUCCESS,
-        email: email
+        email: email,
+        name: name,
     };
 }
 
@@ -101,7 +102,7 @@ export function getStatusRequest() {
         return axios.get('/api/account/getinfo')
         .then((response) => {
             console.log(response.data)
-            dispatch(getStatusSuccess(response.data.info.name)); //HTTP 통신을 통해 name 받아옴
+            dispatch(getStatusSuccess(response.data.info.email, response.data.info.name)); //HTTP 통신을 통해 name 받아옴
         }).catch((error) => {
             dispatch(getStatusFailure());
         });
@@ -114,10 +115,11 @@ export function getStatus() {
     };
 }
  
-export function getStatusSuccess(name) {
+export function getStatusSuccess(email, name) {
     return {
         type: types.AUTH_GET_STATUS_SUCCESS,
-        name: name
+        email: email,
+        name: name,
     };
 }
  
@@ -140,5 +142,41 @@ export function logoutRequest() {
 export function logout() {
     return {
         type: types.AUTH_LOGOUT
+    };
+}
+
+/* nameChange */
+export function nameChangeRequest(email, name) {
+    return (dispatch) => {
+        // Inform nameChange API is starting
+        dispatch(nameChange());
+ 
+        return axios.post('/api/account/nameChange', { email, name })
+        .then((response) => {
+            dispatch(nameChangeSuccess(email, name));
+        }).catch((error) => {
+            dispatch(nameChangeFailure(error.response.data.code));
+        });
+    };
+}
+
+export function nameChange() {
+    return {
+        type: types.NAME_CHANGE
+    };
+}
+ 
+export function nameChangeSuccess(email, name) {
+    return {
+        type: types.NAME_CHANGE_SUCCESS,
+        email: email,
+        name: name,
+    };
+}
+ 
+export function nameChangeFailure(error) {
+    return {
+        type: types.NAME_CHANGE_FAILURE,
+        error: error
     };
 }

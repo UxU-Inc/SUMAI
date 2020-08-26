@@ -22,8 +22,10 @@ import facebookLogo from '../images/facebook_icon.png';
 
 const useStyles = theme => ({
     root: {
-        padding: theme.spacing(3),
-        marginTop: theme.spacing(5),
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        margin: '-320px 0 0 -225px',
     },
     rootMob: {
         padding: "40px",

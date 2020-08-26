@@ -53,7 +53,7 @@ router.post('/login', (req, res) => {
                         name: account[0].name
                     };
                     return req.session.save(() => {
-                        res.json({ success: true });
+                        res.json({ success: true, email: account[0].email, name: account[0].name }); 
                     })
                 } else {
                     return res.status(400).json({
@@ -84,6 +84,66 @@ router.get('/getinfo', (req, res) => {
     }
  
     return res.json({ info: req.session.loginInfo });
+})
+
+router.post('/nameChange', (req, res) => {
+    // 기존에 존재하는 email 이 있는지 DB 에서 확인
+    db.query("UPDATE summary.account_info SET name = '"+ req.body.name + "'  WHERE email = '"+ req.body.email + "'", (err, account) => {
+        console.log(account)
+        if (err) {
+            console.log(err);
+            return res.send(err);
+        } else {
+            req.session.loginInfo = {
+                email: req.body.email,
+                name: req.body.name,
+            };
+            return req.session.save(() => {
+                res.json({ success: true });
+            })
+        }
+    });
+})
+
+router.post('/passwordChange', (req, res) => {
+
+    db.query("SELECT * FROM summary.account_info WHERE email = '"+ req.body.email + "'", (err, account) => {
+        if (err) {
+            console.log(err);
+            return res.send(err);
+        } else if(account.length === 0){
+            return res.status(400).json({
+                error: "해당 이메일로 가입되어 있지 않습니다.",
+                code: 2
+            })
+        } else {
+            // 현재 비밀번호 확인
+            hashing.confirm(req.body.passwordCurrent, account[0].salt).then(password => {
+                if(account[0].password === password.hashed) {
+                    // 변경할 비밀번호 hashing
+                    hashing.encrypt(req.body.passwordChange).then(password => {
+                        db.query("UPDATE summary.account_info SET password = '"+ password.hashed +"', salt = '"+ password.salt +"' WHERE email = '"+ req.body.email + "'", (err, exists) => {
+                            if(!err) {
+                                return res.json({ success: true });
+                            } else {
+                                console.log(err);
+                                return res.send(err);
+                            }
+                        });
+                    })
+                } else {
+                    return res.status(400).json({
+                        error: "현재 비밀번호가 틀립니다.",
+                        code: 3
+                    });
+                }
+            })  
+        }
+        
+    });
+
+    
+
 })
  
 module.exports = router;

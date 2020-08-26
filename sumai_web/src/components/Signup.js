@@ -19,7 +19,10 @@ import Checkbox from '@material-ui/core/Checkbox';
 
 const useStyles = theme => ({
     root: {
-        padding: "10% 0px",
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        margin: '-267px 0 0 -225px',
     },
     rootMob: {
         padding: "40px",
@@ -163,7 +166,7 @@ class Signup extends Component{
             }
         } else if (type === "name") {
             // 이름 형식 검사
-            const nameRegex = /^[a-zA-Z가-힣]{2,10}$/;
+            const nameRegex = /^[a-zA-Z가-힣0-9]{2,10}$/;
             if(!nameRegex.test(value) && value !== "") {
                 this.setState({
                     nameerror: true,
