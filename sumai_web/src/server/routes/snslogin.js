@@ -84,6 +84,7 @@ router.get('/googlecallback', (req, res) => {
                                 console.log("signup")
                                 req.session.loginInfo = {
                                     type: "google",
+                                    id: user.id,
                                     email: user.emails[0].value,
                                     name: user.displayName
                                 };
@@ -105,6 +106,7 @@ router.get('/googlecallback', (req, res) => {
                         })
                         req.session.loginInfo = {
                             type: "google",
+                            id: user.id,
                             email: account[0].email,
                             name: account[0].name
                         };
@@ -117,6 +119,7 @@ router.get('/googlecallback', (req, res) => {
             } else {
                 req.session.loginInfo = {
                     type: "google",
+                    id: user.id,
                     email: account[0].email,
                     name: account[0].name
                 };
@@ -159,6 +162,7 @@ router.get('/kakaocallback', (req, res) => {
                                     console.log("signup")
                                     req.session.loginInfo = {
                                         type: "kakao",
+                                        id: user.id,
                                         email: email,
                                         name: user.username
                                     };
@@ -180,6 +184,7 @@ router.get('/kakaocallback', (req, res) => {
                             })
                             req.session.loginInfo = {
                                 type: "kakao",
+                                id: user.id,
                                 email: account[0].email,
                                 name: account[0].name
                             };
@@ -196,6 +201,7 @@ router.get('/kakaocallback', (req, res) => {
                             console.log("signup")
                             req.session.loginInfo = {
                                 type: "kakao",
+                                id: user.id,
                                 email: email,
                                 name: user.username
                             };
@@ -212,6 +218,7 @@ router.get('/kakaocallback', (req, res) => {
             } else {
                 req.session.loginInfo = {
                     type: "kakao",
+                    id: user.id,
                     email: account[0].email,
                     name: account[0].name
                 };
@@ -250,6 +257,7 @@ router.get('/navercallback', (req, res) => {
                                 console.log("signup")
                                 req.session.loginInfo = {
                                     type: "naver",
+                                    id: user.id,
                                     email: user.emails[0].value,
                                     name: user.displayName
                                 };
@@ -271,6 +279,7 @@ router.get('/navercallback', (req, res) => {
                         })
                         req.session.loginInfo = {
                             type: "naver",
+                            id: user.id,
                             email: account[0].email,
                             name: account[0].name
                         };
@@ -283,6 +292,7 @@ router.get('/navercallback', (req, res) => {
             } else {
                 req.session.loginInfo = {
                     type: "naver",
+                    id: user.id,
                     email: account[0].email,
                     name: account[0].name
                 };
@@ -322,6 +332,7 @@ router.get('/facebookcallback', (req, res) => {
                                     console.log("signup")
                                     req.session.loginInfo = {
                                         type: "facebook",
+                                        id: user.id,
                                         email: email,
                                         name: user.displayName
                                     };
@@ -343,6 +354,7 @@ router.get('/facebookcallback', (req, res) => {
                             })
                             req.session.loginInfo = {
                                 type: "facebook",
+                                id: user.id,
                                 email: account[0].email,
                                 name: account[0].name
                             };
@@ -359,6 +371,7 @@ router.get('/facebookcallback', (req, res) => {
                             console.log("signup")
                             req.session.loginInfo = {
                                 type: "facebook",
+                                id: user.id,
                                 email: email,
                                 name: user.displayName
                             };
@@ -375,6 +388,7 @@ router.get('/facebookcallback', (req, res) => {
             } else {
                 req.session.loginInfo = {
                     type: "facebook",
+                    id: user.id,
                     email: account[0].email,
                     name: account[0].name
                 };
