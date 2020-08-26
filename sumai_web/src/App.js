@@ -34,14 +34,12 @@ class App extends Component {
 
     // if not logged in, do nothing
     if(!loginData.isLoggedIn) return;
-    console.log(loginData);
 
     // page refreshed & has a session in cookie,
     // check whether this cookie is valid or not
     this.props.getStatusRequest().then(
         () => {
             console.log(this.props.status)
-            console.log(this.props.state)
             // if session is not valid
             if(!this.props.status.valid) {
                 // logout the session
@@ -84,7 +82,6 @@ class App extends Component {
 const mapStateToProps = (state) => {
   return {
       status: state.authentication.status,
-      state: state,
   };
 };
 

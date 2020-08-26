@@ -106,9 +106,9 @@ class RecordRecommend extends Component{
     recommend = () => {
         this.props.recommendRequest().then(
             () => {
-                if(this.props.recommendStatus === "SUCCESS") {
+                if(this.props.recommend.status === "SUCCESS") {
                     this.setState({
-                        data: this.state.data.concat(this.props.recommendData),
+                        data: this.state.data.concat(this.props.recommend.data),
                     })
                     if(this.state.data[this.state.data.length-1] && this.state.data[this.state.data.length-1].idx === 1) {
                         this.setState({
@@ -122,7 +122,7 @@ class RecordRecommend extends Component{
     like = (sign, idx) => {
         this.props.likeRequest(sign, idx).then(
             () => {
-                if(this.props.likeStatus === "SUCCESS") {
+                if(this.props.like.status === "SUCCESS") {
                     
                 }
             }
@@ -204,7 +204,7 @@ class RecordRecommend extends Component{
         })
     }    
     onClickConvertSort = (convert) => {
-        if(this.props.recommendStatus !== "WAITING"){
+        if(this.props.recommend.status !== "WAITING"){
             this.props.convertSortFunction(convert); 
         }
     }
@@ -312,11 +312,8 @@ RecordRecommend.defaultProps = {
 
 const mapStateToProps = (state) => {
     return {
-        recommendStatus: state.mainRecord.recommend.status,
-        recommendError: state.mainRecord.recommend.error,
-        recommendData: state.mainRecord.recommend.data,
-        likeStatus: state.mainRecord.like.status,
-        likeError: state.mainRecord.like.error
+        recommend: state.mainRecord.recommend,
+        like: state.mainRecord.like,
     };
 };
  
