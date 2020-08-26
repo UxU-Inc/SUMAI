@@ -29,7 +29,8 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import axios from 'axios';
 
 //redux
-import {ClientInfo} from '../reducers/clientInfo'
+import {sendAct} from '../reducers/clientInfo'
+import { useDispatch } from 'react-redux';
 
 
 
@@ -257,6 +258,8 @@ function NoticesTable(props) {
   const [changeRowsPerPage, setChangeRowsPerPage] = React.useState(5)
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, count - page * rowsPerPage);
 
+  const dispatch = useDispatch()
+
   const handleChangePage = async (newPage) => {
     let end=Math.max(0, Math.ceil(count / rowsPerPage) - 1)
     if(newPage>end){
@@ -290,6 +293,7 @@ function NoticesTable(props) {
   const handleChangeSelectId = (newSelect) => {
     if (newSelect!==selectId) {
       setSelectId(newSelect)
+      dispatch(sendAct(`notices - check ${newSelect}`))
     } else {
       setSelectId(-1)
     }

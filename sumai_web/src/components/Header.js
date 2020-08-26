@@ -39,6 +39,9 @@ import html2canvas from 'html2canvas';
 import { Link } from 'react-router-dom';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
+import { useDispatch } from 'react-redux';
+import axios from 'axios';
+import { sendAct } from '../reducers/clientInfo';
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -128,6 +131,8 @@ function FeedbackDialog(props) {
   const [sendEmailButton, setSendEmailButton] = React.useState(true)
   const [sendEmailStatus, setSendEmailStatus] = React.useState(null)
 
+  const dispatch = useDispatch()
+
   const screenShot = () => {
     document.getElementById('feedback').hidden = true
     html2canvas(document.body, {removeContainer: false, }).then(function(canvas) {
@@ -153,17 +158,18 @@ function FeedbackDialog(props) {
   }
   function sendEmail(e) {
     setSendEmailButton(false)
-    console.log(sendEmailButton)
     e.preventDefault();
     console.log(message)
-
-    // emailjs.send('gmail', 'helptemplates', {email: '', message: message, content: (screen!==null?screen.toDataURL():'')}, 'user_zQPp45WdDWidiikwl7X73')
-    //   .then((result) => {
-    //       console.log(result.text);
-    //       handleClose()
-    //   }, (error) => {
-    //       console.log(error.text);
-    //   });
+    
+    axios.post('/api/sendEmail/sendEmail', {message: message}).then((res) => {
+      setSendEmailStatus(200)
+      dispatch(sendAct('send feedback is success'))
+      console.log(res)
+    }).catch((res)=> {
+      setSendEmailStatus(500)
+      dispatch(sendAct('send feedback is fail'))
+      console.log(res)
+    })
   }
 
   useEffect(() => {
@@ -204,14 +210,14 @@ function FeedbackDialog(props) {
         }}/>
       </Box>
       <Box style={{display: 'block', background: 'WhiteSmoke', padding: '0'}}>
-        <Box id='screenshotButton' style={{display: 'flex', width: '400'}}>
+        {/* <Box id='screenshotButton' style={{display: 'flex', width: '400'}}>
           <Button onClick={(event) => {
             screenShot()
             document.getElementById('screenshotButton').remove()
           }} style={{marginLeft:'auto', marginRight:'auto', width:'100%', padding:'8px 0'}}>
             스크린샷 첨부하기
           </Button>
-        </Box>
+        </Box> */}
         <Box style={{display: 'flex'}}>
           <img id="screenshotPreview" src='' alt='' style={{marginLeft: 'auto', marginRight: 'auto',}}onClick={showCanvas} />
         </Box>
