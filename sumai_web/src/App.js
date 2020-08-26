@@ -14,6 +14,7 @@ import AccountPassword from "./components/AccountPassword";
 
 import { connect } from 'react-redux';
 import { getStatusRequest } from './actions/authentication';
+import { ClientInfoComponent } from './reducers/clientInfo';
 
 class App extends Component { 
   componentDidMount() { //컴포넌트 렌더링이 맨 처음 완료된 이후에 바로 세션확인
@@ -55,7 +56,8 @@ class App extends Component {
 }
   render() { 
     return ( 
-      <Router> 
+      <Router>
+        <ClientInfoComponent /> 
           <div> 
             <Route exact path="/" component={ Main } /> 
               
