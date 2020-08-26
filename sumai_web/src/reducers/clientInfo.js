@@ -70,18 +70,20 @@ const recvAct = () => {
 
 function useLoginInfo() {
   const [loginInfo, setLoginInfo] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     axios.get('/api/account/getinfo').then((res)=> { // 나중에 session 추적이 아닌 redux 추적으로 수정해야함
       setLoginInfo(res.data.info)
+      setLoading(false)
     })
   }, [])
 
-  return [loginInfo]
+  return [loginInfo, loading]
 }
 
 function ClientInfoComponent() {
-  const [loginInfo] = useLoginInfo()
+  const [loginInfo, loginInfoLoading] = useLoginInfo()
   const clientInfo = useSelector(state => state.clientInfo)
   const loading = useSelector(state => state.clientInfo.loading)
   const location = useLocation()
@@ -90,10 +92,10 @@ function ClientInfoComponent() {
 
   const RecordLog = (act) => {
     axios.post('/api/recordLog/recordLog', {
-      ipv4: clientInfo.ipv4 ?? '', 
-      sns_type: loginInfo.snsType ?? '',
-      id: loginInfo.id ?? '',
-      email: loginInfo.email ?? '',
+      ipv4: clientInfo?.ipv4 ?? '', 
+      sns_type: loginInfo?.snsType ?? '',
+      id: loginInfo?.id ?? '',
+      email: loginInfo?.email ?? '',
       action: clientInfo.act
     }).then((res) => {
       console.log('record success')
@@ -112,20 +114,30 @@ function ClientInfoComponent() {
 
   React.useEffect(()=> {
     if(loading){
-      console.log(123)
       dispatch(sendAct(`move ${location.pathname}`))
     }
   }, [loading, location.pathname])
 
   useEffect(() => {
     if(clientInfo.sendAct) {
-      RecordLog()
-      dispatch(recvAct())
+      if(!loginInfoLoading){
+        RecordLog()
+        dispatch(recvAct())
+      }
     }else {
       console.log('no act')
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clientInfo.act])
+
+  useEffect(() => {
+    if(!loginInfoLoading){
+      RecordLog()
+      dispatch(recvAct())
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loginInfoLoading])
+
 
   return(<p style={{display: 'none'}}/>)
 }
