@@ -46,7 +46,7 @@ export function loginRequest(email, password) {
         return axios.post('/api/account/login', { email, password })
         .then((response) => {
             // SUCCEED
-            dispatch(loginSuccess(email));
+            dispatch(loginSuccess(response.data.name));
         }).catch((error) => {
             // FAILED
             dispatch(loginFailure(error.response.data.code));
@@ -65,7 +65,7 @@ export function snsloginRequest(type) {
         .then((response) => {
             console.log(response)
             // SUCCEED
-            dispatch(loginSuccess(response.data.email))
+            dispatch(loginSuccess(response.data.name))
             return response.data.email
         }).catch((error) => {
             // FAILED
@@ -80,10 +80,10 @@ export function login() {
     };
 }
    
-export function loginSuccess(email) {
+export function loginSuccess(name) {
     return {
         type: types.AUTH_LOGIN_SUCCESS,
-        email: email
+        name: name,
     };
 }
 

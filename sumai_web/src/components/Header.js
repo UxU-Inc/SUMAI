@@ -319,6 +319,7 @@ class Header extends Component{
           aria-haspopup="true"
           onClick={handleToggle}
         >
+          {console.log(props)}
           {props.currentUser}님
           <IconButton style={{padding: "0px"}}>
             <ExpandMoreIcon />
