@@ -13,6 +13,8 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import * as root from '../rootValue';
+import { connect } from 'react-redux';
+import { nameChangeRequest } from '../actions/authentication';
 
 const useStyles = theme => ({
     AppBarStyle: {
@@ -36,45 +38,76 @@ const useStyles = theme => ({
 
 class AccountNameChange extends React.Component {
 
-    
     constructor(props) {
         super(props)
         this.state = {
-            currentName: "test",
-            changeName: "test",
-            nameerror: false,
+            email: this.props.status.currentEmail,
+            nameCurrent: this.props.status.currentUser,
+            nameChange: this.props.status.currentUser,
+            nameError: false,
         }
+        this.textFieldRef = [React.createRef()]
+    }
+
+    componentWillReceiveProps() {
+        setTimeout(function() { 
+            this.setState({
+                nameCurrent: this.props.status.currentUser,
+                nameChange: this.props.status.currentUser,
+            }) 
+        }.bind(this), 0)
     }
 
     handleChangeName = (e) => {
         this.setState({
-            changeName: e.target.value,
+            nameChange: e.target.value,
         })
 
         this.validation(e.target.value.trim())
     }
 
     validation = (value) => {
-        const nameRegex = /^[a-zA-Z가-힣]{2,10}$/;
+        const nameRegex = /^[a-zA-Z가-힣0-9]{2,10}$/;
         if(!nameRegex.test(value) && value !== "") {
             this.setState({
-                nameerror: true,
+                nameError: true,
             })
         } else {
             this.setState({
-                nameerror: false,
+                nameError: false,
             })
         } 
     }
 
     onClickSave = () => {
-        if(!this.state.nameerror) {
-            this.props.onNameChange(this.state.email, this.state.currentName, this.state.changeName, this.state.password).then(data => {
+        this.setState({
+            nameCurrent: this.props.status.currentUser
+        })
+
+        if(this.state.nameChange === "" || this.state.nameError || this.state.nameCurrent === this.state.nameChange) {
+            this.textFieldRef[0].current.focus()
+            return
+        }
+
+        if(this.state.email !== "" && !this.state.nameError) {
+            this.onNameChange(this.state.email, this.state.nameChange).then(data => {
                 if (data.success) {
                     this.props.history.goBack()
                 }
             })
         }
+    }
+
+    onNameChange = (email, nameChange) => {
+        return this.props.nameChangeRequest(email, nameChange).then(
+            () => {
+                if(this.props.status.currentUser !== "") {
+                    return { success: true }
+                } else {
+                    return { success: false }
+                }
+            }
+        );
     }
 
 
@@ -86,7 +119,7 @@ class AccountNameChange extends React.Component {
                 <AppBar position="static" className={classes.AppBarStyle}>
                     <Toolbar variant="dense">
 
-                        <a href="/account" className={classes.link} >
+                        <a href="/accounts" className={classes.link} >
                             <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
                             <Typography style={{color: "#0000008A", paddingLeft: "10px", fontSize: "28px"}}>계정</Typography>
                         </a>
@@ -102,19 +135,19 @@ class AccountNameChange extends React.Component {
                 </AppBar> 
 
                 <Box style={{background: "#fff"}}>
-                    <Grid container justify="center" style={{paddingTop: "24px"}}>
+                    <Grid container justify="center" style={{padding: "24px"}}>
 
-                        <Paper variant="outlined" style={{minWidth: "400px", maxWidth: "800px", padding: "24px"}}>
+                        <Paper variant="outlined" style={{width: "100%", minWidth: "200px", maxWidth: "450px", padding: "24px"}}>
                             <Typography variant="caption" style={{fontFamily: "NotoSansKR-Regular", color: "#0000008A"}}>
                                 이름 변경
                             </Typography>
 
-                            <TextField autoFocus fullWidth variant="outlined" value={this.state.changeName} onChange={this.handleChangeName} label="이름" 
-                                        style={{width: "100%", margin: "30px 0px 7.5px 0px"}} spellCheck="false" error={this.state.nameerror}
-                                        helperText={this.state.nameerror ? "한글 또는 영어 2~10자리를 입력해주세요." : false} />
+                            <TextField autoFocus fullWidth variant="outlined" value={this.state.nameChange || ""} onChange={this.handleChangeName} label={"이름"} 
+                                        style={{width: "100%", margin: "30px 0px 7.5px 0px"}} spellCheck="false" error={this.state.nameError} inputRef={this.textFieldRef[0]}
+                                        helperText={this.state.nameError ? "한글 또는 영어 2~10자리를 입력해주세요." : false} />
 
                             <Box display="flex" flexDirection="row-reverse" style={{marginTop: "10px"}}>
-                                <Button  style={{background: root.PrimaryColor, color: "#fff"}}>
+                                <Button onClick={this.onClickSave} style={{background: root.PrimaryColor, color: "#fff"}}>
                                     저장
                                 </Button>
                                 <Button style={{color: root.PrimaryColor}} onClick={() => this.props.history.goBack()}>
@@ -134,5 +167,18 @@ class AccountNameChange extends React.Component {
 
 }
 
+const mapStateToProps = (state) => {
+    return {
+        status: state.authentication.status,
+    };
+};
 
-export default withStyles(useStyles)(withRouter(AccountNameChange));
+const mapDispatchToProps = (dispatch) => {
+    return {
+        nameChangeRequest: (email, name) => {
+            return dispatch(nameChangeRequest(email, name));
+        },
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(useStyles)(withRouter(AccountNameChange)));

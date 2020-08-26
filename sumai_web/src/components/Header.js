@@ -333,7 +333,7 @@ class Header extends Component{
               <Paper>
                 <ClickAwayListener onClickAway={handleClose}>
                   <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
-                    <MenuItem onClick={handleClose}><Link to="/account" style={{textDecoration: 'none', marginLeft: "auto"}} >계정 관리</Link></MenuItem>
+                    <MenuItem onClick={this.onClickLink("accounts")}>계정 관리</MenuItem>
                     <MenuItem onClick={props.onLogout}>로그아웃</MenuItem>
                   </MenuList>
                 </ClickAwayListener>
