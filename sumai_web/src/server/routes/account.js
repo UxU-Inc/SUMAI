@@ -8,6 +8,13 @@ const router = express.Router();
 
 router.post('/signup', (req, res) => {
     // 기존에 존재하는 email 이 있는지 DB 에서 확인
+    if(req.session.emailCert.email!==req.body.email || !req.session.emailCert.certState) { // undefined 에러 관련 추가해야됨
+        console.log('실패요')
+        return res.status(500).json({
+            error: "이메일 인증을 해달랑께롱",
+            code: 2
+        });
+    }
     db.query("SELECT * FROM summary.account_info WHERE email = '"+ req.body.email + "'", (err, data) => {
         if (err) {
             console.log(err);
