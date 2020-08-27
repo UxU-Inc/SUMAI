@@ -16,13 +16,18 @@ import { Link } from 'react-router-dom';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import axios from 'axios'
+import Slide from '@material-ui/core/Slide';
+import Paper from '@material-ui/core/Paper';
 
 const useStyles = theme => ({
     root: {
+        height: '560px',
         position: 'absolute',
         top: '50%',
         left: '50%',
         margin: '-267px 0 0 -225px',
+        zIndex: '5'
     },
     rootMob: {
         padding: "40px",
@@ -118,6 +123,7 @@ class Signup extends Component{
             termsCheckederror: false,
             privacyChecked: false,
             privacyCheckederror: false,
+            slideOpen: true,
         }
         this.textFieldRef = [React.createRef(), React.createRef(), React.createRef(), React.createRef()]
       }
@@ -216,37 +222,57 @@ class Signup extends Component{
             })
         }
     }
-    onClickSignup = () => {
-        if(this.state.email === "" || this.state.emailerror) {
-            this.textFieldRef[0].current.focus()
-            return
-        } else if(this.state.name === "" || this.state.nameerror) {
-            this.textFieldRef[1].current.focus()
-            return
-        } else if(this.state.password === "" || this.state.passworderror) {
-            this.textFieldRef[2].current.focus()
-            return
-        } else if(this.state.passwordcheck === "" || this.state.passwordcheckerror) {
-            this.textFieldRef[3].current.focus()
-            return
-        } else if(!this.state.termsChecked) {
+    onClickSignup = (e) => {
+        
+        this.setState({
+            slideOpen: false
+        })
+        if (this.state.slideOpen) { // 회원가입 누르면
+            if(this.state.email === "" || this.state.emailerror) {
+                this.textFieldRef[0].current.focus()
+                return
+            } else if(this.state.name === "" || this.state.nameerror) {
+                this.textFieldRef[1].current.focus()
+                return
+            } else if(this.state.password === "" || this.state.passworderror) {
+                this.textFieldRef[2].current.focus()
+                return
+            } else if(this.state.passwordcheck === "" || this.state.passwordcheckerror) {
+                this.textFieldRef[3].current.focus()
+                return
+            } else if(!this.state.termsChecked) {
+                this.setState({
+                    termsCheckederror: true,
+                })
+                return
+            } else if(!this.state.privacyChecked) {
+                this.setState({
+                    privacyCheckederror: true,
+                })
+                return
+            }
+            
+            console.log(this.state.slideOpen)
+
+
             this.setState({
-                termsCheckederror: true,
+                slideOpen: false
             })
-            return
-        } else if(!this.state.privacyChecked) {
-            this.setState({
-                privacyCheckederror: true,
-            })
+            e.target.textContent='확인'
+            // axios.post('/api/sendEmail/sendEmailCertification', {email: this.state.email}).then((res) => {
+            //     console.log('인증메일 전송했당께')
+            // })
             return
         }
+        
+
         if(!this.state.emailerror && !this.state.nameerror && !this.state.passworderror && !this.state.passwordcheckerror && !this.state.termsCheckederror && !this.state.privacyCheckederror) {
             this.props.onSignup(this.state.email, this.state.name, this.state.password).then(data => {
                 if (data.success) {
                     
                 } else {
                     if(data.error === 1) {
-                        this.textFieldRef[0].current.focus()
+                        // this.textFieldRef[0].current.focus()
                         this.setState({
                             signupEmailExist: true,
                         })
@@ -282,31 +308,52 @@ class Signup extends Component{
                                                 </Box>
                                             }   
                             />
-                            <CardContent style={{padding: "16px 10%"}}>
-                                <TextField autoFocus variant="outlined" value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.emailerror || this.state.signupEmailExist}
-                                    fullWidth label="이메일" placeholder="이메일을 입력해주세요." style={{margin: "15px 0px 7.5px 0px"}} inputRef={this.textFieldRef[0]}
-                                    helperText={this.state.emailerror? "이메일 형식이 올바르지 않습니다.": false} onKeyPress={this.onKeyPress} spellCheck="false"/>
-                                <TextField variant="outlined" value={this.state.name} onChange={this.handleChange.bind(this, "name")} error={this.state.nameerror}
-                                    fullWidth label="이름" placeholder="이름을 입력해주세요." style={{margin: "7.5px 0px"}} inputRef={this.textFieldRef[1]}
-                                    helperText={this.state.nameerror? "한글, 영어만 사용, 2~10자리": false} onKeyPress={this.onKeyPress} spellCheck="false"/>
-                                <TextField variant="outlined" value={this.state.password} onChange={this.handleChange.bind(this, "password")} error={this.state.passworderror}
-                                    fullWidth label="비밀번호" placeholder="비밀번호를 입력해주세요." type="password" style={{margin: "7.5px 0px"}} inputRef={this.textFieldRef[2]}
-                                    helperText={this.state.passworderror? "영어, 숫자, 특수문자 포함, 8~15자리": false} onKeyPress={this.onKeyPress}/>
-                                <TextField variant="outlined" value={this.state.passwordcheck} onChange={this.handleChange.bind(this, "passwordcheck")} error={this.state.passwordcheckerror}
-                                    fullWidth label="비밀번호 확인" placeholder="비밀번호를 한 번 더 입력해주세요." type="password" style={{margin: "7.5px 0px 15px 0px"}} inputRef={this.textFieldRef[3]}
-                                    helperText={this.state.passwordcheckerror? "비밀번호가 다릅니다.": false} onKeyPress={this.onKeyPress}/>
+                            <Box height={'450px'} overflow='hidden' position='relative' >
+                            <Slide direction="right" in={this.state.slideOpen} mountOnEnter unmountOnExit>
+                                <CardContent style={{padding: "16px 10%", position: 'absolute'}}>
+                                    <TextField autoFocus variant="outlined" value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.emailerror || this.state.signupEmailExist}
+                                        fullWidth label="이메일" placeholder="이메일을 입력해주세요." style={{margin: "15px 0px 7.5px 0px"}} inputRef={this.textFieldRef[0]}
+                                        helperText={this.state.emailerror? "이메일 형식이 올바르지 않습니다.": false} onKeyPress={this.onKeyPress} spellCheck="false"/>
+                                    <TextField variant="outlined" value={this.state.name} onChange={this.handleChange.bind(this, "name")} error={this.state.nameerror}
+                                        fullWidth label="이름" placeholder="이름을 입력해주세요." style={{margin: "7.5px 0px"}} inputRef={this.textFieldRef[1]}
+                                        helperText={this.state.nameerror? "한글, 영어만 사용, 2~10자리": false} onKeyPress={this.onKeyPress} spellCheck="false"/>
+                                    <TextField variant="outlined" value={this.state.password} onChange={this.handleChange.bind(this, "password")} error={this.state.passworderror}
+                                        fullWidth label="비밀번호" placeholder="비밀번호를 입력해주세요." type="password" style={{margin: "7.5px 0px"}} inputRef={this.textFieldRef[2]}
+                                        helperText={this.state.passworderror? "영어, 숫자, 특수문자 포함, 8~15자리": false} onKeyPress={this.onKeyPress}/>
+                                    <TextField variant="outlined" value={this.state.passwordcheck} onChange={this.handleChange.bind(this, "passwordcheck")} error={this.state.passwordcheckerror}
+                                        fullWidth label="비밀번호 확인" placeholder="비밀번호를 한 번 더 입력해주세요." type="password" style={{margin: "7.5px 0px 15px 0px"}} inputRef={this.textFieldRef[3]}
+                                        helperText={this.state.passwordcheckerror? "비밀번호가 다릅니다.": false} onKeyPress={this.onKeyPress}/>
 
 
-                                <Box display="flex" style={{marginTop: "10px"}}>
-                                    <FormControlLabel label="이용약관 동의" className={classes.termsCheckBox} control={<Checkbox checked={this.state.termsChecked} onChange={this.handleChange.bind(this, "terms")} size="medium" value="termsChecked" color="primary"/>}   />
-                                    <Link to="/terms" style={{textDecoration: 'none', marginLeft: "auto"}} ><Button className={classes.termsButton}>이용약관</Button></Link>
-                                </Box>
-                                <Box display="flex">
-                                    <FormControlLabel label="개인정보처리방침 동의" className={classes.termsCheckBox} control={<Checkbox checked={this.state.privacyChecked} onChange={this.handleChange.bind(this, "privacy")} size="medium" value="privacyChecked" color="primary"/>}   />
-                                    <Link to="/privacy" style={{textDecoration: 'none', marginLeft: "auto"}} ><Button className={classes.termsButton}>개인정보처리방침</Button></Link>
-                                </Box>
+                                    <Box display="flex" style={{marginTop: "10px"}}>
+                                        <FormControlLabel label="이용약관 동의" className={classes.termsCheckBox} control={<Checkbox checked={this.state.termsChecked} onChange={this.handleChange.bind(this, "terms")} size="medium" value="termsChecked" color="primary"/>}   />
+                                        <Link to="/terms" style={{textDecoration: 'none', marginLeft: "auto"}} ><Button className={classes.termsButton}>이용약관</Button></Link>
+                                    </Box>
+                                    <Box display="flex">
+                                        <FormControlLabel label="개인정보처리방침 동의" className={classes.termsCheckBox} control={<Checkbox checked={this.state.privacyChecked} onChange={this.handleChange.bind(this, "privacy")} size="medium" value="privacyChecked" color="primary"/>}   />
+                                        <Link to="/privacy" style={{textDecoration: 'none', marginLeft: "auto"}} ><Button className={classes.termsButton}>개인정보처리방침</Button></Link>
+                                    </Box>
+                                </CardContent>
+                            </Slide>
+                            <Slide direction="left" in={!this.state.slideOpen} mountOnEnter unmountOnExit>
+                                <CardContent style={{display: 'flex', flexDirection: 'column', padding: "16px 10%", position: 'absolute'}}>
+                                    <Box height='388px'>
+                                        <TextField autoFocus variant="outlined" value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.emailerror || this.state.signupEmailExist}
+                                            fullWidth label="생년월일(선택사항)" placeholder="이메일을 입력해주세요." style={{margin: "15px 0px 7.5px 0px"}} inputRef={this.textFieldRef[0]}
+                                            helperText={this.state.emailerror? "이메일 형식이 올바르지 않습니다.": false} onKeyPress={this.onKeyPress} spellCheck="false"/>
+                                        <TextField variant="outlined" value={this.state.name} onChange={this.handleChange.bind(this, "name")} error={this.state.nameerror}
+                                            fullWidth label="성별(선택사항)" placeholder="이름을 입력해주세요." style={{margin: "7.5px 0px"}} inputRef={this.textFieldRef[1]}
+                                            helperText={this.state.nameerror? "한글, 영어만 사용, 2~10자리": false} onKeyPress={this.onKeyPress} spellCheck="false"/>
+                                    </Box>
+                                        
+                                    <Box height='auto'>
+                                        <Typography variant='caption' color='primary'>{this.state.email}로 인증메일을 보냈습니다. 메일을 확인해 주세요.</Typography>
+                                    </Box>
+                                </CardContent>
+                            </Slide>
+                            </Box>
+                            
 
-                            </CardContent>
                             <CardActions className={classes.signupButtonLayout}>
                                 <Button onClick={this.onClickSignup} className={classes.signupButton}>
                                     회원가입
