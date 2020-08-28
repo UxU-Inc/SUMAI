@@ -11,13 +11,32 @@ import LoginMain from "./components/LoginMain";
 import Account from "./components/Account";
 import AccountNameChange from "./components/AccountNameChange";
 import AccountPassword from "./components/AccountPassword";
+import AccountWithdrawal from "./components/AccountWithdrawal";
+import AccountBirthday from "./components/AccountBirthday";
+import AccountGender from "./components/AccountGender";
 
 import { connect } from 'react-redux';
-import { getStatusRequest } from './actions/authentication';
+import { getStatusRequest, logoutRequest } from './actions/authentication';
 import { ClientInfoComponent } from './reducers/clientInfo';
 
 class App extends Component { 
   componentDidMount() { //컴포넌트 렌더링이 맨 처음 완료된 이후에 바로 세션확인
+
+    // 쿠키 차단 설정 시 자동 로그아웃
+    if(!navigator.cookieEnabled && this.props.status.isLoggedIn) {
+      this.props.history.push("/")
+      this.props.logoutRequest().then(
+          () => {
+              // EMPTIES THE SESSION
+              let loginData = {
+                  isLoggedIn: false,
+                  email: ''
+              };
+              document.cookie = 'key=' + btoa(JSON.stringify(loginData));
+          }
+      );
+    }
+
     // get cookie by name
     function getCookie(name) {
         var value = "; " + document.cookie; 
@@ -64,6 +83,9 @@ class App extends Component {
             <Switch>
               <Route path="/accounts/name" component={ AccountNameChange } />
               <Route path="/accounts/password" component={ AccountPassword } />
+              <Route path="/accounts/withdrawal" component={ AccountWithdrawal } />
+              <Route path="/accounts/birthday" component={ AccountBirthday } />
+              <Route path="/accounts/gender" component={ AccountGender } />
               <Route path="/accounts" component={ Account } />
             </Switch>
 
@@ -92,6 +114,9 @@ const mapDispatchToProps = (dispatch) => {
       getStatusRequest: () => {
           return dispatch(getStatusRequest());
       },
+      logoutRequest: () => {
+        return dispatch(logoutRequest());
+    },
   };
 };
 
