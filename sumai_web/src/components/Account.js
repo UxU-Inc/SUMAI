@@ -20,7 +20,6 @@ import AccountWithdrawal from "./AccountWithdrawal";
 import { connect } from 'react-redux';
 import { logoutRequest } from '../actions/authentication';
 import AccountImage from "./AccountImage";
-import { connect } from 'react-redux';
 import axios from 'axios';
 import sha1 from 'crypto-js/sha1';
 import Base64 from 'crypto-js/enc-base64';
