@@ -8,7 +8,17 @@ import { Alert, AlertTitle } from '@material-ui/lab';
 import { connect } from 'react-redux';
 import { signupRequest, loginRequest, snsloginRequest } from '../actions/authentication';
 
+import axios from 'axios'
+
 class LoginMain extends Component{ 
+    handleChckSignupEmail = (email) => {
+        return axios.post('/api/account/checkSignupEmail', {email}).then((res) => {
+            return { success: true }
+        }).catch((err) => {
+            return { success: false}
+        })
+    }
+
     handleSignup = (email, name, password) => {
         return this.props.signupRequest(email, name, password).then(
             () => {
@@ -71,7 +81,7 @@ class LoginMain extends Component{
                         <strong>로그인을 해주세요!</strong>
                     </Alert>: null}
                 <div style={{backgroundColor: "#fff"}}>
-                    {this.props.match.path === "/login/signup"? <Signup onSignup={this.handleSignup}/>:<Login onLogin={this.handleLogin} onSNSLogin={this.handleSNSLogin}/>}
+                    {this.props.match.path === "/login/signup"? <Signup onCheckSignupEmail={this.handleChckSignupEmail} onSignup={this.handleSignup}/>:<Login onLogin={this.handleLogin} onSNSLogin={this.handleSNSLogin}/>}
                 </div>
             </div> 
         ) 
