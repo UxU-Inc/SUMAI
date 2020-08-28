@@ -5,7 +5,6 @@ import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import imgLogo from '../images/sumai_logo_blue.png';
-import TermsContents from "../components/TermsContents"; 
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
@@ -17,7 +16,9 @@ import Divider from '@material-ui/core/Divider';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import AccountNameChange from "./AccountNameChange";
 import AccountPassword from "./AccountPassword";
+import AccountWithdrawal from "./AccountWithdrawal";
 import { connect } from 'react-redux';
+import { logoutRequest } from '../actions/authentication';
 
 const useStyles = theme => ({
     AppBarStyle: {
@@ -40,6 +41,13 @@ const useStyles = theme => ({
 
 
 class Account extends Component{ 
+
+    componentDidMount() {
+      // 로그인 상태 아니면 접근 불가
+      if(this.props.status.isLoggedIn === false) {
+        this.props.history.push("/")
+      }
+    }
 
     onClickLink = (url) => (e) => {
       this.props.history.push(url)
@@ -91,7 +99,7 @@ class Account extends Component{
                                       </Button>
                                   </Box>
 
-                                  <Divider zindex={1} style={{marginLeft: "3%", height: "0.5px"}}/>
+                                  <Divider style={{margin: "0.1px 0px 0.1px 3%", height: "0.5px"}}/>
 
                                   <Box display="flex" alignItems="center" style={{width: "100%", borderRadius: "0px"}}>
                                     <Button onClick={this.onClickLink("/accounts/name")} style={{width: "100%", padding: "15px 24px 16px", borderRadius: "0px", textTransform: "none"}}>
@@ -105,7 +113,7 @@ class Account extends Component{
                                     </Button>
                                   </Box>
 
-                                  <Divider zindex={1} style={{marginLeft: "3%", height: "0.5px"}}/>
+                                  <Divider style={{margin: "0.1px 0px 0.1px 3%", height: "0.5px"}}/>
 
                                   <Box display="flex" alignItems="center" style={{width: "100%", borderRadius: "0px"}}>
                                     <Button onClick={this.onClickLink("/accounts/password")} style={{width: "100%", padding: "15px 24px 16px", borderRadius: "0px", textTransform: "none"}}>
@@ -124,7 +132,7 @@ class Account extends Component{
                                     </Button>
                                   </Box>
 
-                                  <Divider zindex={1} style={{marginLeft: "3%", height: "0.5px"}}/>
+                                  <Divider style={{margin: "0.1px 0px 0.1px 3%", height: "0.5px"}}/>
 
                                   <Box display="flex" alignItems="center" style={{borderRadius: "0px", padding: "15px 24px 16px", textTransform: "none"}}>
                                         <Typography variant="caption" style={{width: "156px", textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#0000008A"}}>
@@ -135,15 +143,42 @@ class Account extends Component{
                                         </Typography>
                                   </Box>
 
-                                  <Divider zindex={1} style={{marginLeft: "3%", height: "0.5px"}}/>
+                                  <Divider style={{margin: "0.1px 0px 0.1px 3%", height: "0.5px"}}/>
 
                                   <Box display="flex" alignItems="center" style={{width: "100%", borderRadius: "0px"}}>
-                                    <Button style={{width: "100%", padding: "15px 24px 16px", borderRadius: "0px", textTransform: "none"}}>
+                                    <Box display="flex" style={{width: "100%", padding: "15px 24px 16px", borderRadius: "0px", textTransform: "none"}}>
                                         <Typography variant="caption" style={{width: "156px", textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#0000008A"}}>
                                           이메일
                                         </Typography>
                                         <Typography variant="subtitle2" style={{width: "376.4px", textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#202020"}}>
                                           {this.props.status.currentEmail}
+                                        </Typography>
+                                    </Box>
+                                  </Box>
+
+                                  <Divider style={{margin: "0.1px 0px 0.1px 3%", height: "0.5px"}}/>
+
+                                  <Box display="flex" alignItems="center" style={{width: "100%", borderRadius: "0px"}}>
+                                    <Button onClick={this.onClickLink("/accounts/birthday")} style={{width: "100%", padding: "15px 24px 16px", borderRadius: "0px", textTransform: "none"}}>
+                                        <Typography variant="caption" style={{width: "156px", textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#0000008A"}}>
+                                          생년월일
+                                        </Typography>
+                                        <Typography variant="subtitle1" style={{width: "376.4px", textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#202020"}}>
+                                          2000년 01월 01일
+                                        </Typography>
+                                        <ArrowForwardIosIcon fontSize="small" style={{marginLeft: "auto", color: "#0000008A"}}/>
+                                    </Button>
+                                  </Box>
+
+                                  <Divider style={{margin: "0.1px 0px 0.1px 3%", height: "0.5px"}}/>
+
+                                  <Box display="flex" alignItems="center" style={{width: "100%", borderRadius: "0px"}}>
+                                    <Button onClick={this.onClickLink("/accounts/gender")} style={{width: "100%", padding: "15px 24px 16px", borderRadius: "0px", textTransform: "none"}}>
+                                        <Typography variant="caption" style={{width: "156px", textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#0000008A"}}>
+                                          성별
+                                        </Typography>
+                                        <Typography variant="subtitle1" style={{width: "376.4px", textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#202020"}}>
+                                          남자
                                         </Typography>
                                         <ArrowForwardIosIcon fontSize="small" style={{marginLeft: "auto", color: "#0000008A"}}/>
                                     </Button>
@@ -155,7 +190,7 @@ class Account extends Component{
 
                           <Grid container justify="center" >
                             <Box display="flex" flexDirection="row-reverse" style={{width: "640px", marginTop: "10px"}}>
-                              <Button style={{color: "#0000008A", fontFamily: "NotoSansKR-Light"}}>
+                              <Button onClick={this.onClickLink("/accounts/withdrawal")} style={{color: "#0000008A", fontFamily: "NotoSansKR-Light"}}>
                                 회원탈퇴
                               </Button>
                             </Box>
@@ -177,6 +212,11 @@ class Account extends Component{
             return <AccountPassword />
           }
 
+          /* 회원탈퇴 컴포넌트 */
+          else if(this.props.match.path === "/accounts/withdrawal") {
+            return <AccountWithdrawal />
+          }
+
         } 
 
 
@@ -188,7 +228,7 @@ class Account extends Component{
                       <AppBar position="static" className={classes.AppBarStyle}>
                         <Toolbar variant="dense">
 
-                            <a href="/accounts" className={classes.link} >
+                            <a href="/" className={classes.link} >
                                 <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
                                 <Typography style={{color: "#0000008A", paddingLeft: "10px", fontSize: "28px"}}>계정</Typography>
                             </a>
@@ -223,7 +263,7 @@ class Account extends Component{
                                       </Button>
                                   </Box>
 
-                                  <Divider style={{marginLeft: "3%", height: "0.5px"}}/>
+                                  <Divider style={{margin: "0.1px 0px 0.1px 3%", height: "0.5px"}}/>
 
                                   <Box display="flex" style={{width: "100%", borderRadius: "0px", textTransform: "none"}}>
                                       <Button onClick={this.onClickLink("/accounts/name")} style={{padding: "15px 24px 16px", width: "100%"}}>
@@ -239,7 +279,7 @@ class Account extends Component{
                                       </Button>
                                   </Box>
 
-                                  <Divider style={{marginLeft: "3%", height: "0.5px"}}/>
+                                  <Divider style={{margin: "0.1px 0px 0.1px 3%", height: "0.5px"}}/>
 
                                   <Box display="flex" style={{width: "100%", borderRadius: "0px", textTransform: "none"}}>
                                       <Button onClick={this.onClickLink("/accounts/password")} style={{padding: "15px 24px 16px", width: "100%"}}>
@@ -258,32 +298,58 @@ class Account extends Component{
                                       </Button>
                                   </Box>
 
-                                  <Divider style={{marginLeft: "3%", height: "0.5px"}}/>
+                                  <Divider style={{margin: "0.1px 0px 0.1px 3%", height: "0.5px"}}/>
+
+                                  <Box display="flex" style={{width: "100%", borderRadius: "0px"}}>
+                                      <Box style={{width: "100%", padding: "15px 24px 16px", textTransform: "none"}} >
+                                        <Typography style={{textAlign: "left", fontSize: "12px", fontFamily: "NotoSansKR-Light", color: "#0000008A"}}>
+                                          회원가입 계정
+                                        </Typography>
+                                        <Typography variant="subtitle2" style={{textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#000008A"}}>
+                                          카카오
+                                        </Typography>
+                                      </Box>
+                                  </Box>
+
+                                  <Divider style={{margin: "0.1px 0px 0.1px 3%", height: "0.5px"}}/>
+
+                                  <Box display="flex" style={{width: "100%", borderRadius: "0px"}}>
+                                      <Box style={{width: "100%", padding: "15px 24px 16px", textTransform: "none"}} >
+                                        <Typography style={{textAlign: "left", fontSize: "12px", fontFamily: "NotoSansKR-Light", color: "#0000008A"}}>
+                                          이메일
+                                        </Typography>
+                                        <Typography variant="subtitle2" style={{textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#000008A"}}>
+                                          {this.props.status.currentEmail}
+                                        </Typography>
+                                      </Box>
+                                  </Box>
+                                  
+                                  <Divider style={{margin: "0.1px 0px 0.1px 3%", height: "0.5px"}}/>
 
                                   <Box display="flex" style={{width: "100%", borderRadius: "0px", textTransform: "none"}}>
-                                      <Button style={{padding: "15px 24px 16px", width: "100%", textTransform: "none"}}>
-                                        <Box style={{width: "100%", paddingRight: "10px"}} >
+                                      <Button onClick={this.onClickLink("/accounts/birthday")} style={{padding: "15px 24px 16px", width: "100%"}}>
+                                        <Box style={{width: "100%", paddingRight: "10px", textTransform: "none"}} >
                                           <Typography style={{textAlign: "left", fontSize: "12px", fontFamily: "NotoSansKR-Light", color: "#0000008A"}}>
-                                            회원가입 계정
+                                            생년월일
                                           </Typography>
                                           <Typography variant="subtitle2" style={{textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#000008A"}}>
-                                            카카오
+                                            2000년 01월 01일
                                           </Typography>
                                         </Box>
                                         <ArrowForwardIosIcon fontSize="small" style={{marginLeft: "auto", color: "#0000008A"}}/>
                                       </Button>
                                   </Box>
 
-                                  <Divider style={{marginLeft: "3%", height: "0.5px"}}/>
+                                  <Divider style={{margin: "0.1px 0px 0.1px 3%", height: "0.5px"}}/>
 
                                   <Box display="flex" style={{width: "100%", borderRadius: "0px", textTransform: "none"}}>
-                                      <Button style={{padding: "15px 24px 16px", width: "100%"}}>
+                                      <Button onClick={this.onClickLink("/accounts/gender")} style={{padding: "15px 24px 16px", width: "100%"}}>
                                         <Box style={{width: "100%", paddingRight: "10px", textTransform: "none"}} >
                                           <Typography style={{textAlign: "left", fontSize: "12px", fontFamily: "NotoSansKR-Light", color: "#0000008A"}}>
-                                            이메일
+                                            성별
                                           </Typography>
                                           <Typography variant="subtitle2" style={{textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#000008A"}}>
-                                            {this.props.status.currentEmail}
+                                            남자
                                           </Typography>
                                         </Box>
                                         <ArrowForwardIosIcon fontSize="small" style={{marginLeft: "auto", color: "#0000008A"}}/>
@@ -296,7 +362,7 @@ class Account extends Component{
 
                           <Grid container justify="center" >
                             <Box display="flex" flexDirection="row-reverse" style={{width: "720px", maxWidth: "800px", marginTop: "10px"}}>
-                              <Button style={{color: "#0000008A", fontFamily: "NotoSansKR-Light"}}>
+                              <Button onClick={this.onClickLink("/accounts/withdrawal")} style={{color: "#0000008A", fontFamily: "NotoSansKR-Light"}}>
                                 회원탈퇴
                               </Button>
                             </Box>
@@ -318,6 +384,11 @@ class Account extends Component{
           return <AccountPassword />
         }
 
+        /* 회원탈퇴 컴포넌트 */
+        else if(this.props.match.path === "/accounts/withdrawal") {
+          return <AccountWithdrawal />
+        }
+
 
       }
 
@@ -332,7 +403,14 @@ const mapStateToProps = (state) => {
   };
 };
 
+const mapDispatchToProps = (dispatch) => {
+  return {
+      logoutRequest: () => {
+          return dispatch(logoutRequest());
+      },
+  };
+};
 
-export default connect(mapStateToProps, null)(withStyles(useStyles)(withWidth()(Account)));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(useStyles)(withWidth()(Account)));
 
 

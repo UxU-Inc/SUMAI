@@ -33,7 +33,12 @@ class LoginMain extends Component{
  
                     document.cookie = 'key=' + btoa(JSON.stringify(loginData));
  
-                    this.props.history.push('/');
+                    if(navigator.cookieEnabled) {  // 쿠키 허용 상태
+                        this.props.history.push('/');
+                    } else {  // 쿠키 차단 상태
+                        return { success: true, error: 92 }
+                    }
+
                     return { success: true };
                 } else {
                     return { success: false, error: this.props.loginErrorCode }
@@ -53,7 +58,12 @@ class LoginMain extends Component{
  
                     document.cookie = 'key=' + btoa(JSON.stringify(loginData));
  
-                    this.props.history.push('/');
+                    if(navigator.cookieEnabled) {  // 쿠키 허용 상태
+                        this.props.history.push('/');
+                    } else {  // 쿠키 차단 상태
+                        return { success: true, error: 92 }
+                    }
+                    
                     return { success: true };
                 } else {
                     return { success: false }

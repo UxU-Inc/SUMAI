@@ -19,6 +19,7 @@ import googleLogo from '../images/btn_google_light_normal_ios@3x.png';
 import kakaoLogo from '../images/kakaolink_btn_small.png';
 import naverLogo from '../images/naver_btn_green.png';
 import facebookLogo from '../images/facebook_icon.png';
+import clsx from 'clsx';
 
 const useStyles = theme => ({
     root: {
@@ -102,6 +103,9 @@ const useStyles = theme => ({
     loginStyle: {
         height: "50px",
     },
+    displayNone: {
+      display: "none",
+    },
 })
 
 
@@ -118,6 +122,7 @@ class Login extends Component{
             emailerror: false,
             password: "",
             passworderror: false,
+            cookieState: true, 
         }
         this.textFieldRef = [React.createRef(), React.createRef()]
     }
@@ -148,7 +153,11 @@ class Login extends Component{
         } else {
             this.props.onLogin(this.state.email, this.state.password).then(data => {
                 if (data.success) {
-                    
+                    if(data.error === 92) {  // 로그인이 확인됐으나 쿠키 차단 상태
+                        this.setState({
+                            cookieState: false,
+                        })
+                    }
                 } else {
                     if(data.error === 2) {
                         this.textFieldRef[0].current.focus()
@@ -179,7 +188,6 @@ class Login extends Component{
     render() { 
         const { classes } = this.props;
 
-        
         /**************************************************** PC *****************************************************/
         if(isWidthUp('sm', this.props.width)) {
             return ( 
@@ -207,6 +215,9 @@ class Login extends Component{
                                 <Box textAlign="right" fontSize={13}>
                                     <Link to="/login/signup" style={{textDecoration: 'none'}}><Button className={classes.accountCreateButton}>계정 만들기</Button></Link>
                                 </Box>
+                                <Typography variant="body2" className={clsx("none", {[classes.displayNone]: this.state.cookieState === true})} style={{color: "#f44336"}}>
+                                    브라우저 설정 오류입니다. 현재 사용하시는 인터넷 브라우저의 설정에 문제가 있어 로그인이 되지 않았습니다.
+                                </Typography>
                             </CardContent>
                             <CardActions className={classes.loginButtonLayout}>
                                 <Button onClick={this.onClickLogin} className={classes.loginButton}>

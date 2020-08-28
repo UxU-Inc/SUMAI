@@ -157,19 +157,21 @@ function FeedbackDialog(props) {
     setMessage(event.target.value)
   }
   function sendEmail(e) {
+    console.log(sendEmailButton, 123)
     setSendEmailButton(false)
     e.preventDefault();
     console.log(message)
     
-    axios.post('/api/sendEmail/sendEmail', {message: message}).then((res) => {
-      setSendEmailStatus(200)
+    axios.post('/api/sendEmail/sendEmail', {message: message}).then((res) => { // email을 추가하려면 {massage: message, email: 변수}
+      setSendEmailStatus(res.status)
       dispatch(sendAct('send feedback is success'))
-      console.log(res)
-    }).catch((res)=> {
-      setSendEmailStatus(500)
+      setSnackbarOpen(true)
+    }, (res) => {
+      setSendEmailButton(true)
+      setSendEmailStatus(res.status)
       dispatch(sendAct('send feedback is fail'))
-      console.log(res)
-    })
+      setSnackbarOpen(true)
+    });
   }
 
   useEffect(() => {
@@ -324,6 +326,7 @@ class Header extends Component{
           aria-controls={open ? 'menu-list-grow' : undefined}
           aria-haspopup="true"
           onClick={handleToggle}
+          style={{color: "#0000008A"}}
         >
           {console.log(props)}
           {props.currentUser}님
@@ -446,9 +449,9 @@ class Header extends Component{
 
             <div style={{flexGrow: 1}}/>
 
-            <IconButton style={{marginRight: "10px"}}>
+            {/* <IconButton style={{marginRight: "10px"}}>
                 <NewsIcon style={{color: root.PrimaryColor}}/>
-            </IconButton>
+            </IconButton> */}
 
             {this.props.isLoggedIn ? loginLayout : loginButton}
 

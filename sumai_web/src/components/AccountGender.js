@@ -55,14 +55,13 @@ class AccountNameChange extends React.Component {
         } 
     }
 
-    static getDerivedStateFromProps(nextProps, prevState) {
-        if(nextProps.status !== prevState.status) {
-            return {
-                nameCurrent : nextProps.status.currentUser,
-                nameChange: nextProps.status.currentUser,
-            };
-        }
-        return null
+    componentWillReceiveProps() {
+        setTimeout(function() { 
+            this.setState({
+                nameCurrent: this.props.status.currentUser,
+                nameChange: this.props.status.currentUser,
+            }) 
+        }.bind(this), 0)
     }
 
     handleChangeName = (e) => {
@@ -137,7 +136,7 @@ class AccountNameChange extends React.Component {
                         <IconButton onClick={() => this.props.history.goBack()}>
                             <ArrowBackIcon style={{color: "#0000008A"}}/>  
                         </IconButton>
-                        <Typography variant="h5" style={{color: "#0000008A", paddingLeft: "10px", width: "600px"}}>이름</Typography>
+                        <Typography variant="h5" style={{color: "#0000008A", paddingLeft: "10px", width: "600px"}}>성별</Typography>
                     </Box>
                 </AppBar> 
 
@@ -146,7 +145,7 @@ class AccountNameChange extends React.Component {
 
                         <Paper variant="outlined" style={{width: "100%", minWidth: "200px", maxWidth: "450px", padding: "24px"}}>
                             <Typography variant="caption" style={{fontFamily: "NotoSansKR-Regular", color: "#0000008A"}}>
-                                이름 변경
+                                성별
                             </Typography>
 
                             <TextField autoFocus fullWidth variant="outlined" value={this.state.nameChange || ""} onChange={this.handleChangeName} label={"이름"} 

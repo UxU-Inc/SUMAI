@@ -149,9 +149,9 @@ class Signup extends Component{
                 privacyChecked: e.target.checked,
             })
         }
-        this.validation(type, e.target.value.trim())
+        this.validation(type, e.target.value.trim(), e.target.checked)
     }
-    validation = (type, value) => {
+    validation = (type, value, checked) => {
         if(type === "email") {
             // 이메일 형식 검사
             const emailRegex = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
@@ -197,6 +197,28 @@ class Signup extends Component{
             } else {
                 this.setState({
                     passwordcheckerror: false,
+                })
+            }
+        } else if (type === "terms") {
+            // 비밀번호 확인
+            if(!checked) {
+                this.setState({
+                    termsCheckederror: true,
+                })
+            } else {
+                this.setState({
+                    termsCheckederror: false,
+                })
+            }
+        } else if (type === "privacy") {
+            // 비밀번호 확인
+            if(!checked) {
+                this.setState({
+                    privacyCheckederror: true,
+                })
+            } else {
+                this.setState({
+                    privacyCheckederror: false,
                 })
             }
         } 

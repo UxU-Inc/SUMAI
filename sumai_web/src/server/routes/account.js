@@ -94,6 +94,11 @@ router.post('/nameChange', (req, res) => {
             console.log(err);
             return res.send(err);
         } else {
+            // 계정 변경 사항 account_change [name]
+            db.query("SELECT * FROM summary.account_info WHERE email = '"+ req.body.email + "'", (err, account) => {
+                db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, name) VALUES (now(), 'name', IF('"
+                + account[0].type +"'='null', NULL, '"+ account[0].type + "'), IF('"+ account[0].id + "'='null', NULL, '"+ account[0].id + "'), '"+ account[0].email + "', '"+ req.body.name + "')")
+            });
             req.session.loginInfo = {
                 email: req.body.email,
                 name: req.body.name,
@@ -124,6 +129,11 @@ router.post('/passwordChange', (req, res) => {
                     hashing.encrypt(req.body.passwordChange).then(password => {
                         db.query("UPDATE summary.account_info SET password = '"+ password.hashed +"', salt = '"+ password.salt +"' WHERE email = '"+ req.body.email + "'", (err, exists) => {
                             if(!err) {
+                                // 계정 변경 사항 account_change [password]
+                                db.query("SELECT * FROM summary.account_info WHERE email = '"+ req.body.email + "'", (err, account) => {
+                                    db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, password, salt) VALUES (now(), 'password', IF('"
+                                    + account[0].type +"'='null', NULL, '"+ account[0].type + "'), IF('"+ account[0].id + "'='null', NULL, '"+ account[0].id + "'), '"+ account[0].email + "', '"+ password.hashed +"', '"+ password.salt + "')")
+                                });
                                 return res.json({ success: true });
                             } else {
                                 console.log(err);
@@ -142,8 +152,64 @@ router.post('/passwordChange', (req, res) => {
         
     });
 
-    
+})
 
+router.post('/withdrawal', (req, res) => {
+
+    db.query("SELECT * FROM summary.account_info WHERE email = '"+ req.body.email + "'", (err, account) => {
+        if (err) {
+            console.log(err);
+            return res.send(err);
+        } else if(account.length === 0){
+            return res.status(400).json({
+                error: "해당 이메일로 가입되어 있지 않습니다.",
+                code: 2
+            })
+        } else {
+            // 현재 비밀번호 확인
+            hashing.confirm(req.body.password, account[0].salt).then(password => {
+                if(account[0].password === password.hashed) {
+                    // 계정, 해당 계정 관련 데이터 제거
+                    db.query("DELETE FROM summary.account_info WHERE email = '"+ req.body.email + "'", (err, exists) => {
+                        if(!err) {
+                            // 추후 summary_data 테이블 데이터도 삭제, summary_data에 email 컬럼 추가
+                            return res.json({ success: true });
+                        } else {
+                            console.log(err);
+                            return res.send(err);
+                        }
+                    });
+                } else {
+                    return res.status(400).json({
+                        error: "현재 비밀번호가 틀립니다.",
+                        code: 3
+                    });
+                }
+            })  
+        }
+        
+    });
+
+})
+
+router.post('/birthdayChange', (req, res) => {
+    // 기존에 존재하는 email 이 있는지 DB 에서 확인
+    db.query("UPDATE summary.account_info SET birth = '"+ req.body.birthday + "'  WHERE email = '"+ req.body.email + "'", (err, account) => {
+        console.log(account)
+        if (err) {
+            console.log(err);
+            return res.send(err);
+        } else {
+            // 계정 변경 사항 account_change [name]
+            db.query("SELECT * FROM summary.account_info WHERE email = '"+ req.body.email + "'", (err, account) => {
+                db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, birth) VALUES (now(), 'birth', IF('"
+                + account[0].type +"'='null', NULL, '"+ account[0].type + "'), IF('"+ account[0].id + "'='null', NULL, '"+ account[0].id + "'), '"+ account[0].email + "', '"+ req.body.birthday + "')")
+            });
+            return req.session.save(() => {
+                res.json({ success: true });
+            })
+        }
+    });
 })
  
 module.exports = router;

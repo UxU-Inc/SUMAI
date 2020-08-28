@@ -240,6 +240,7 @@ class Header extends Component{
           aria-controls={open ? 'menu-list-grow' : undefined}
           aria-haspopup="true"
           onClick={handleToggle}
+          style={{color: "#0000008A"}}
         >
           {props.currentUser}님
           <IconButton style={{padding: "0px"}}>
@@ -255,7 +256,7 @@ class Header extends Component{
               <Paper>
                 <ClickAwayListener onClickAway={handleClose}>
                   <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
-                    <MenuItem onClick={handleClose}><Link to="/account" style={{textDecoration: 'none', marginLeft: "auto"}} >계정 관리</Link></MenuItem>
+                    <MenuItem onClick={this.onClickLink("accounts")}>계정 관리</MenuItem>
                     <MenuItem onClick={props.onLogout}>로그아웃</MenuItem>
                   </MenuList>
                 </ClickAwayListener>

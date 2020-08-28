@@ -15,6 +15,7 @@ import TextField from '@material-ui/core/TextField';
 import * as root from '../rootValue';
 import { connect } from 'react-redux';
 import axios from 'axios';
+import { SnackbarProvider, useSnackbar } from 'notistack';
 
 const useStyles = theme => ({
     AppBarStyle: {
@@ -33,7 +34,27 @@ const useStyles = theme => ({
         alignItems: "center",
         textDecoration: 'none',
     },
+    displayNone: {
+        display: "none",
+    },
 });
+
+
+function PasswordChangeMassage(props) {
+    const { enqueueSnackbar } = useSnackbar()
+    const { code, setCode } = props
+
+    React.useEffect(() => {
+        console.log(code)
+        if(code === 1) enqueueSnackbar('비밀번호가 변경되었습니다.', {variant: "success"} )
+        if(code === 2) enqueueSnackbar('해당 계정이 존재하지 않습니다.', {variant: "error"})
+        if(code === 3) enqueueSnackbar('현재 비밀번호가 틀립니다.', {variant: "error"})
+        if(code === 4) enqueueSnackbar('로그인 상태가 아닙니다.', {variant: "error"})
+        if(code !== 1) setCode(0)
+    }, [code])
+
+    return (<React.Fragment></React.Fragment>)
+}
 
 
 class AccountPassword extends React.Component {
@@ -47,9 +68,21 @@ class AccountPassword extends React.Component {
             passwordChangeError: false,
             passwordCheck: "",
             passwordCheckError: false,
-            massage: "",
+            code: 0,
         }
         this.textFieldRef = [React.createRef(), React.createRef(), React.createRef()]
+    }
+
+    componentDidMount() {
+        if(this.props.status.isLoggedIn === false) {
+          this.props.history.push("/")
+        }
+    }
+
+    handleCode = (code) => {
+        this.setState({
+            code: code
+        })
     }
 
     handleChange = (type, e) => {
@@ -96,6 +129,12 @@ class AccountPassword extends React.Component {
         } 
     }
 
+    onKeyPress = (e) => {
+        if(e.key === 'Enter') {
+            this.onClickSave();
+        }
+    }
+
     onClickSave = () => {
         if(this.state.passwordCurrent === "" || this.state.passwordCurrentError) {
             this.textFieldRef[0].current.focus()
@@ -108,15 +147,23 @@ class AccountPassword extends React.Component {
             return
         }
 
+        if(this.state.code === 1) {
+            return
+        }
+
         if(!this.state.passwordCurrentError && !this.state.passwordChangeError && !this.state.passwordCheckError) {
             this.onPasswordChange(this.props.status.currentEmail, this.state.passwordCurrent, this.state.passwordChange).then(data => {
                 if (data.success) {
-                    this.props.history.goBack()
+                    this.setState({
+                        code: data.code
+                    })
+                    setTimeout(function() { 
+                        this.props.history.goBack()
+                    }.bind(this), 2000)
                 } else {
                     this.setState({
-                        massage: data.massage
+                        code: data.code
                     })
-                    console.log(this.state.massage)
                 }
             })
         }
@@ -126,19 +173,18 @@ class AccountPassword extends React.Component {
         return axios.post('/api/account/passwordChange', { email, passwordCurrent, passwordChange }).then(
             () => {
                 if(this.props.status.isLoggedIn === true) {
-                    return { success: true };
+                    return { success: true, code: 1 };
                 } else {
                     console.log(this.props.status.isLoggedIn)
-                    return { success: false, massage: "로그인 상태가 아닙니다." }
+                    return { success: false, code: 4 }
                 }
             }
         ).catch(
             (error) => {
-                return { success: false, massage: error.response.data.error }
+                return { success: false, code: error.response.data.code }
             }
         );
     }
-
 
     render() {
         const { classes } = this.props;
@@ -173,7 +219,7 @@ class AccountPassword extends React.Component {
 
                             <TextField autoFocus fullWidth variant="outlined" value={this.state.password} onChange={this.handleChange.bind(this, "passwordCurrent")} label="현재 비밀번호 입력" 
                                         style={{margin: "30px 0px 7.5px 0px"}} placeholder="현재 비밀번호를 입력해주세요." type="password" error={this.state.passwordCurrentError} inputRef={this.textFieldRef[0]}
-                                        helperText={this.state.passwordCurrentError ? "잘못된 비밀번호입니다. 다시 시도하거나 비밀번호 찾기를 클릭하여 재설정하세요." : false} />
+                                        helperText={this.state.passwordCurrentError ? "잘못된 비밀번호입니다. 다시 시도하거나 비밀번호 찾기를 클릭하여 재설정하세요." : false} onKeyPress={this.onKeyPress}/>
 
                             <TextField variant="outlined" value={this.state.password} onChange={this.handleChange.bind(this, "passwordChange")} error={this.state.passwordChangeError}
                                     fullWidth label="변경할 비밀번호 입력" placeholder="변경할 비밀번호를 입력해주세요." type="password" style={{margin: "30px 0px 7.5px 0px"}} inputRef={this.textFieldRef[1]}
@@ -195,8 +241,10 @@ class AccountPassword extends React.Component {
                     </Grid>
                 </Box>
 
+                <SnackbarProvider maxSnack={3}> 
+                    <PasswordChangeMassage code={this.state.code} setCode={this.handleCode}/>
+                </SnackbarProvider>
 
-                  
             </div>
           );
     }
@@ -206,8 +254,6 @@ class AccountPassword extends React.Component {
 const mapStateToProps = (state) => {
     return {
         status: state.authentication.status,
-        loginStatus: state.authentication.login.status,
-        loginErrorCode: state.authentication.login.error,
     };
 };
 
