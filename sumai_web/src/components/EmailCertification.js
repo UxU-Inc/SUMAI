@@ -1,5 +1,4 @@
 import React, {useEffect} from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 
