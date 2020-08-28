@@ -11,7 +11,7 @@ router.post("/sendEmail", function(req, res){
 
   let mailOptions = {
     to: 'uxu.co.kr@gmail.com' ,                     // 수신 메일 주소
-    subject: `의견 보내기 ${email ?? ''}`,   // 제목
+    subject: `의견 보내기 `,   // 제목
     text: message,  // 내용
     // html: 'Embedded image: <img src="cid:feedbackImage"/>',
     // attachments: [{

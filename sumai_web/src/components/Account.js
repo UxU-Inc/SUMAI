@@ -17,7 +17,11 @@ import Divider from '@material-ui/core/Divider';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import AccountNameChange from "./AccountNameChange";
 import AccountPassword from "./AccountPassword";
+import AccountImage from "./AccountImage";
 import { connect } from 'react-redux';
+import axios from 'axios';
+import sha1 from 'crypto-js/sha1';
+import Base64 from 'crypto-js/enc-base64';
 
 const useStyles = theme => ({
     AppBarStyle: {
@@ -40,15 +44,71 @@ const useStyles = theme => ({
 
 
 class Account extends Component{ 
+    constructor(props) {
+      super(props);
+
+      this.state = {
+        open: false,
+        imagesrc: '',
+      }
+    }
+
+    componentDidMount() {
+      this.imageInit()
+    }
+
+    imageInit = () => {
+      new Promise(async (resolve, reject) => {
+          const Interval = setInterval(() => {
+              if(typeof this.props.status.currentEmail !== "undefined") {
+                  if(this.props.status.currentEmail === '') {
+                    resolve();
+                    clearInterval(Interval)
+                  } else {
+                    const email = this.props.status.currentEmail
+                  console.log(Base64.stringify(sha1(email)))
+                  axios.get('/api/account/imageLoad/'+email).then((data) => {
+                    this.setState({
+                      imagesrc: data.data.image
+                    })
+                  })
+                  resolve();
+                  clearInterval(Interval)
+                  }
+              }
+          });
+      })
+    }
 
     onClickLink = (url) => (e) => {
       this.props.history.push(url)
+    }
+
+    handleopen = () => {
+      this.setState({
+        open: true,
+      })
+    }
+
+    handleclose = (image) => {
+      if(image !== '') {
+        this.setState({
+          open: false,
+          imagesrc: image
+        })
+      } else {
+        this.setState({
+          ...this.state,
+          open: false,
+        })
+      }
     }
 
     render(){ 
         const { classes } = this.props;
 
         console.log(this.props.status)
+        console.log(this.state.imagesrc)
 
         /**************************************************** PC *****************************************************/
         if(isWidthUp('md', this.props.width)) {
@@ -77,7 +137,8 @@ class Account extends Component{
                               <Paper variant="outlined" style={{maxWidth: "800px"}}>
 
                                   <Box display="flex" alignItems="center" style={{width: "100%", textTransform: "none"}}>
-                                      <Button style={{padding: "15px 24px 16px", borderRadius: "0px"}}>
+                                      {this.state.open? <AccountImage onClose={this.handleclose} email={this.props.status.currentEmail}/> : null}
+                                      <Button onClick={this.handleopen} style={{padding: "15px 24px 16px", borderRadius: "0px"}}>
                                         <Typography variant="caption" style={{width: "156px", textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#0000008A"}}>
                                           사진
                                         </Typography>
@@ -85,7 +146,7 @@ class Account extends Component{
                                           프로필 사진 설정
                                         </Typography>
                                         <Box>
-                                          <Avatar alt="test" src="https://material-ui.com/static/images/avatar/1.jpg" style={{width: "60px", height: "60px"}} />
+                                          <Avatar alt="profileImage" src={this.state.imagesrc} style={{width: "60px", height: "60px"}} />
                                           
                                         </Box>
                                       </Button>
@@ -207,7 +268,8 @@ class Account extends Component{
                               <Paper variant="outlined" style={{width: "100%"}}>
 
                                   <Box display="flex" style={{width: "100%", borderRadius: "0px", textTransform: "none"}}>
-                                      <Button style={{padding: "15px 24px 16px", width: "100%"}}>
+                                      {this.state.open? <AccountImage onClose={this.handleclose} email={this.props.status.currentEmail}/> : null}
+                                      <Button onClick={this.handleopen} style={{padding: "15px 24px 16px", width: "100%"}}>
                                         <Box style={{width: "100%", paddingRight: "10px", textTransform: "none"}} >
                                           <Typography style={{textAlign: "left", fontSize: "12px", fontFamily: "NotoSansKR-Light", color: "#0000008A"}}>
                                             사진
@@ -217,7 +279,7 @@ class Account extends Component{
                                           </Typography>
                                         </Box>
                                         <Box>
-                                          <Avatar alt="test" src="https://material-ui.com/static/images/avatar/1.jpg" style={{width: "60px", height: "60px"}} />
+                                          <Avatar alt="profileImage" src={this.state.imagesrc} style={{width: "60px", height: "60px"}} />
                                           
                                         </Box>
                                       </Button>

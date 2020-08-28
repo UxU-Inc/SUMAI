@@ -51,7 +51,7 @@ passport.use(new FacebookStrategy({
     clientID: snsconfig.facebook_clientId,
     clientSecret: snsconfig.facebook_clientSecret,
     callbackURL: "/api/snslogin/facebookcallback",
-    profileFields: ['id', 'displayName', 'photos', 'email', 'gender', 'name', "birthday"]
+    profileFields: ['id', 'displayName', 'photos', 'email', 'gender', 'name']
     },
     function(accessToken, refreshToken, profile, done) {
         return done(null, profile);
@@ -73,7 +73,7 @@ router.get('/googlecallback', (req, res) => {
 	passport.authenticate('google', (err, user) => {
         console.log('passport.authenticate(google)실행');
         console.log(user);
-        const imageName = "image/" + crypto.createHash('sha1').update(user.photos[0].value).digest("base64") + ".jpg"
+        const imageName = crypto.createHash('sha1').update(user.id+Date.now()).digest("base64") + ".jpg"
         db.query("SELECT * FROM summary.account_info WHERE id = '"+ user.id + "'", (err, account) => {
             if (err) {
                 console.log(err);
@@ -85,15 +85,15 @@ router.get('/googlecallback', (req, res) => {
                         res.send(err);
                     } else if(account.length === 0) {
                         request.get(user.photos[0].value, (err, res, body) => {
-                            s3.upload({'Bucket':'sumai-profile', 'Key': imageName, 'ACL' : 'public-read', 'Body': body, 'ContentType':'image/jpg'}, (err, data) => {
+                            s3.upload({'Bucket':'sumai-profile', 'Key': 'image/'+imageName, 'ACL' : 'public-read', 'Body': body, 'ContentType':'image/jpg'}, (err, data) => {
                                 if(err) {
                                     console.log(err);
                                 }
                                 console.log(data);
                             });
                         });
-                        db.query("INSERT INTO summary.account_info (type, id, email, verified, name, image, connectDate) \
-                            VALUES ('GOOGLE', '"+ user.id +"', '"+ user.emails[0].value +"', "+ user.emails[0].verified +", '"+ user.displayName +"', '"+ imageName +"', NOW())", (err, data) => {
+                        db.query("INSERT INTO summary.account_info (type, id, email, verified, name, image) \
+                            VALUES ('GOOGLE', '"+ user.id +"', '"+ user.emails[0].value +"', "+ user.emails[0].verified +", '"+ user.displayName +"', '"+ encodeURIComponent(imageName) +"')", (err, data) => {
                             if(!err) {
                                 console.log("signup")
                                 req.session.loginInfo = {
@@ -112,24 +112,42 @@ router.get('/googlecallback', (req, res) => {
                             }
                         });
                     } else {
-                        const verifiedUpdate = account[0].verified === 0? ", verified = "+ user.emails[0].verified: ""
-                        const imageUpdate = account[0].image === null? ", image = '"+ imageName +"'": ""
-                        db.query("UPDATE summary.account_info SET type = 'GOOGLE', id = '"+ user.id +"', connectDate = NOW()"+ verifiedUpdate + imageUpdate +" WHERE email = '"+ account[0].email + "'", (err, data) => {
-                            if (err) {
-                                console.log(err);
-                                res.send(err);
-                            }
-                        })
                         req.session.loginInfo = {
-                            type: "google",
-                            id: user.id,
-                            email: account[0].email,
-                            name: account[0].name
+                            type: account[0].type || "NORMAL",
+                            id: -1,
                         };
                         return req.session.save(() => {
-                            console.log("login")
+                            console.log("failure")
                             res.send("<script>window.close();</script>")
                         })
+                        // if(account[0].id !== null) {
+                        //     req.session.loginInfo = {
+                        //         type: account[0].type,
+                        //         id: -1,
+                        //     };
+                        //     return req.session.save(() => {
+                        //         console.log("failure")
+                        //         res.send("<script>window.close();</script>")
+                        //     })
+                        // }
+                        // const verifiedUpdate = account[0].verified === 0? ", verified = "+ user.emails[0].verified: ""
+                        // const imageUpdate = account[0].image === null? ", image = '"+ imageName +"'": ""
+                        // db.query("UPDATE summary.account_info SET type = 'GOOGLE', id = '"+ user.id +"', connectDate = NOW()"+ verifiedUpdate + imageUpdate +" WHERE email = '"+ account[0].email + "'", (err, data) => {
+                        //     if (err) {
+                        //         console.log(err);
+                        //         res.send(err);
+                        //     }
+                        // })
+                        // req.session.loginInfo = {
+                        //     type: "google",
+                        //     id: user.id,
+                        //     email: account[0].email,
+                        //     name: account[0].name
+                        // };
+                        // return req.session.save(() => {
+                        //     console.log("login")
+                        //     res.send("<script>window.close();</script>")
+                        // })
                     }
                 })
             } else {
@@ -159,9 +177,9 @@ router.get('/kakaocallback', (req, res) => {
         const email = typeof user._json.kakao_account.email === "undefined"? null : "'"+user._json.kakao_account.email+"'"
         const verified = typeof user._json.kakao_account.email === "undefined"? 0 : user._json.kakao_account.is_email_valid && user._json.kakao_account.is_email_verified
         const gender = typeof user._json.kakao_account.gender === "undefined"? null : "'"+user._json.kakao_account.gender+"'"
-        const birthday = typeof user._json.kakao_account.birthday === "undefined"? null : "'"+user._json.kakao_account.birthday+"'"
         const age_range = typeof user._json.kakao_account.age_range === "undefined"? null : "'"+user._json.kakao_account.age_range.replace(/[^0-9]/g,"")+"'"
-        const imageName = typeof user._json.properties.profile_image === "undefined"? null : "'image/" + crypto.createHash('sha1').update(user._json.properties.profile_image).digest("base64") + ".jpg'"
+        const imageName = typeof user._json.properties.profile_image === "undefined"? null : "image/" + crypto.createHash('sha1').update(user.id+Date.now()).digest("base64") + ".jpg"
+        const imageURI = typeof user._json.properties.profile_image === "undefined"? null : "'"+encodeURIComponent(crypto.createHash('sha1').update(user.id+Date.now()).digest("base64") + ".jpg")+"'"
         db.query("SELECT * FROM summary.account_info WHERE id = '"+ user.id + "'", (err, account) => {
             if (err) {
                 console.log(err);
@@ -175,7 +193,7 @@ router.get('/kakaocallback', (req, res) => {
                         } else if(account.length === 0) {
                             if(imageName !== null) {
                                 request.get(user._json.properties.profile_image, (err, res, body) => {
-                                    s3.upload({'Bucket':'sumai-profile', 'Key': imageName.substring(1, imageName.length-1), 'ACL' : 'public-read', 'Body': body, 'ContentType':'image/jpg'}, (err, data) => {
+                                    s3.upload({'Bucket':'sumai-profile', 'Key': imageName, 'ACL' : 'public-read', 'Body': body, 'ContentType':'image/jpg'}, (err, data) => {
                                         if(err) {
                                             console.log(err);
                                         }
@@ -183,8 +201,8 @@ router.get('/kakaocallback', (req, res) => {
                                     });
                                 });
                             }
-                            db.query("INSERT INTO summary.account_info (type, id, email, verified, name, gender, birth, ageRange, image, connectDate) \
-                                VALUES ('KAKAO', '"+ user.id +"', "+ email +", "+ verified +", '"+ user.username +"', "+ gender +", "+ birthday +", "+ age_range +", "+ imageName +", NOW())", (err, data) => {
+                            db.query("INSERT INTO summary.account_info (type, id, email, verified, name, gender, ageRange, image) \
+                                VALUES ('KAKAO', '"+ user.id +"', "+ email +", "+ verified +", '"+ user.username +"', "+ gender +", "+ age_range +", "+ imageURI +")", (err, data) => {
                                 if(!err) {
                                     console.log("signup")
                                     req.session.loginInfo = {
@@ -203,33 +221,51 @@ router.get('/kakaocallback', (req, res) => {
                                 }
                             });
                         } else {
-                            const verifiedUpdate = account[0].verified === 0? ", verified = "+ verified: ""
-                            const genderUpdate = account[0].gender === null? ", gender = "+ gender: ""
-                            const birthUpdate = account[0].birth === null? ", birth = "+ birthday: ""
-                            const ageRangeUpdate = account[0].ageRange === null? ", ageRange = "+ age_range: ""
-                            const imageUpdate = account[0].image === null? ", image = "+ imageName: ""
-                            db.query("UPDATE summary.account_info SET type = 'KAKAO', id = '"+ user.id +"', connectDate = NOW()"+ verifiedUpdate + genderUpdate + birthUpdate + ageRangeUpdate + imageUpdate +" WHERE email = '"+ account[0].email + "'", (err, data) => {
-                                if (err) {
-                                    console.log(err);
-                                    res.send(err);
-                                }
-                            })
                             req.session.loginInfo = {
-                                type: "kakao",
-                                id: user.id,
-                                email: account[0].email,
-                                name: account[0].name
+                                type: account[0].type || "NORMAL",
+                                id: -1,
                             };
                             return req.session.save(() => {
-                                console.log("login")
+                                console.log("failure")
                                 res.send("<script>window.close();</script>")
                             })
+                            // if(account[0].id !== null) {
+                            //     req.session.loginInfo = {
+                            //         type: account[0].type,
+                            //         id: -1,
+                            //     };
+                            //     return req.session.save(() => {
+                            //         console.log("failure")
+                            //         res.send("<script>window.close();</script>")
+                            //     })
+                            // }
+                            // const verifiedUpdate = account[0].verified === 0? ", verified = "+ verified: ""
+                            // const genderUpdate = account[0].gender === null? ", gender = "+ gender: ""
+                            // const birthUpdate = account[0].birth === null? ", birth = "+ birthday: ""
+                            // const ageRangeUpdate = account[0].ageRange === null? ", ageRange = "+ age_range: ""
+                            // const imageUpdate = account[0].image === null? ", image = "+ imageName: ""
+                            // db.query("UPDATE summary.account_info SET type = 'KAKAO', id = '"+ user.id +"', connectDate = NOW()"+ verifiedUpdate + genderUpdate + birthUpdate + ageRangeUpdate + imageUpdate +" WHERE email = '"+ account[0].email + "'", (err, data) => {
+                            //     if (err) {
+                            //         console.log(err);
+                            //         res.send(err);
+                            //     }
+                            // })
+                            // req.session.loginInfo = {
+                            //     type: "kakao",
+                            //     id: user.id,
+                            //     email: account[0].email,
+                            //     name: account[0].name
+                            // };
+                            // return req.session.save(() => {
+                            //     console.log("login")
+                            //     res.send("<script>window.close();</script>")
+                            // })
                         }
                     })
                 } else {
                     if(imageName !== null) {
                         request.get(user._json.properties.profile_image, (err, res, body) => {
-                            s3.upload({'Bucket':'sumai-profile', 'Key': imageName.substring(1, imageName.length-1), 'ACL' : 'public-read', 'Body': body, 'ContentType':'image/jpg'}, (err, data) => {
+                            s3.upload({'Bucket':'sumai-profile', 'Key': imageName, 'ACL' : 'public-read', 'Body': body, 'ContentType':'image/jpg'}, (err, data) => {
                                 if(err) {
                                     console.log(err);
                                 }
@@ -237,8 +273,8 @@ router.get('/kakaocallback', (req, res) => {
                             });
                         });
                     }
-                    db.query("INSERT INTO summary.account_info (type, id, email, verified, name, gender, birth, ageRange, image, connectDate) \
-                        VALUES ('KAKAO', '"+ user.id +"', "+ email +", "+ verified +", '"+ user.username +"', "+ gender +", "+ birthday +", "+ age_range +", "+ imageName +", NOW())", (err, data) => {
+                    db.query("INSERT INTO summary.account_info (type, id, email, verified, name, gender, ageRange, image) \
+                        VALUES ('KAKAO', '"+ user.id +"', "+ email +", "+ verified +", '"+ user.username +"', "+ gender +", "+ age_range +", "+ imageURI +")", (err, data) => {
                         if(!err) {
                             console.log("signup")
                             req.session.loginInfo = {
@@ -282,9 +318,9 @@ router.get('/navercallback', (req, res) => {
         console.log('passport.authenticate(naver)실행');
         console.log(user);
         db.query("SELECT * FROM summary.account_info WHERE id = '"+ user.id + "'", (err, account) => {
-            const birthday = typeof user._json.birthday === "undefined"? null : "'"+user._json.birthday.replace(/[^0-9]/g,"")+"'"
             const age = typeof user._json.age === "undefined"? null : "'"+user._json.age.replace(/[^0-9]/g,"")+"'"
-            const imageName = typeof user._json.profile_image === "undefined"? null : "'image/" + crypto.createHash('sha1').update(user._json.profile_image).digest("base64") + ".jpg'"
+            const imageName = typeof user._json.profile_image === "undefined"? null : "image/" + crypto.createHash('sha1').update(user.id+Date.now()).digest("base64") + ".jpg"
+            const imageURI = typeof user._json.profile_image === "undefined"? null : "'"+encodeURIComponent(crypto.createHash('sha1').update(user.id+Date.now()).digest("base64") + ".jpg")+"'"
             if (err) {
                 console.log(err);
                 res.send(err);
@@ -296,7 +332,7 @@ router.get('/navercallback', (req, res) => {
                     } else if(account.length === 0) {
                         if(imageName !== null) {
                             request.get(user._json.profile_image, (err, res, body) => {
-                                s3.upload({'Bucket':'sumai-profile', 'Key': imageName.substring(1, imageName.length-1), 'ACL' : 'public-read', 'Body': body, 'ContentType':'image/jpg'}, (err, data) => {
+                                s3.upload({'Bucket':'sumai-profile', 'Key': imageName, 'ACL' : 'public-read', 'Body': body, 'ContentType':'image/jpg'}, (err, data) => {
                                     if(err) {
                                         console.log(err);
                                     }
@@ -304,8 +340,8 @@ router.get('/navercallback', (req, res) => {
                                 });
                             });
                         }
-                        db.query("INSERT INTO summary.account_info (type, id, email, name, birth, ageRange, image, connectDate) \
-                            VALUES ('NAVER', '"+ user.id +"', '"+ user.emails[0].value +"', '"+ user.displayName +"', "+ birthday +", "+ age +", "+ imageName +", NOW())", (err, data) => {
+                        db.query("INSERT INTO summary.account_info (type, id, email, name, ageRange, image) \
+                            VALUES ('NAVER', '"+ user.id +"', '"+ user.emails[0].value +"', '"+ user.displayName +"', "+ age +", "+ imageURI +")", (err, data) => {
                             if(!err) {
                                 console.log("signup")
                                 req.session.loginInfo = {
@@ -324,25 +360,43 @@ router.get('/navercallback', (req, res) => {
                             }
                         });
                     } else {
-                        const birthUpdate = account[0].birth === null? ", birth = "+ birthday: ""
-                        const ageUpdate = account[0].ageRange === null? ", ageRange = "+ age: ""
-                        const imageUpdate = account[0].image === null? ", image = "+ imageName: ""
-                        db.query("UPDATE summary.account_info SET type = 'NAVER', id = '"+ user.id +"', connectDate = NOW()"+ birthUpdate + ageUpdate + imageUpdate +" WHERE email = '"+ account[0].email + "'", (err, data) => {
-                            if (err) {
-                                console.log(err);
-                                res.send(err);
-                            }
-                        })
                         req.session.loginInfo = {
-                            type: "naver",
-                            id: user.id,
-                            email: account[0].email,
-                            name: account[0].name
+                            type: account[0].type || "NORMAL",
+                            id: -1,
                         };
                         return req.session.save(() => {
-                            console.log("login")
+                            console.log("failure")
                             res.send("<script>window.close();</script>")
                         })
+                        // if(account[0].id !== null) {
+                        //     req.session.loginInfo = {
+                        //         type: account[0].type,
+                        //         id: -1,
+                        //     };
+                        //     return req.session.save(() => {
+                        //         console.log("failure")
+                        //         res.send("<script>window.close();</script>")
+                        //     })
+                        // }
+                        // const birthUpdate = account[0].birth === null? ", birth = "+ birthday: ""
+                        // const ageUpdate = account[0].ageRange === null? ", ageRange = "+ age: ""
+                        // const imageUpdate = account[0].image === null? ", image = "+ imageName: ""
+                        // db.query("UPDATE summary.account_info SET type = 'NAVER', id = '"+ user.id +"', connectDate = NOW()"+ birthUpdate + ageUpdate + imageUpdate +" WHERE email = '"+ account[0].email + "'", (err, data) => {
+                        //     if (err) {
+                        //         console.log(err);
+                        //         res.send(err);
+                        //     }
+                        // })
+                        // req.session.loginInfo = {
+                        //     type: "naver",
+                        //     id: user.id,
+                        //     email: account[0].email,
+                        //     name: account[0].name
+                        // };
+                        // return req.session.save(() => {
+                        //     console.log("login")
+                        //     res.send("<script>window.close();</script>")
+                        // })
                     }
                 })
             } else {
@@ -371,7 +425,7 @@ router.get('/facebookcallback', (req, res) => {
         console.log(user);
         const email = typeof user.emails === "undefined"? null : "'"+user.emails[0].value+"'"
         const gender = typeof user.gender === "undefined"? null : "'"+user.gender+"'"
-        const imageName = "image/" + crypto.createHash('sha1').update(user.photos[0].value).digest("base64") + ".jpg"
+        const imageName = crypto.createHash('sha1').update(user.id+Date.now()).digest("base64") + ".jpg"
         db.query("SELECT * FROM summary.account_info WHERE id = '"+ user.id + "'", (err, account) => {
             if (err) {
                 console.log(err);
@@ -384,15 +438,15 @@ router.get('/facebookcallback', (req, res) => {
                             res.send(err);
                         } else if(account.length === 0) {
                             request.get(user.photos[0].value, (err, res, body) => {
-                                s3.upload({'Bucket':'sumai-profile', 'Key': imageName, 'ACL' : 'public-read', 'Body': body, 'ContentType':'image/jpg'}, (err, data) => {
+                                s3.upload({'Bucket':'sumai-profile', 'Key': "image/" + imageName, 'ACL' : 'public-read', 'Body': body, 'ContentType':'image/jpg'}, (err, data) => {
                                     if(err) {
                                         console.log(err);
                                     }
                                     console.log(data);
                                 });
                             });
-                            db.query("INSERT INTO summary.account_info (type, id, email, name, gender, image, connectDate) \
-                                VALUES ('FACEBOOK', '"+ user.id +"', "+ email +", '"+ user.displayName +"', "+ gender +", '"+ imageName +"', NOW())", (err, data) => {
+                            db.query("INSERT INTO summary.account_info (type, id, email, name, gender, image) \
+                                VALUES ('FACEBOOK', '"+ user.id +"', "+ email +", '"+ user.displayName +"', "+ gender +", '"+ encodeURIComponent(imageName) +"')", (err, data) => {
                                 if(!err) {
                                     console.log("signup")
                                     req.session.loginInfo = {
@@ -411,24 +465,42 @@ router.get('/facebookcallback', (req, res) => {
                                 }
                             });
                         } else {
-                            const genderUpdate = account[0].gender === null? ", gender = "+ gender: ""
-                            const imageUpdate = account[0].image === null? ", image = '"+ imageName+"'": ""
-                            db.query("UPDATE summary.account_info SET type = 'FACEBOOK', id = '"+ user.id +"', connectDate = NOW()"+ genderUpdate + imageUpdate + " WHERE email = '"+ account[0].email + "'", (err, data) => {
-                                if (err) {
-                                    console.log(err);
-                                    res.send(err);
-                                }
-                            })
                             req.session.loginInfo = {
-                                type: "facebook",
-                                id: user.id,
-                                email: account[0].email,
-                                name: account[0].name
+                                type: account[0].type || "NORMAL",
+                                id: -1,
                             };
                             return req.session.save(() => {
-                                console.log("login")
+                                console.log("failure")
                                 res.send("<script>window.close();</script>")
                             })
+                            // if(account[0].id !== null) {
+                            //     req.session.loginInfo = {
+                            //         type: account[0].type,
+                            //         id: -1,
+                            //     };
+                            //     return req.session.save(() => {
+                            //         console.log("failure")
+                            //         res.send("<script>window.close();</script>")
+                            //     })
+                            // }
+                            // const genderUpdate = account[0].gender === null? ", gender = "+ gender: ""
+                            // const imageUpdate = account[0].image === null? ", image = '"+ imageName+"'": ""
+                            // db.query("UPDATE summary.account_info SET type = 'FACEBOOK', id = '"+ user.id +"', connectDate = NOW()"+ genderUpdate + imageUpdate + " WHERE email = '"+ account[0].email + "'", (err, data) => {
+                            //     if (err) {
+                            //         console.log(err);
+                            //         res.send(err);
+                            //     }
+                            // })
+                            // req.session.loginInfo = {
+                            //     type: "facebook",
+                            //     id: user.id,
+                            //     email: account[0].email,
+                            //     name: account[0].name
+                            // };
+                            // return req.session.save(() => {
+                            //     console.log("login")
+                            //     res.send("<script>window.close();</script>")
+                            // })
                         }
                     })
                 } else {
@@ -440,8 +512,8 @@ router.get('/facebookcallback', (req, res) => {
                             console.log(data);
                         });
                     });
-                    db.query("INSERT INTO summary.account_info (type, id, email, name, gender, image, connectDate) \
-                        VALUES ('FACEBOOK', '"+ user.id +"', "+ email +", '"+ user.displayName +"', "+ gender +", '"+ imageName +"', NOW())", (err, data) => {
+                    db.query("INSERT INTO summary.account_info (type, id, email, name, gender, image) \
+                        VALUES ('FACEBOOK', '"+ user.id +"', "+ email +", '"+ user.displayName +"', "+ gender +", '"+ encodeURIComponent(imageName) +"')", (err, data) => {
                         if(!err) {
                             console.log("signup")
                             req.session.loginInfo = {
@@ -482,7 +554,15 @@ router.get('/confirm', (req, res) => {
             req.session.reload((err) => {
                 if(typeof req.session.loginInfo !== "undefined"){
                     console.log(req.session.loginInfo);
-                    resolve(res.send(req.session.loginInfo));
+                    if(req.session.loginInfo.id === -1) {
+                        const logintype = req.session.loginInfo.type
+                        delete req.session.loginInfo;
+                        req.session.save(() => {
+                            resolve(res.status(400).send(logintype));
+                        })
+                    } else {
+                        resolve(res.send(req.session.loginInfo));
+                    }
                     clearInterval(Interval)
                 }
             })
