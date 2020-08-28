@@ -71,7 +71,7 @@ router.post('/signup', (req, res) => {
         // CREATE ACCOUNT
         // hash 를 이용해 비밀번호 보안
         hashing.encrypt(req.body.password).then(password => {
-            db.query("INSERT INTO summary.account_info (email, name, password, salt) VALUES ('"+ req.body.email +"', '"+ req.body.name +"', '"+ password.hashed +"', '"+ password.salt +"')", (err, exists) => {
+            db.query("INSERT INTO summary.account_info (email, name, password, salt) VALUES (LOWER('"+ req.body.email +"'), '"+ req.body.name +"', '"+ password.hashed +"', '"+ password.salt +"')", (err, exists) => {
                 if(!err) {
                     return res.json({ success: true });
                 } else {

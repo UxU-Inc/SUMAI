@@ -54,10 +54,6 @@ class Account extends Component{
       }
     }
 
-    componentDidMount() {
-      this.imageInit()
-    }
-
     imageInit = () => {
       new Promise(async (resolve, reject) => {
           const Interval = setInterval(() => {
@@ -67,8 +63,8 @@ class Account extends Component{
                     clearInterval(Interval)
                   } else {
                     const email = this.props.status.currentEmail
-                  console.log(Base64.stringify(sha1(email)))
-                  axios.get('/api/account/imageLoad/'+email).then((data) => {
+                    console.log(Base64.stringify(sha1(email)))
+                    axios.get('/api/account/imageLoad/'+email).then((data) => {
                     this.setState({
                       imagesrc: data.data.image
                     })
@@ -82,6 +78,7 @@ class Account extends Component{
     }
 
     componentDidMount() {
+      this.imageInit()
       // 로그인 상태 아니면 접근 불가
       if(this.props.status.isLoggedIn === false) {
         this.props.history.push("/")
