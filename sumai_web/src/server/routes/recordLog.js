@@ -1,5 +1,6 @@
 const express = require('express');
 const mysql = require('mysql');
+const requestIp = require('request-ip');
 const dbconfig = require('../security/database');
 
 const db = mysql.createPool(dbconfig)
@@ -17,6 +18,8 @@ router.post('/recordLog', (req, res) => {
 })
 
 router.get('/getIP', (req, res) => {
+    const ip = requestIp.getClientIp(req)
+    console.log(ip)
     db.query(`SELECT SUBSTRING_INDEX(USER(), '@', -1) AS ip;`, (err, data) => {
         if(!err) {
             return res.send(data[0].ip);
