@@ -4,14 +4,14 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom'
 
  
 const initialState = {
     ipv4: '',
     href: '',
-    loading: false,
+    loading: true,
     act: '',
     sendAct: false,
 };
@@ -48,7 +48,7 @@ const setInfo = (ipv4, href) => {
     type: "CLIENTIFO_SET",
     ipv4: ipv4,
     href: href,
-    loading: true
+    loading: false
   }
 }
 
@@ -68,75 +68,80 @@ const recvAct = () => {
   }
 }
 
-function useLoginInfo() {
-  const [loginInfo, setLoginInfo] = useState(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    axios.get('/api/account/getinfo').then((res)=> { // 나중에 session 추적이 아닌 redux 추적으로 수정해야함
-      setLoginInfo(res.data.info)
-      setLoading(false)
-    })
-  }, [])
-
-  return [loginInfo, loading]
-}
-
 function ClientInfoComponent() {
-  const [loginInfo, loginInfoLoading] = useLoginInfo()
+  // const [statusInfo, statusInfoLoading] = useStatusInfo()
+  const state = useSelector(state => state)
   const clientInfo = useSelector(state => state.clientInfo)
-  const loading = useSelector(state => state.clientInfo.loading)
+  const loginInfo = useSelector(state => state.authentication.login)
+  const statusInfo = useSelector(state => state.authentication.status)
+  const signupInfo = useSelector(state => state.authentication.signup)
+  const clientInfoLoading = useSelector(state => state.clientInfo.loading)
   const location = useLocation()
-  const dispatch = useDispatch()
+  const dispatch = React.useCallback(useDispatch(), [])
   
 
   const RecordLog = (act) => {
     axios.post('/api/recordLog/recordLog', {
       ipv4: clientInfo?.ipv4 ?? '', 
-      sns_type: loginInfo?.snsType ?? '',
-      id: loginInfo?.id ?? '',
-      email: loginInfo?.email ?? '',
+      sns_type: statusInfo?.snsType ?? '',
+      id: statusInfo?.id ?? '',
+      email: statusInfo?.currentEmail ?? '',
       action: clientInfo.act
-    }).then((res) => {
+    }).then(() => {
       console.log('record success')
     }).catch(() => {
       console.log('record false')
     })
   }
-  React.useEffect(() => {
-    axios.get('/api/recordLog/getIP').then((res) => {
-      const href=window.location.href
-      const ipv4 = res.data
-      dispatch(setInfo(ipv4, href))
-    })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // 최초 접속 href, 새로고침하거나 link를 통해서 접속할 때
 
-  React.useEffect(()=> {
-    if(loading){
-      dispatch(sendAct(`move ${location.pathname}`))
+  // clientinfo를 얻음
+  useEffect(() => {
+    const ClientInfo = () => {
+      axios.get('/api/recordLog/getIP').then((res) => {
+        const href=window.location.href
+        const ipv4=res.data
+        dispatch(setInfo(ipv4, href))
+      })
     }
-  }, [loading, location.pathname])
+    ClientInfo()
+    
+  }, [dispatch])
+
+  // 호스트 경로가 바뀔 때 마다 act
+  useEffect(()=> {
+    dispatch(sendAct(`move ${location.pathname}`))
+  }, [location.pathname, dispatch])
+
+  // 로그인
+  useEffect(() => {
+    if(loginInfo.status==='SUCCESS') {
+      if(statusInfo.isLoggedIn) console.log('로그인')
+      else console.log('로그아웃') // 로직 수정 필요
+    } else {
+      if(!statusInfo.isLoggedIn && statusInfo.valid) // 로직 수정 필요
+      console.log('로그아웃')
+    }
+  }, [loginInfo.status, statusInfo, dispatch])
+
+  // 회원가입
+  useEffect(() => {
+    if(signupInfo.status==='SUCCESS') console.log('회원가입 성공')
+    else if(signupInfo.status==='FAILURE') console.log(`회원가입 오류 ${signupInfo.error}`)
+  }, [signupInfo.status, signupInfo.error])
+
 
   useEffect(() => {
-    if(clientInfo.sendAct) {
-      if(!loginInfoLoading){
-        RecordLog()
-        dispatch(recvAct())
-      }
-    }else {
-      console.log('no act')
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clientInfo.act])
+    console.log(state)
+  })
 
+
+  // recv
   useEffect(() => {
-    if(!loginInfoLoading){
+    if(clientInfo.sendAct && !clientInfoLoading) {
       RecordLog()
       dispatch(recvAct())
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loginInfoLoading])
+  })
 
 
   return(<p style={{display: 'none'}}/>)
