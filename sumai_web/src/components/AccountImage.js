@@ -12,6 +12,7 @@ import {useDropzone} from 'react-dropzone'
 import FormData from 'form-data'
 import axios from 'axios';
 import { Typography } from '@material-ui/core';
+import imageCompression from 'browser-image-compression';
 
 export default function AccountImage(props) {
   const theme = useTheme();
@@ -36,7 +37,18 @@ export default function AccountImage(props) {
         setImgBase64("");
         setImgFile(null); // 파일 상태 업데이트
       } else {
-        setImgFile(event.target.files[0]); // 파일 상태 업데이트
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 500,
+          useWebWorker: true
+        }
+        imageCompression(event.target.files[0], options)
+          .then(function (compressedFile) {
+            console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
+            console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
+       
+            setImgFile(compressedFile); // write your own logic
+          })
       }
     }
   }
@@ -57,7 +69,18 @@ export default function AccountImage(props) {
         setImgBase64("");
         setImgFile(null); // 파일 상태 업데이트
       } else {
-        setImgFile(acceptedFiles[0]); // 파일 상태 업데이트
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 500,
+          useWebWorker: true
+        }
+        imageCompression(acceptedFiles[0], options)
+          .then(function (compressedFile) {
+            console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
+            console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
+       
+            setImgFile(compressedFile); // write your own logic
+          })
       }
     }
   }, [])
