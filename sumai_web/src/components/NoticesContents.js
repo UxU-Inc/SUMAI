@@ -448,10 +448,18 @@ export default function NoticesContents() {
           flexGrow : 1,
         }}>
           <Typography className={classes.subtitle}>
-          
             공지사항
-
           </Typography>
+          <button
+          onClick={
+            () => {
+              axios.post('/api/sendEmail/sendTemporaryPassword', {email:'ksm2@test.com'}).then(()=> {
+                console.log('전송했지라')
+              })
+            }
+          }>
+            실험 버튼이지라
+          </button>
         </Box>
       )}
       <Box

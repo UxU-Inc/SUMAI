@@ -6,12 +6,32 @@ const hashing = require('../security/hashing');
 const db = mysql.createPool(dbconfig)
 const router = express.Router();
 
+router.post('/checkSignupEmail', (req, res) => {
+    db.query("SELECT * FROM summary.account_info WHERE email = '"+ req.body.email + "'", (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.send(err);
+        } else if(data.length !== 0){
+            return res.status(400).json({
+                error: "해당 이메일이 존재합니다.",
+                code: 1
+            });
+        } else {
+            return res.json({success:true})
+        }
+    })
+})
+
 router.post('/signup', (req, res) => {
     // 기존에 존재하는 email 이 있는지 DB 에서 확인
-    if(req.session.emailCert.email!==req.body.email || !req.session.emailCert.certState) { // undefined 에러 관련 추가해야됨
-        console.log('실패요')
+    console.log(typeof req.session.emailCert==='undefined')
+    if(typeof req.session.emailCert==='undefined') { // 인증상태가 아닐 경우 (session에 emailCert가 없을 경우)
         return res.status(500).json({
-            error: "이메일 인증을 해달랑께롱",
+            code: 3
+        })
+    }
+    if(req.session.emailCert.email!==req.body.email || !req.session.emailCert.certState) { // 회원가입하는 이메일과 인증하는 이메일이 다른 경우 또는 인증상태가 아닐 경우
+        return res.status(500).json({
             code: 2
         });
     }
