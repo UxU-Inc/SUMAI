@@ -4,6 +4,7 @@ const passport = require('passport');
 const AWS = require('aws-sdk');
 const crypto = require('crypto');
 const request = require('request').defaults({ encoding: null });
+const sharp = require('sharp');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const NaverStrategy = require('passport-naver').Strategy;
 const KakaoStrategy = require('passport-kakao').Strategy;
@@ -85,12 +86,14 @@ router.get('/googlecallback', (req, res) => {
                         res.send(err);
                     } else if(account.length === 0) {
                         request.get(user.photos[0].value, (err, res, body) => {
-                            s3.upload({'Bucket':'sumai-profile', 'Key': 'image/'+imageName, 'ACL' : 'public-read', 'Body': body, 'ContentType':'image/jpg'}, (err, data) => {
-                                if(err) {
-                                    console.log(err);
-                                }
-                                console.log(data);
-                            });
+                            sharp(body).resize(300).toBuffer().then( data => { 
+                                s3.upload({'Bucket':'sumai-profile', 'Key': 'image/'+imageName, 'ACL' : 'public-read', 'Body': data, 'ContentType':'image/jpg'}, (err, data) => {
+                                    if(err) {
+                                        console.log(err);
+                                    }
+                                    console.log(data);
+                                });
+                            })
                         });
                         db.query("INSERT INTO summary.account_info (type, id, email, verified, name, image) \
                             VALUES ('GOOGLE', '"+ user.id +"', '"+ user.emails[0].value +"', "+ user.emails[0].verified +", '"+ user.displayName +"', '"+ encodeURIComponent(imageName) +"')", (err, data) => {
@@ -174,13 +177,14 @@ router.get('/kakaocallback', (req, res) => {
     passport.authenticate('kakao', (err, user) => {
         console.log('passport.authenticate(kakao)실행');
         console.log(user);
-        const email = typeof user._json.kakao_account.email === "undefined"? null : "'"+user._json.kakao_account.email+"'"
-        const verified = typeof user._json.kakao_account.email === "undefined"? 0 : user._json.kakao_account.is_email_valid && user._json.kakao_account.is_email_verified
-        const gender = typeof user._json.kakao_account.gender === "undefined"? null : "'"+user._json.kakao_account.gender+"'"
-        const age_range = typeof user._json.kakao_account.age_range === "undefined"? null : "'"+user._json.kakao_account.age_range.replace(/[^0-9]/g,"")+"'"
-        const imageName = typeof user._json.properties.profile_image === "undefined"? null : "image/" + crypto.createHash('sha1').update(user.id+Date.now()).digest("base64") + ".jpg"
-        const imageURI = typeof user._json.properties.profile_image === "undefined"? null : "'"+encodeURIComponent(crypto.createHash('sha1').update(user.id+Date.now()).digest("base64") + ".jpg")+"'"
         db.query("SELECT * FROM summary.account_info WHERE id = '"+ user.id + "'", (err, account) => {
+            const email = typeof user._json.kakao_account.email === "undefined"? null : "'"+user._json.kakao_account.email+"'"
+            const email_ = typeof user._json.kakao_account.email === "undefined"? null : user._json.kakao_account.email
+            const verified = typeof user._json.kakao_account.email === "undefined"? 0 : user._json.kakao_account.is_email_valid && user._json.kakao_account.is_email_verified
+            const gender = typeof user._json.kakao_account.gender === "undefined"? null : "'"+user._json.kakao_account.gender+"'"
+            const age_range = typeof user._json.kakao_account.age_range === "undefined"? null : "'"+user._json.kakao_account.age_range.replace(/[^0-9]/g,"")+"'"
+            const imageName = typeof user._json.properties.thumbnail_image === "undefined"? null : "image/" + crypto.createHash('sha1').update(String(user.id)+Date.now()).digest("base64") + ".jpg"
+            const imageURI = typeof user._json.properties.thumbnail_image === "undefined"? null : "'"+encodeURIComponent(crypto.createHash('sha1').update(String(user.id)+Date.now()).digest("base64") + ".jpg")+"'"
             if (err) {
                 console.log(err);
                 res.send(err);
@@ -192,7 +196,7 @@ router.get('/kakaocallback', (req, res) => {
                             res.send(err);
                         } else if(account.length === 0) {
                             if(imageName !== null) {
-                                request.get(user._json.properties.profile_image, (err, res, body) => {
+                                request.get(user._json.properties.thumbnail_image, (err, res, body) => {
                                     s3.upload({'Bucket':'sumai-profile', 'Key': imageName, 'ACL' : 'public-read', 'Body': body, 'ContentType':'image/jpg'}, (err, data) => {
                                         if(err) {
                                             console.log(err);
@@ -208,7 +212,7 @@ router.get('/kakaocallback', (req, res) => {
                                     req.session.loginInfo = {
                                         type: "kakao",
                                         id: user.id,
-                                        email: email,
+                                        email: email_,
                                         name: user.username
                                     };
                                     return req.session.save(() => {
@@ -264,7 +268,7 @@ router.get('/kakaocallback', (req, res) => {
                     })
                 } else {
                     if(imageName !== null) {
-                        request.get(user._json.properties.profile_image, (err, res, body) => {
+                        request.get(user._json.properties.thumbnail_image, (err, res, body) => {
                             s3.upload({'Bucket':'sumai-profile', 'Key': imageName, 'ACL' : 'public-read', 'Body': body, 'ContentType':'image/jpg'}, (err, data) => {
                                 if(err) {
                                     console.log(err);
@@ -280,7 +284,7 @@ router.get('/kakaocallback', (req, res) => {
                             req.session.loginInfo = {
                                 type: "kakao",
                                 id: user.id,
-                                email: email,
+                                email: email_,
                                 name: user.username
                             };
                             return req.session.save(() => {
@@ -332,12 +336,14 @@ router.get('/navercallback', (req, res) => {
                     } else if(account.length === 0) {
                         if(imageName !== null) {
                             request.get(user._json.profile_image, (err, res, body) => {
-                                s3.upload({'Bucket':'sumai-profile', 'Key': imageName, 'ACL' : 'public-read', 'Body': body, 'ContentType':'image/jpg'}, (err, data) => {
-                                    if(err) {
-                                        console.log(err);
-                                    }
-                                    console.log(data);
-                                });
+                                sharp(body).resize(300).toBuffer().then( data => { 
+                                    s3.upload({'Bucket':'sumai-profile', 'Key': imageName, 'ACL' : 'public-read', 'Body': data, 'ContentType':'image/jpg'}, (err, data) => {
+                                        if(err) {
+                                            console.log(err);
+                                        }
+                                        console.log(data);
+                                    });
+                                })
                             });
                         }
                         db.query("INSERT INTO summary.account_info (type, id, email, name, ageRange, image) \
@@ -424,6 +430,7 @@ router.get('/facebookcallback', (req, res) => {
         console.log('passport.authenticate(facebook)실행');
         console.log(user);
         const email = typeof user.emails === "undefined"? null : "'"+user.emails[0].value+"'"
+        const email_ = typeof user.emails === "undefined"? null : user.emails[0].value
         const gender = typeof user.gender === "undefined"? null : "'"+user.gender+"'"
         const imageName = crypto.createHash('sha1').update(user.id+Date.now()).digest("base64") + ".jpg"
         db.query("SELECT * FROM summary.account_info WHERE id = '"+ user.id + "'", (err, account) => {
@@ -452,7 +459,7 @@ router.get('/facebookcallback', (req, res) => {
                                     req.session.loginInfo = {
                                         type: "facebook",
                                         id: user.id,
-                                        email: email,
+                                        email: email_,
                                         name: user.displayName
                                     };
                                     return req.session.save(() => {
@@ -519,7 +526,7 @@ router.get('/facebookcallback', (req, res) => {
                             req.session.loginInfo = {
                                 type: "facebook",
                                 id: user.id,
-                                email: email,
+                                email: email_,
                                 name: user.displayName
                             };
                             return req.session.save(() => {

@@ -190,7 +190,7 @@ class Signup extends Component{
     validation = (type, value, checked) => {
         if(type === "email") {
             // 이메일 형식 검사
-            const emailRegex = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
+            const emailRegex = /^[0-9a-z]([-_.]?[0-9a-z])*@[0-9a-z]([-_.]?[0-9a-z])*\.[a-z]{2,3}$/i;
             if(!emailRegex.test(value) && value !== "") {
                 this.setState({
                     emailerror: true,
