@@ -12,7 +12,7 @@ export function signupRequest(email, name, password) {
         .then((response) => {
             dispatch(signupSuccess());
         }).catch((error) => {
-            dispatch(signupFailure(error.response.data.code));
+            dispatch(signupFailure(error.response.data.code || -1));
         });
     };
 }
@@ -49,7 +49,7 @@ export function loginRequest(email, password) {
             dispatch(loginSuccess(response.data.email, response.data.name));
         }).catch((error) => {
             // FAILED
-            dispatch(loginFailure(error.response.data.code));
+            dispatch(loginFailure(error.response.data.code || -1));
         });
     };
 }
@@ -69,7 +69,7 @@ export function snsloginRequest(type) {
             return response.data.email
         }).catch((error) => {
             // FAILED
-            dispatch(loginFailure());
+            dispatch(loginFailure(error.response.data || -1));
         });
     };
 }
@@ -155,7 +155,7 @@ export function nameChangeRequest(email, name) {
         .then((response) => {
             dispatch(nameChangeSuccess(email, name));
         }).catch((error) => {
-            dispatch(nameChangeFailure(error.response.data.code));
+            dispatch(nameChangeFailure(error.response.data.code || -1));
         });
     };
 }

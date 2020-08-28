@@ -119,10 +119,12 @@ class Login extends Component{
         super(props)
         this.state = {
             email: "",
-            emailerror: false,
             password: "",
             passworderror: false,
             cookieState: true, 
+            loginerror: false,
+            snsloginerror: '',
+            toomanyerror: false,
         }
         this.textFieldRef = [React.createRef(), React.createRef()]
     }
@@ -131,12 +133,16 @@ class Login extends Component{
         if(type === "email") {
             this.setState({
                 email: e.target.value.trim(),
-                emailerror: false,
+                loginerror: false,
+                snsloginerror: '',
+                toomanyerror: false,
             })
         } else if (type === "password") {
             this.setState({
                 password: e.target.value.trim(),
-                passworderror: false,
+                loginerror: false,
+                snsloginerror: '',
+                toomanyerror: false,
             })
         }
     }
@@ -146,9 +152,9 @@ class Login extends Component{
         }
     }
     onClickLogin = () => {
-        if(this.state.email === "" || this.state.emailerror) {
+        if(this.state.email === "") {
             this.textFieldRef[0].current.focus()
-        } else if(this.state.password === "" || this.state.passworderror) {
+        } else if(this.state.password === "" || this.state.loginerror) {
             this.textFieldRef[1].current.focus()
         } else {
             this.props.onLogin(this.state.email, this.state.password).then(data => {
@@ -158,19 +164,22 @@ class Login extends Component{
                             cookieState: false,
                         })
                     }
+                    
+                } else if (data.error === 429) {
+                    this.setState({
+                        password: "",
+                        loginerror: false,
+                        snsloginerror: '',
+                        toomanyerror: true,
+                    })
                 } else {
-                    if(data.error === 2) {
-                        this.textFieldRef[0].current.focus()
-                        this.setState({
-                            emailerror: true,
-                        })
-                    } else {
-                        this.textFieldRef[1].current.focus()
-                        this.setState({
-                            password: "",
-                            passworderror: true,
-                        })
-                    }
+                    this.textFieldRef[1].current.focus()
+                    this.setState({
+                        password: "",
+                        loginerror: true,
+                        snsloginerror: '',
+                        toomanyerror: false,
+                    })
                 }
             })
             
@@ -182,7 +191,29 @@ class Login extends Component{
         }
     }
     SNSLogin = (SNS) => {
-        this.props.onSNSLogin(SNS)
+        this.setState({
+            loginerror: false,
+            snsloginerror: '',
+            toomanyerror: false,
+        })
+        this.props.onSNSLogin(SNS).then(data => {
+            if (data.success) {
+                
+            } else {
+                let typeName
+                switch(data.error) {
+                    case "GOOGLE": typeName = "구글"; break;
+                    case "NAVER": typeName = "네이버"; break;
+                    case "KAKAO": typeName = "카카오"; break;
+                    case "FACEBOOK": typeName = "페이스북"; break;
+                    case "NORMAL": typeName = "일반"; break;
+                    default:
+                }
+                this.setState({
+                    snsloginerror: typeName,
+                })
+            }
+        })
     }
 
     render() { 
@@ -206,10 +237,10 @@ class Login extends Component{
                                             }  
                             />
                             <CardContent style={{padding: "16px 10%"}}>
-                                <TextField variant="outlined" autoFocus value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.emailerror || this.state.signupEmailExist}
+                                <TextField variant="outlined" autoFocus value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.loginerror}
                                     fullWidth label="이메일" placeholder="이메일을 입력해주세요." color="primary" style={{height: "70px", marginTop: "15px", fontFamily: "NotoSansKR-Thin"}} inputRef={this.textFieldRef[0]}
                                     onKeyPress={this.onKeyPress} spellCheck="false" />
-                                <TextField variant="outlined" value={this.state.password} onChange={this.handleChange.bind(this, "password")} error={this.state.passworderror}
+                                <TextField variant="outlined" value={this.state.password} onChange={this.handleChange.bind(this, "password")} error={this.state.loginerror}
                                     fullWidth label="비밀번호" placeholder="비밀번호를 입력해주세요." type="password" style={{height: "70px"}} inputRef={this.textFieldRef[1]}
                                     onKeyPress={this.onKeyPress}/>
                                 <Box textAlign="right" fontSize={13}>
@@ -267,10 +298,11 @@ class Login extends Component{
                         </Box>
                     </Grid>
                     
-                    <Snackbar open={this.state.emailerror || this.state.passworderror}>
+                    <Snackbar open={this.state.loginerror || this.state.snsloginerror !== '' || this.state.toomanyerror}>
                         <Alert severity="error">
-                            {this.state.emailerror? "SUMAI 계정을 찾을 수 없습니다.":null}
-                            {this.state.passworderror? "비밀번호가 틀렸습니다.":null}
+                            {this.state.loginerror? "가입하지 않은 이메일이거나, 잘못된 비밀번호입니다.":null}
+                            {this.state.snsloginerror !== ''? "해당 이메일은 " + this.state.snsloginerror + " 로그인으로 가입되었습니다.":null}
+                            {this.state.toomanyerror? "잠시 후 시도해주세요.":null}
                         </Alert>
                     </Snackbar>
                 </div> 
@@ -293,10 +325,10 @@ class Login extends Component{
                             </Typography>
                         </Box>
 
-                        <TextField variant="outlined" autoFocus value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.emailerror || this.state.signupEmailExist}
+                        <TextField variant="outlined" autoFocus value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.loginerror}
                                     fullWidth label="이메일" placeholder="이메일을 입력해주세요." style={{height: "70px", marginTop: "30px"}} inputRef={this.textFieldRef[0]}
                                     onKeyPress={this.onKeyPress} spellCheck="false"/>
-                        <TextField variant="outlined" value={this.state.password} onChange={this.handleChange.bind(this, "password")} error={this.state.passworderror}
+                        <TextField variant="outlined" value={this.state.password} onChange={this.handleChange.bind(this, "password")} error={this.state.loginerror}
                             fullWidth label="비밀번호" placeholder="비밀번호를 입력해주세요." type="password" style={{height: "70px"}} inputRef={this.textFieldRef[1]}
                             onKeyPress={this.onKeyPress}/>
 
@@ -343,15 +375,14 @@ class Login extends Component{
                         <Link to="/terms" style={{textDecoration: 'none'}}><Button className={classes.termsButton}>이용약관</Button></Link>
                         <Link to="/privacy" style={{textDecoration: 'none'}}><Button className={classes.termsButton}>개인정보처리방침</Button></Link>
                     </Box>
-                    
 
-                    <Snackbar open={this.state.emailerror || this.state.passworderror}>
+                    <Snackbar open={this.state.loginerror || this.state.snsloginerror !== '' || this.state.toomanyerror}>
                         <Alert severity="error">
-                            {this.state.emailerror? "SUMAI 계정을 찾을 수 없습니다.":null}
-                            {this.state.passworderror? "비밀번호가 틀렸습니다.":null}
+                            {this.state.loginerror? "가입하지 않은 이메일이거나, 잘못된 비밀번호입니다.":null}
+                            {this.state.snsloginerror !== ''? "해당 이메일은 " + this.state.snsloginerror + " 로그인으로 가입되었습니다.":null}
+                            {this.state.toomanyerror? "잠시 후 시도해주세요.":null}
                         </Alert>
                     </Snackbar>
-
                 </Box> 
             ) 
         }
