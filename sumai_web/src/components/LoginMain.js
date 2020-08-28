@@ -22,11 +22,11 @@ class LoginMain extends Component{
     handleSignup = (email, name, password) => {
         return this.props.signupRequest(email, name, password).then(
             () => {
-                if(this.props.signupStatus === "SUCCESS") {
+                if(this.props.signup.status === "SUCCESS") {
                     this.props.history.push('/login');
                     return { success: true }
                 } else {
-                    return { success: false, error: this.props.signupErrorCode }
+                    return { success: false, error: this.props.signup.error }
                 }
             }
         );
@@ -34,7 +34,7 @@ class LoginMain extends Component{
     handleLogin = (email, password) => {
         return this.props.loginRequest(email, password).then(
             () => {
-                if(this.props.loginStatus === "SUCCESS") {
+                if(this.props.login.status === "SUCCESS") {
                     // create session data
                     let loginData = {
                         isLoggedIn: true,
@@ -51,7 +51,7 @@ class LoginMain extends Component{
 
                     return { success: true };
                 } else {
-                    return { success: false, error: this.props.loginErrorCode }
+                    return { success: false, error: this.props.login.error }
                 }
             }
         );
@@ -59,7 +59,7 @@ class LoginMain extends Component{
     handleSNSLogin = (type) => {
         return this.props.snsloginRequest(type).then(
             (email) => {
-                if(this.props.loginStatus === "SUCCESS") {
+                if(this.props.login.status === "SUCCESS") {
                     // create session data
                     let loginData = {
                         isLoggedIn: true,
@@ -76,7 +76,7 @@ class LoginMain extends Component{
                     
                     return { success: true };
                 } else {
-                    return { success: false }
+                    return { success: false, error: this.props.login.error }
                 }
             }
         );
@@ -85,7 +85,7 @@ class LoginMain extends Component{
         return ( 
             <div> 
                 {/* <Header props={this.props}/>  */}
-                {this.props.signupStatus === "SUCCESS"? 
+                {this.props.signup.status === "SUCCESS"? 
                     <Alert severity="success">
                         <AlertTitle>SUMAI 회원가입 완료!</AlertTitle>
                         <strong>로그인을 해주세요!</strong>
@@ -100,10 +100,8 @@ class LoginMain extends Component{
 
 const mapStateToProps = (state) => {
     return {
-        loginStatus: state.authentication.login.status,
-        loginErrorCode: state.authentication.login.error,
-        signupStatus: state.authentication.signup.status,
-        signupErrorCode: state.authentication.signup.error
+        login: state.authentication.login,
+        signup: state.authentication.signup,
     };
 };
  
