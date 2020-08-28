@@ -36,7 +36,6 @@ import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 
 import html2canvas from 'html2canvas';
 // import emailjs from 'emailjs-com';
-import { Link } from 'react-router-dom';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import { useDispatch } from 'react-redux';
@@ -149,8 +148,6 @@ function FeedbackDialog(props) {
   
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false)
-    // if(sendEmail)
-    handleClose()
   }
 
   const handleMessage = (event) => {
@@ -172,6 +169,7 @@ function FeedbackDialog(props) {
       dispatch(sendAct('send feedback is fail'))
       setSnackbarOpen(true)
     });
+    handleClose()
   }
 
   useEffect(() => {
@@ -192,57 +190,58 @@ function FeedbackDialog(props) {
   };
 
   return (
-    <Dialog id='feedback' onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}
-    style={{width: '460px', justifyContent: 'center', margin: '0 auto'}}>
-      <DialogTitle id="customized-dialog-title" onClose={handleClose} style={{backgroundColor: root.PrimaryColor, color: 'white', padding: "10px 15px"}}>
-        의견 보내기
-      </DialogTitle>
-      <Box style={{minHeight: '100px', maxHeight: '150px', display: 'flex', padding: "10px 15px"}}>
-        <TextareaAutosize className={classes.textInput} maxLength="5000" autoFocus={true} onChange={handleMessage}
-        placeholder="의견을 보내고 싶으신가요? 보내 주신 의견은 소중하게 활용되지만, 민감한 정보는 공유하지 말아 주세요. 궁금하신 점이 있나요? 도움말을 참조하시거나 지원팀에 문의해 보세요."
-        style={{
-          boxSizing: "border-box",
-          flexGrow: 1,
-          width: '100%',
-          height: 'auto',
-          resize: 'none',
-          border: 'none',
-          outline: 'none',
-          font: "400 16px NotoSansKR-Regular",
-        }}/>
-      </Box>
-      <Box style={{display: 'block', background: 'WhiteSmoke', padding: '0'}}>
-        {/* <Box id='screenshotButton' style={{display: 'flex', width: '400'}}>
-          <Button onClick={(event) => {
-            screenShot()
-            document.getElementById('screenshotButton').remove()
-          }} style={{marginLeft:'auto', marginRight:'auto', width:'100%', padding:'8px 0'}}>
-            스크린샷 첨부하기
-          </Button>
-        </Box> */}
-        <Box style={{display: 'flex'}}>
-          <img id="screenshotPreview" src='' alt='' style={{marginLeft: 'auto', marginRight: 'auto',}}onClick={showCanvas} />
-        </Box>
-      </Box>
-      <small
-      style={{
-        borderTop: '1px solid rgb(224, 224, 224)',
-        color: 'rgb(168, 168, 168)',
-        backgroundColor: 'rgb(250, 250, 250)',
-        font: "12px NotoSansKR-Regular",
-        padding: "15px 15px"
-      }}>
-          법적인 이유로 콘텐츠 변경을 요청하려면 법적 도움말 페이지로 이동하세요.
-          일부 계정 및 시스템 정보가 UxU에 전송될 수 있습니다. 
-          제공해 주신 정보는 개인정보처리방침 및 서비스 약관에 따라 기술 문제를 해결하고 서비스를 개선하는 데 사용됩니다.
-      </small>
-      <DialogActions
-      style={{borderTop: '1px solid rgb(224, 224, 224)', backgroundColor: 'rgb(250, 250, 250)', padding: '5px 15px'}}>
-        <Button id='sendEmailButton' autoFocus color="primary" style={{font: "16px NotoSansKR-Regular",}} onClick={sendEmail} disabled={!sendEmailButton}>
-          보내기
-        </Button>
-      </DialogActions>
     <Box>
+      <Dialog id='feedback' onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}
+      style={{width: '460px', justifyContent: 'center', margin: '0 auto'}}>
+        <DialogTitle id="customized-dialog-title" onClose={handleClose} style={{backgroundColor: root.PrimaryColor, color: 'white', padding: "10px 15px"}}>
+          의견 보내기
+        </DialogTitle>
+        <Box style={{minHeight: '200px', maxHeight: '250px', display: 'flex', padding: "10px 15px"}}>
+          <TextareaAutosize className={classes.textInput} maxLength="5000" autoFocus={true} onChange={handleMessage}
+          placeholder="의견을 보내고 싶으신가요? 보내 주신 의견은 소중하게 활용되지만, 민감한 정보는 공유하지 말아 주세요. 궁금하신 점이 있나요? 도움말을 참조하시거나 지원팀에 문의해 보세요."
+          style={{
+            boxSizing: "border-box",
+            flexGrow: 1,
+            width: '100%',
+            height: 'auto',
+            resize: 'none',
+            border: 'none',
+            outline: 'none',
+            font: "400 16px NotoSansKR-Regular",
+          }}/>
+        </Box>
+        <Box style={{display: 'block', background: 'WhiteSmoke', padding: '0'}}>
+          {/* <Box id='screenshotButton' style={{display: 'flex', width: '400'}}>
+            <Button onClick={(event) => {
+              screenShot()
+              document.getElementById('screenshotButton').remove()
+            }} style={{marginLeft:'auto', marginRight:'auto', width:'100%', padding:'8px 0'}}>
+              스크린샷 첨부하기
+            </Button>
+          </Box> */}
+          <Box style={{display: 'flex'}}>
+            <img id="screenshotPreview" src='' alt='' style={{marginLeft: 'auto', marginRight: 'auto',}}onClick={showCanvas} />
+          </Box>
+        </Box>
+        <small
+        style={{
+          borderTop: '1px solid rgb(224, 224, 224)',
+          color: 'rgb(168, 168, 168)',
+          backgroundColor: 'rgb(250, 250, 250)',
+          font: "12px NotoSansKR-Regular",
+          padding: "15px 15px"
+        }}>
+            법적인 이유로 콘텐츠 변경을 요청하려면 법적 도움말 페이지로 이동하세요.
+            일부 계정 및 시스템 정보가 UxU에 전송될 수 있습니다. 
+            제공해 주신 정보는 개인정보처리방침 및 서비스 약관에 따라 기술 문제를 해결하고 서비스를 개선하는 데 사용됩니다.
+        </small>
+        <DialogActions
+        style={{borderTop: '1px solid rgb(224, 224, 224)', backgroundColor: 'rgb(250, 250, 250)', padding: '5px 15px'}}>
+          <Button id='sendEmailButton' autoFocus color="primary" style={{font: "16px NotoSansKR-Regular",}} onClick={sendEmail} disabled={!sendEmailButton}>
+            보내기
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Snackbar autoHideDuration={3000} open={snackbarOpen} onClose={handleCloseSnackbar}>
         {
           ( sendEmailStatus===200 && 
@@ -257,7 +256,6 @@ function FeedbackDialog(props) {
         }
       </Snackbar>
     </Box>
-    </Dialog>
   )
 }
 
