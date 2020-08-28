@@ -11,7 +11,7 @@ export function lastestRequest(idx) {
         .then((response) => {
             dispatch(lastestSuccess(response.data));
         }).catch((error) => {
-            dispatch(lastestFailure(error.response.data));
+            dispatch(lastestFailure(error.response.data || -1));
         });
     };
 }
@@ -46,7 +46,7 @@ export function recommendRequest() {
         .then((response) => {
             dispatch(recommendSuccess(response.data));
         }).catch((error) => {
-            dispatch(recommendFailure(error.response.data));
+            dispatch(recommendFailure(error.response.data || -1));
         });
     };
 }
@@ -81,7 +81,7 @@ export function likeRequest(sign, idx) {
         .then((response) => {
             dispatch(likeSuccess());
         }).catch((error) => {
-            dispatch(likeFailure(error.response.data));
+            dispatch(likeFailure(error.response.data || -1));
         });
     };
 }
