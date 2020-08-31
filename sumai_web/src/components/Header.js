@@ -324,7 +324,7 @@ class Header extends Component{
           aria-controls={open ? 'menu-list-grow' : undefined}
           aria-haspopup="true"
           onClick={handleToggle}
-          style={{color: "#0000008A"}}
+          style={{color: "#0000008A", cursor:'pointer'}}
         >
           {console.log(props)}
           {props.currentUser}님
