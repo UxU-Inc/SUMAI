@@ -196,16 +196,16 @@ class AccountPassword extends React.Component {
 
                         <a href="/accounts" className={classes.link} >
                             <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
-                            <Typography style={{color: "#0000008A", paddingLeft: "10px", fontSize: "28px"}}>계정</Typography>
+                            <Typography style={{color: "#0000008A", paddingLeft: "10px", fontSize: "28px", minWidth: "60px"}}>계정</Typography>
                         </a>
 
                     </Toolbar>
 
                     <Box display="flex" alignItems="center" justifyContent="center" style={{paddingTop: "20px"}}>
                         <IconButton onClick={() => this.props.history.goBack()}>
-                            <ArrowBackIcon style={{color: "#0000008A"}}/>  
+                            <ArrowBackIcon style={{color: "#0000008A", paddingLeft: "12px"}}/>  
                         </IconButton>
-                        <Typography variant="h5" style={{color: "#0000008A", paddingLeft: "10px", width: "600px"}}>비밀번호</Typography>
+                        <Typography variant="h5" style={{color: "#0000008A", paddingLeft: "10px", width: "480px", minWidth: "230px"}}>비밀번호</Typography>
                     </Box>
                 </AppBar> 
 
@@ -218,21 +218,21 @@ class AccountPassword extends React.Component {
                             </Typography>
 
                             <TextField autoFocus fullWidth variant="outlined" value={this.state.password} onChange={this.handleChange.bind(this, "passwordCurrent")} label="현재 비밀번호 입력" 
-                                        style={{margin: "30px 0px 7.5px 0px"}} placeholder="현재 비밀번호를 입력해주세요." type="password" error={this.state.passwordCurrentError} inputRef={this.textFieldRef[0]}
+                                        style={{margin: "30px 0px 7.5px 0px"}} type="password" error={this.state.passwordCurrentError} inputRef={this.textFieldRef[0]}
                                         helperText={this.state.passwordCurrentError ? "잘못된 비밀번호입니다. 다시 시도하거나 비밀번호 찾기를 클릭하여 재설정하세요." : false} onKeyPress={this.onKeyPress}/>
 
                             <TextField variant="outlined" value={this.state.password} onChange={this.handleChange.bind(this, "passwordChange")} error={this.state.passwordChangeError}
-                                    fullWidth label="변경할 비밀번호 입력" placeholder="변경할 비밀번호를 입력해주세요." type="password" style={{margin: "30px 0px 7.5px 0px"}} inputRef={this.textFieldRef[1]}
+                                    fullWidth label="변경할 비밀번호 입력" type="password" style={{margin: "30px 0px 7.5px 0px"}} inputRef={this.textFieldRef[1]}
                                     helperText={this.state.passwordChangeError? "영어, 숫자, 특수문자 포함, 8~15자리": false} onKeyPress={this.onKeyPress}/>
                             <TextField variant="outlined" value={this.state.passwordcheck} onChange={this.handleChange.bind(this, "passwordCheck")} error={this.state.passwordCheckError}
-                                    fullWidth label="비밀번호 확인" placeholder="비밀번호를 한 번 더 입력해주세요." type="password" style={{margin: "7.5px 0px 15px 0px"}} inputRef={this.textFieldRef[2]}
+                                    fullWidth label="비밀번호 확인" type="password" style={{margin: "7.5px 0px 15px 0px"}} inputRef={this.textFieldRef[2]}
                                     helperText={this.state.passwordCheckError? "비밀번호가 다릅니다.": false} onKeyPress={this.onKeyPress}/>
 
-                            <Box display="flex" flexDirection="row-reverse" style={{marginTop: "10px"}}>
+                            <Box display="flex" flexDirection="row-reverse" mt={5}>
                                 <Button onClick={this.onClickSave} style={{background: root.PrimaryColor, color: "#fff"}}>
                                     저장
                                 </Button>
-                                <Button style={{color: root.PrimaryColor}} onClick={() => this.props.history.goBack()}>
+                                <Button style={{color: root.PrimaryColor, marginRight: "20px"}} onClick={() => this.props.history.goBack()}>
                                     취소
                                 </Button>
                             </Box>

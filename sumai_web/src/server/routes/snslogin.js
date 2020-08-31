@@ -96,6 +96,9 @@ router.get('/googlecallback', (req, res) => {
                             VALUES ('GOOGLE', '"+ user.id +"', '"+ user.emails[0].value +"', "+ user.emails[0].verified +", '"+ user.displayName +"', '"+ encodeURIComponent(imageName) +"')", (err, data) => {
                             if(!err) {
                                 console.log("signup")
+                                // google 회원 가입 로그
+                                db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, verified, name, image) \
+                            VALUES (now(), 'signup', 'GOOGLE', '"+ user.id +"', '"+ user.emails[0].value +"', "+ user.emails[0].verified +", '"+ user.displayName +"', '"+ encodeURIComponent(imageName) +"')")
                                 req.session.loginInfo = {
                                     type: "google",
                                     id: user.id,
@@ -204,6 +207,9 @@ router.get('/kakaocallback', (req, res) => {
                             db.query("INSERT INTO summary.account_info (type, id, email, verified, name, gender, ageRange, image) \
                                 VALUES ('KAKAO', '"+ user.id +"', "+ email +", "+ verified +", '"+ user.username +"', "+ gender +", "+ age_range +", "+ imageURI +")", (err, data) => {
                                 if(!err) {
+                                    // kakao 회원가입 로그
+                                    db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, verified, name, gender, ageRange, image) \
+                                    VALUES (now(), 'signup', 'KAKAO', '"+ user.id +"', "+ email +", "+ verified +", '"+ user.username +"', "+ gender +", "+ age_range +", "+ imageURI +")")
                                     console.log("signup")
                                     req.session.loginInfo = {
                                         type: "kakao",
@@ -277,6 +283,9 @@ router.get('/kakaocallback', (req, res) => {
                         VALUES ('KAKAO', '"+ user.id +"', "+ email +", "+ verified +", '"+ user.username +"', "+ gender +", "+ age_range +", "+ imageURI +")", (err, data) => {
                         if(!err) {
                             console.log("signup")
+                            // kakao 회원가입 로그
+                            db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, verified, name, gender, ageRange, image) \
+                            VALUES (now(), 'signup', 'KAKAO', '"+ user.id +"', "+ email +", "+ verified +", '"+ user.username +"', "+ gender +", "+ age_range +", "+ imageURI +")")
                             req.session.loginInfo = {
                                 type: "kakao",
                                 id: user.id,
@@ -344,6 +353,9 @@ router.get('/navercallback', (req, res) => {
                             VALUES ('NAVER', '"+ user.id +"', '"+ user.emails[0].value +"', '"+ user.displayName +"', "+ age +", "+ imageURI +")", (err, data) => {
                             if(!err) {
                                 console.log("signup")
+                                // naver 회원가입 로그
+                                db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, name, ageRange, image) \
+                                VALUES (now(), 'signup', 'NAVER', '"+ user.id +"', '"+ user.emails[0].value +"', '"+ user.displayName +"', "+ age +", "+ imageURI +")")
                                 req.session.loginInfo = {
                                     type: "naver",
                                     id: user.id,
@@ -449,6 +461,9 @@ router.get('/facebookcallback', (req, res) => {
                                 VALUES ('FACEBOOK', '"+ user.id +"', "+ email +", '"+ user.displayName +"', "+ gender +", '"+ encodeURIComponent(imageName) +"')", (err, data) => {
                                 if(!err) {
                                     console.log("signup")
+                                    // facebook 회원가입 로그
+                                    db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, name, gender, image) \
+                                    VALUES (now(), 'signup', 'FACEBOOK', '"+ user.id +"', "+ email +", '"+ user.displayName +"', "+ gender +", '"+ encodeURIComponent(imageName) +"')")
                                     req.session.loginInfo = {
                                         type: "facebook",
                                         id: user.id,
@@ -516,6 +531,9 @@ router.get('/facebookcallback', (req, res) => {
                         VALUES ('FACEBOOK', '"+ user.id +"', "+ email +", '"+ user.displayName +"', "+ gender +", '"+ encodeURIComponent(imageName) +"')", (err, data) => {
                         if(!err) {
                             console.log("signup")
+                            // facebook 회원가입 로그
+                            db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, name, gender, image) \
+                            VALUES (now(), 'signup', 'FACEBOOK', '"+ user.id +"', "+ email +", '"+ user.displayName +"', "+ gender +", '"+ encodeURIComponent(imageName) +"')")
                             req.session.loginInfo = {
                                 type: "facebook",
                                 id: user.id,

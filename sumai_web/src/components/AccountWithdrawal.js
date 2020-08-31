@@ -22,6 +22,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { logoutRequest } from '../actions/authentication';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 
 const useStyles = theme => ({
     AppBarStyle: {
@@ -43,6 +45,10 @@ const useStyles = theme => ({
     displayNone: {
         display: "none",
     },
+    withdrawalCheckBox: {
+        color: "#757575",
+        fontFamily: "NotoSansKR-Light",
+    },
 });
 
 
@@ -56,6 +62,7 @@ function PasswordChangeMassage(props) {
         if(code === 2) enqueueSnackbar('해당 계정이 존재하지 않습니다.', {variant: "error"})
         if(code === 3) enqueueSnackbar('비밀번호가 틀립니다.', {variant: "error"})
         if(code === 4) enqueueSnackbar('로그인 상태가 아닙니다.', {variant: "error"})
+        if(code === 5) enqueueSnackbar('SUMAI 해당 계정의 모든 데이터 삭제에 동의해주시면 회원탈퇴가 가능합니다.', {variant: "error"})
         setCode(0)
     }, [code])
 
@@ -70,6 +77,7 @@ class AccountPassword extends React.Component {
         this.state = {
             password: "",
             passwordError: false,
+            withdrawalChecked: false,
             dialogOpen: false,
             code: 0,
         }
@@ -106,6 +114,10 @@ class AccountPassword extends React.Component {
             password: e.target.value.trim(),
             passwordError: false,
         })
+    }
+
+    handleChangeWithdrawal = (e) => {
+        this.setState({ withdrawalChecked: e.target.checked })
     }
 
     onClickPasswordCheck = () => {
@@ -147,10 +159,16 @@ class AccountPassword extends React.Component {
 
     onClickWithdrawal = () => {
         if(this.state.password === "") {
+            this.setState({ code: 3 })
             return
         }
 
         if(this.state.code === 1) {
+            return
+        }
+
+        if(this.state.withdrawalChecked === false) {
+            this.setState({ code: 5 })
             return
         }
 
@@ -261,18 +279,16 @@ class AccountPassword extends React.Component {
 
                     <DialogContent>
                         <DialogContentText id="alert-dialog-description" style={{fontFamily: "NotoSansKR-Regular"}}>
-                            회원탈퇴 시 모든 정보가 삭제되며, 삭제된 정보는 복구할 수 없습니다.<br/><br/>
+                            회원탈퇴 시 모든 정보가 삭제되며, 삭제된 정보는 복구할 수 없습니다.<br/>
                             정말 회원탈퇴를 진행하시겠습니까?
                         </DialogContentText>
+                        <FormControlLabel label="SUMAI 계정 모든 데이터 삭제에 동의합니다." className={classes.withdrawalCheckBox} control={<Checkbox checked={this.state.withdrawalChecked} onChange={this.handleChangeWithdrawal} size="medium" value="withdrawalChecked" color="primary"/>}   />
                     </DialogContent>
 
+
                     <DialogActions>
-                        <Button onClick={this.handleClose} color="primary">
-                            취소
-                        </Button>
-                        <Button onClick={this.onClickWithdrawal} color="primary" autoFocus>
-                            회원탈퇴
-                        </Button>
+                        <Button onClick={this.handleClose} color="primary">취소</Button>
+                        <Button onClick={this.onClickWithdrawal} color="primary">회원탈퇴</Button>
                     </DialogActions>
                 </Dialog>
 
