@@ -55,11 +55,9 @@ class AccountNameChange extends React.Component {
             month: '',
             date: '',
             errorMassage: '',
-            saveClick: false,
         }
         this.textFieldRef = [React.createRef(), React.createRef()]
     }
-
     componentDidUpdate() {
         if(this.props.status.loaded) {
             if(this.props.status.isLoggedIn === false) {
@@ -68,20 +66,17 @@ class AccountNameChange extends React.Component {
         }
     }
 
-    static getDerivedStateFromProps(nextProps, prevState) {
-
-        if(nextProps.status !== prevState.status && nextProps.status.birthday !== undefined) {
-            return {
-                year: nextProps.status.year,
-                month: nextProps.status.month,
-                date: nextProps.status.date,
-            };
-        }
-        return null
+    componentWillReceiveProps() {
+        setTimeout(function() { 
+            this.setState({
+                year: this.props.location.state.birthday,
+                // month: moment(this.props.state.birthday).format('M'),
+                // date: moment(this.props.state.birthday).format('D'),
+            }) 
+        }.bind(this), 0)
     }
 
     handleChange = (value, type) => {
-
         const re = /^[0-9\b]+$/
 
         if(type === "year" && (value === '' || re.test(value.trim()) ) ) {
@@ -147,6 +142,8 @@ class AccountNameChange extends React.Component {
 
         if(this.state.year !== '' && this.state.month !== '' && this.state.date !== '') {
             let birthday
+            if(this.state.month.length === 1) birthday = this.state.year + "0" + this.state.month + this.state.date
+            else birthday = this.state.year + this.state.month + this.state.date
             if(this.state.date.length === 1) birthday = this.state.year + this.state.month + "0" + this.state.date
             else birthday = this.state.year + this.state.month + this.state.date
 
@@ -194,6 +191,7 @@ class AccountNameChange extends React.Component {
 
     render() {
         const { classes } = this.props;
+        console.log(this.props.location.state.birthday)
         
         return (
             <div >
@@ -202,16 +200,16 @@ class AccountNameChange extends React.Component {
 
                         <a href="/accounts" className={classes.link} >
                             <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
-                            <Typography style={{color: "#0000008A", paddingLeft: "10px", fontSize: "28px"}}>계정</Typography>
+                            <Typography style={{color: "#0000008A", paddingLeft: "10px", fontSize: "28px", minWidth: "60px"}}>계정</Typography>
                         </a>
 
                     </Toolbar>
 
                     <Box display="flex" alignItems="center" justifyContent="center" style={{paddingTop: "20px"}}>
                         <IconButton onClick={() => this.props.history.goBack()}>
-                            <ArrowBackIcon style={{color: "#0000008A"}}/>  
+                            <ArrowBackIcon style={{color: "#0000008A", paddingLeft: "12px"}}/>  
                         </IconButton>
-                        <Typography variant="h5" style={{color: "#0000008A", paddingLeft: "10px", width: "600px"}}>생년월일</Typography>
+                        <Typography variant="h5" style={{color: "#0000008A", paddingLeft: "10px", width: "480px", minWidth: "230px"}}>생년월일</Typography>
                     </Box>
                 </AppBar> 
 

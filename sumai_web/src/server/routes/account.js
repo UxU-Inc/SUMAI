@@ -73,6 +73,8 @@ router.post('/signup', (req, res) => {
         hashing.encrypt(req.body.password).then(password => {
             db.query("INSERT INTO summary.account_info (email, name, password, salt) VALUES ('"+ req.body.email +"', '"+ req.body.name +"', '"+ password.hashed +"', '"+ password.salt +"')", (err, exists) => {
                 if(!err) {
+                    // 회원가입 로그
+                    db.query("INSERT INTO summary.account_change (modifiedDate, changeData, email, name, password, salt) VALUES (now(), 'signup', '"+ req.body.email +"', '"+ req.body.name +"', '"+ password.hashed +"', '"+ password.salt +"')")
                     return res.json({ success: true });
                 } else {
                     console.log(err);
@@ -206,6 +208,44 @@ router.post('/passwordChange', (req, res) => {
     });
 })
 
+router.post('/birthdayChange', (req, res) => {
+    db.query("UPDATE summary.account_info SET birth = '"+ req.body.birthday + "'  WHERE email = '"+ req.body.email + "'", (err, account) => {
+        console.log(account)
+        if (err) {
+            console.log(err);
+            return res.send(err);
+        } else {
+            // 계정 변경 사항 account_change [birth]
+            db.query("SELECT * FROM summary.account_info WHERE email = '"+ req.body.email + "'", (err, account) => {
+                db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, birth) VALUES (now(), 'birth', IF('"
+                + account[0].type +"'='null', NULL, '"+ account[0].type + "'), IF('"+ account[0].id + "'='null', NULL, '"+ account[0].id + "'), '"+ account[0].email + "', '"+ req.body.birthday + "')")
+            });
+            return req.session.save(() => {
+                res.json({ success: true });
+            })
+        }
+    })
+})
+
+router.post('/genderChange', (req, res) => {
+    db.query("UPDATE summary.account_info SET gender = '"+ req.body.gender + "'  WHERE email = '"+ req.body.email + "'", (err, account) => {
+        console.log(account)
+        if (err) {
+            console.log(err);
+            return res.send(err);
+        } else {
+            // 계정 변경 사항 account_change [gender]
+            db.query("SELECT * FROM summary.account_info WHERE email = '"+ req.body.email + "'", (err, account) => {
+                db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, gender) VALUES (now(), 'gender', IF('"
+                + account[0].type +"'='null', NULL, '"+ account[0].type + "'), IF('"+ account[0].id + "'='null', NULL, '"+ account[0].id + "'), '"+ account[0].email + "', '"+ req.body.gender + "')")
+            });
+            return req.session.save(() => {
+                res.json({ success: true });
+            })
+        }
+    })
+})
+
 router.post('/withdrawal', (req, res) => {
 
     db.query("SELECT * FROM summary.account_info WHERE email = '"+ req.body.email + "'", (err, account) => {
@@ -244,26 +284,6 @@ router.post('/withdrawal', (req, res) => {
 
 })
 
-router.post('/birthdayChange', (req, res) => {
-    // 기존에 존재하는 email 이 있는지 DB 에서 확인
-    db.query("UPDATE summary.account_info SET birth = '"+ req.body.birthday + "'  WHERE email = '"+ req.body.email + "'", (err, account) => {
-        console.log(account)
-        if (err) {
-            console.log(err);
-            return res.send(err);
-        } else {
-            // 계정 변경 사항 account_change [name]
-            db.query("SELECT * FROM summary.account_info WHERE email = '"+ req.body.email + "'", (err, account) => {
-                db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, birth) VALUES (now(), 'birth', IF('"
-                + account[0].type +"'='null', NULL, '"+ account[0].type + "'), IF('"+ account[0].id + "'='null', NULL, '"+ account[0].id + "'), '"+ account[0].email + "', '"+ req.body.birthday + "')")
-            });
-            return req.session.save(() => {
-                res.json({ success: true });
-            })
-        }
-    })
-})
-
 router.post('/imageUpload/:email', upload.single("img"), (req, res, next) => {
     db.query("SELECT * FROM summary.account_info WHERE email = '"+ req.params.email + "'", (err, account) => {
         if (account[0].image === null) {
@@ -291,20 +311,34 @@ router.post('/imageUpload/:email', upload.single("img"), (req, res, next) => {
             console.log(err);
             return res.send(err);
         } else {
+            db.query("SELECT * FROM summary.account_info WHERE email = '"+ req.params.email + "'", (err, account) => {
+                db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, image) VALUES (now(), 'image', IF('"
+                + account[0].type +"'='null', NULL, '"+ account[0].type + "'), IF('"+ account[0].id + "'='null', NULL, '"+ account[0].id + "'), '"+ account[0].email + "', '"+ req.file.location.substring(60, req.file.location.length) + "')")
+            });
             return res.json({ image: req.file.location });
         }
     });
 })
 
-router.get('/imageLoad/:email', (req, res, next) => {
+router.get('/accountLoad/:email', (req, res, next) => {
     db.query("SELECT * FROM summary.account_info WHERE email = '"+ req.params.email + "'", (err, account) => {
         if (err || account.length === 0) {
             console.log(err);
             return res.send(err);
         } else if (account[0].image === null) {
-            return res.json({ image: '' });
+            db.query("SELECT modifiedDate FROM summary.account_change WHERE email = '"+ req.params.email + "' AND changeData = 'password' ORDER BY modifiedDate DESC LIMIT 1", (err2, passwordChangeTime) => {
+                if(!err2) {
+                    if(passwordChangeTime[0] !== undefined) return res.json({ image: '', passwordChangeTime: passwordChangeTime[0].modifiedDate, type: account[0].type, id: account[0].id, birthday: account[0].birth, gender: account[0].gender });
+                    else return res.json({ image: '', passwordChangeTime: account[0].joinDate, type: account[0].type, id: account[0].id, birthday: account[0].birth, gender: account[0].gender });
+                }
+            })
         } else {
-            return res.json({ image: 'https://sumai-profile.s3.ap-northeast-2.amazonaws.com/image/'+account[0].image })
+            db.query("SELECT modifiedDate FROM summary.account_change WHERE email = '"+ req.params.email + "' AND changeData = 'password' ORDER BY modifiedDate DESC LIMIT 1", (err2, passwordChangeTime) => {
+                if(!err2) {
+                    if(passwordChangeTime[0] !== undefined) return res.json({ image: 'https://sumai-profile.s3.ap-northeast-2.amazonaws.com/image/'+account[0].image, passwordChangeTime: passwordChangeTime[0].modifiedDate, type: account[0].id, birthday: account[0].birth, gender: account[0].gender })
+                    else return res.json({ image: 'https://sumai-profile.s3.ap-northeast-2.amazonaws.com/image/'+account[0].image, passwordChangeTime: account[0].joinDate, type: account[0].id, birthday: account[0].birth, gender: account[0].gender })
+                }
+            })
         }
     });
 })

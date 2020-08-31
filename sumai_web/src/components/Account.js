@@ -14,15 +14,13 @@ import Grid from '@material-ui/core/Grid';
 import Avatar from '@material-ui/core/Avatar';
 import Divider from '@material-ui/core/Divider';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-import AccountNameChange from "./AccountNameChange";
-import AccountPassword from "./AccountPassword";
-import AccountWithdrawal from "./AccountWithdrawal";
 import { connect } from 'react-redux';
 import { logoutRequest } from '../actions/authentication';
 import AccountImage from "./AccountImage";
 import axios from 'axios';
 import sha1 from 'crypto-js/sha1';
 import Base64 from 'crypto-js/enc-base64';
+import moment from 'moment'
 
 const useStyles = theme => ({
     AppBarStyle: {
@@ -51,11 +49,21 @@ class Account extends Component{
       this.state = {
         open: false,
         imagesrc: '',
+        passwordChangeTime: '',
+        accountType: '',
+        accountId: '',
+        birthday: '',
+        gender: '',
       }
     }
 
     componentDidMount() {
-      this.imageInit()
+      // 로그인 상태 아니면 접근 불가
+      if(this.props.status.isLoggedIn === false) {
+        this.props.history.push("/")
+      }
+
+      this.accountInit()
     }
 
     componentDidUpdate() {
@@ -66,7 +74,7 @@ class Account extends Component{
       }
   }
 
-    imageInit = () => {
+    accountInit = () => {
       new Promise(async (resolve, reject) => {
           const Interval = setInterval(() => {
               if(typeof this.props.status.currentEmail !== "undefined") {
@@ -76,9 +84,14 @@ class Account extends Component{
                   } else {
                     const email = this.props.status.currentEmail
                   console.log(Base64.stringify(sha1(email)))
-                  axios.get('/api/account/imageLoad/'+email).then((data) => {
+                  axios.get('/api/account/accountLoad/'+email).then((data) => {
                     this.setState({
-                      imagesrc: data.data.image
+                      imagesrc: data.data.image,
+                      passwordChangeTime: moment(data.data.passwordChangeTime).format('YYYY. M. D.'),
+                      accountType: (data.data.type === null ? "SUMAI" : data.data.type),
+                      accountId: data.data.id,
+                      birthday: (data.data.birthday === null ? "생년월일 설정" : moment(data.data.birthday).format('YYYY년 M월 D일')),
+                      gender: (data.data.gender === null ? "성별 설정" : data.data.gender),
                     })
                   })
                   resolve();
@@ -90,7 +103,11 @@ class Account extends Component{
     }
 
     onClickLink = (url) => (e) => {
-      this.props.history.push(url)
+      // this.props.history.push(url)
+      this.props.history.push({
+        pathname: url,
+        state: { birthday: this.state.birthday }
+      })
     }
 
     handleopen = () => {
@@ -187,7 +204,7 @@ class Account extends Component{
                                             ••••••••
                                           </Typography>
                                           <Typography variant="subtitle2" style={{width: "376.4px", textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#202020"}}>
-                                            최종 변경일: 1월 1일
+                                            최종 변경일: {this.state.passwordChangeTime}
                                           </Typography>
                                         </Box>
                                         <ArrowForwardIosIcon fontSize="small" style={{marginLeft: "auto", color: "#0000008A"}}/>
@@ -201,7 +218,7 @@ class Account extends Component{
                                           회원가입 계정
                                         </Typography>
                                         <Typography variant="subtitle2" style={{width: "376.4px", textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#202020"}}>
-                                          카카오
+                                          {this.state.accountType}
                                         </Typography>
                                   </Box>
 
@@ -226,7 +243,7 @@ class Account extends Component{
                                           생년월일
                                         </Typography>
                                         <Typography variant="subtitle1" style={{width: "376.4px", textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#202020"}}>
-                                          2000년 01월 01일
+                                          {this.state.birthday}
                                         </Typography>
                                         <ArrowForwardIosIcon fontSize="small" style={{marginLeft: "auto", color: "#0000008A"}}/>
                                     </Button>
@@ -240,7 +257,7 @@ class Account extends Component{
                                           성별
                                         </Typography>
                                         <Typography variant="subtitle1" style={{width: "376.4px", textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#202020"}}>
-                                          남자
+                                          {this.state.gender}
                                         </Typography>
                                         <ArrowForwardIosIcon fontSize="small" style={{marginLeft: "auto", color: "#0000008A"}}/>
                                     </Button>
@@ -262,21 +279,6 @@ class Account extends Component{
                     
                 </div>
             )
-          }
-
-          /* 이름 변경 컴포넌트 */
-          else if(this.props.match.path === "/accounts/name") {
-            return <AccountNameChange />
-          }
-
-          /* 비밀번호 변경 컴포넌트 */
-          else if(this.props.match.path === "/accounts/password") {
-            return <AccountPassword />
-          }
-
-          /* 회원탈퇴 컴포넌트 */
-          else if(this.props.match.path === "/accounts/withdrawal") {
-            return <AccountWithdrawal />
           }
 
         } 
@@ -354,7 +356,7 @@ class Account extends Component{
                                             ••••••••
                                           </Typography>
                                           <Typography variant="subtitle2" style={{textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#000008A"}}>
-                                            최종 변경일: 1월 1일
+                                            최종 변경일: {this.state.passwordChangeTime}
                                           </Typography>
                                         </Box>
                                         <ArrowForwardIosIcon fontSize="small" style={{marginLeft: "auto", color: "#0000008A"}}/>
@@ -369,7 +371,7 @@ class Account extends Component{
                                           회원가입 계정
                                         </Typography>
                                         <Typography variant="subtitle2" style={{textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#000008A"}}>
-                                          카카오
+                                          {this.state.accountType}
                                         </Typography>
                                       </Box>
                                   </Box>
@@ -396,7 +398,7 @@ class Account extends Component{
                                             생년월일
                                           </Typography>
                                           <Typography variant="subtitle2" style={{textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#000008A"}}>
-                                            2000년 01월 01일
+                                            {this.state.birthday}
                                           </Typography>
                                         </Box>
                                         <ArrowForwardIosIcon fontSize="small" style={{marginLeft: "auto", color: "#0000008A"}}/>
@@ -412,7 +414,7 @@ class Account extends Component{
                                             성별
                                           </Typography>
                                           <Typography variant="subtitle2" style={{textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#000008A"}}>
-                                            남자
+                                            {this.state.gender}
                                           </Typography>
                                         </Box>
                                         <ArrowForwardIosIcon fontSize="small" style={{marginLeft: "auto", color: "#0000008A"}}/>
@@ -436,22 +438,6 @@ class Account extends Component{
                   </div>
           )
         }
-
-        /* 이름 변경 컴포넌트 */
-        else if(this.props.match.path === "/accounts/name") {
-          return <AccountNameChange />
-        }
-
-        /* 비밀번호 변경 컴포넌트 */
-        else if(this.props.match.path === "/accounts/password") {
-          return <AccountPassword />
-        }
-
-        /* 회원탈퇴 컴포넌트 */
-        else if(this.props.match.path === "/accounts/withdrawal") {
-          return <AccountWithdrawal />
-        }
-
 
       }
 
