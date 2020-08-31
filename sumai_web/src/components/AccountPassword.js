@@ -73,9 +73,11 @@ class AccountPassword extends React.Component {
         this.textFieldRef = [React.createRef(), React.createRef(), React.createRef()]
     }
 
-    componentDidMount() {
-        if(this.props.status.isLoggedIn === false) {
-          this.props.history.push("/")
+    componentDidUpdate() {
+        if(this.props.status.loaded) {
+            if(this.props.status.isLoggedIn === false) {
+                this.props.history.push("/")
+            } 
         }
     }
 

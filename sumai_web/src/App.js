@@ -17,7 +17,7 @@ import AccountGender from "./components/AccountGender";
 import EmailCertification from "./components/EmailCertification"
 
 import { connect } from 'react-redux';
-import { getStatusRequest, logoutRequest } from './actions/authentication';
+import { getStatusRequest, logoutRequest, getStatusFailure } from './actions/authentication';
 import { ClientInfoComponent } from './reducers/clientInfo';
 
 class App extends Component { 
@@ -48,13 +48,19 @@ class App extends Component {
     // get loginData from cookie
     let loginData = getCookie('key');
     // if loginData is undefined, do nothing
-    if(typeof loginData === "undefined") return;
+    if(typeof loginData === "undefined") {
+      this.props.getStatusFailure()
+      return
+    };
 
     // decode base64 & parse json
     loginData = JSON.parse(atob(loginData));
 
     // if not logged in, do nothing
-    if(!loginData.isLoggedIn) return;
+    if(!loginData.isLoggedIn) {
+      this.props.getStatusFailure()
+      return
+    };
 
     // page refreshed & has a session in cookie,
     // check whether this cookie is valid or not
@@ -113,6 +119,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+      getStatusFailure: () => {
+        return dispatch(getStatusFailure());
+      },
       getStatusRequest: () => {
           return dispatch(getStatusRequest());
       },

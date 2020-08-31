@@ -18,15 +18,9 @@ router.post('/recordLog', (req, res) => {
 })
 
 router.get('/getIP', (req, res) => {
-    const ip = requestIp.getClientIp(req)
+    let ip = requestIp.getClientIp(req).split(':')
+    ip = ip[ip.length-1]
     console.log(ip)
-    db.query(`SELECT SUBSTRING_INDEX(USER(), '@', -1) AS ip;`, (err, data) => {
-        if(!err) {
-            return res.send(data[0].ip);
-        } else {
-            console.log(err);
-            return res.send(err);
-        }
-    });
+    return res.send(ip)
 })
 module.exports = router;

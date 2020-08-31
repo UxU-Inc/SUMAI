@@ -21,18 +21,24 @@ import Slide from '@material-ui/core/Slide';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
-import InputBase from '@material-ui/core/InputBase';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import moment from "moment"
 import axios from "axios"
 
 const useStyles = theme => ({
     root: {
-        height: '560px',
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        margin: '-267px 0 0 -225px',
+        minHeight: '100vh',
+        flexDirection: 'column',
+        '&::before, &::after' : {
+            minHeight: '30px',
+            height: '24px',
+            boxSizing: 'border-box',
+            display: 'block',
+            content: '""',
+            flexGrow: 1,
+        },
+        display: 'flex',
+
     },
     rootMob: {
         padding: "40px",
@@ -133,11 +139,11 @@ class Signup extends Component{
             year: '',
             month: '',
             day: '',
-            dateError: false,
             gender: '',
             slideOpen: 0,
             errorCode: 0,
             errorMessage: '',
+            birthCode:0,
         }
         this.textFieldRef = [React.createRef(), React.createRef(), React.createRef(), React.createRef()]
       }
@@ -258,30 +264,17 @@ class Signup extends Component{
                 })
             }
         } else if(type === "year") {
-            if(value < 1000 || 10000 <= value) {  // 연도 4자리 수 입력
-                this.setState({ birthCode: -100 })
-                return
-            } else if(value < 1890) {  // 1890년도 이후 입력 
+            if(value < 1890) {  // 1890년도 이후 입력 
                 this.setState({ birthCode: -101 })
-                return
-            } 
-        } else if(type === "month") {
-            if(value < 1 || 12 < value ) {  // 월 범위 벗어나는 경우
-                this.setState({ birthCode: -200 })
-                return
+            } else if(this.state.birthCode===-101) {
+                this.setState({ birthCode: 0 })
             }
         } else if(type === "day") {
             if(value < 1 || 31 < value ) {  // 일 범위 벗어나는 경우
                 this.setState({ birthCode: -300 })
-                return
+            } else if(this.state.birthCode===-300) {
+                this.setState({ birthCode: 0 })
             }
-        }
-
-        if(this.state.year !== '' && this.state.month !== '' && this.state.day !== '') {
-            let birthday = this.state.year + this.state.month + this.state.day
-            if(moment(birthday).isValid()) this.setState({ birthCode: -400 })  // 올바른 날짜인지 검증
-            else if(moment().isBefore(moment(birthday).format('YYYY-MM-DD'), 'day')) this.setState({ birthCode: -401 })  // 현재 날짜 이후 생년월일 오류
-            else this.setState({ birthCode: 1 })
         }
     }
     snackBarHandleClose = (event, reason) => {
@@ -352,13 +345,23 @@ class Signup extends Component{
                     }
                 })
             }else if(this.state.slideOpen===1){ // 2번째 페이지에서 다음을 누를 경우..
-                axios.post('/api/sendEmail/sendEmailCertification', {email: this.state.email}).then((res) => {
-                    console.log('인증메일 전송했당께')
-                })
-                this.setState({
-                    slideOpen: 2,
-                })
-                e.target.textContent='확인'
+                if(this.state.year === '' && this.state.day === '') { // 비동기임 function으로 바꿀 것
+                    this.setState({ birthCode: 2 })
+                } else if(this.state.year !== '' && this.state.month !== '' && this.state.day !== '') {
+                    let birthday = this.state.year + this.state.month + this.state.day
+                    if(moment(birthday).isValid()) this.setState({ birthCode: -400 })  // 올바른 날짜인지 검증
+                    else if(moment().isBefore(moment(birthday).format('YYYY-MM-DD'), 'day')) this.setState({ birthCode: -401 })  // 현재 날짜 이후 생년월일 오류
+                    else this.setState({ birthCode: 1 })
+                } 
+                if(this.state.birthCode>0) {
+                    // axios.post('/api/sendEmail/sendEmailCertification', {email: this.state.email}).then((res) => {
+                    //     console.log('인증메일 전송했당께')
+                    // })
+                    this.setState({
+                        slideOpen: 2,
+                    })
+                    e.target.textContent='확인'
+                }
             }else if(this.state.slideOpen===2){
                 this.props.onSignup(this.state.email, this.state.name, this.state.password).then(data => {
                     if (data.success) {
@@ -385,8 +388,8 @@ class Signup extends Component{
         if(isWidthUp('sm', this.props.width)) {
             return ( 
                 <div className={classes.root}>
-                    <Box display="flex" justifyContent="center">
-                        <Card elevation={3} style={{minWidth: "450px",maxWidth: "450px"}} >
+                    <Box display="flex" justifyContent="center" >
+                        <Card elevation={3} style={{minWidth: "450px",}} >
                             <CardHeader className={classes.cardTitleText} 
                                         title={
                                                 <Box display="flex" alignItems="center">
@@ -401,7 +404,7 @@ class Signup extends Component{
                             <Box height={'450px'} overflow='hidden' position='relative' >
                             <Slide direction="left" in={this.state.slideOpen===0} mountOnEnter unmountOnExit>
                                 <CardContent style={{padding: "16px 10%", position: 'absolute'}}>
-                                    <TextField autoFocus variant="outlined" value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.emailerror || this.state.errorCode===1}
+                                    <TextField id='test' autoFocus variant="outlined" value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.emailerror || this.state.errorCode===1}
                                         fullWidth label="이메일" placeholder="이메일을 입력해주세요." style={{margin: "15px 0px 7.5px 0px"}} inputRef={this.textFieldRef[0]}
                                         helperText={this.state.emailerror? "이메일 형식이 올바르지 않습니다.": false} onKeyPress={this.onKeyPress} spellCheck="false"/>
                                     <TextField variant="outlined" value={this.state.name} onChange={this.handleChange.bind(this, "name")} error={this.state.nameerror}
@@ -433,7 +436,7 @@ class Signup extends Component{
                                             <Box display='flex' >
                                                 <Box className={classes.formControl} >
                                                     <TextField variant="outlined" value={this.state.year} onChange={this.handleChange.bind(this, "year")}
-                                                        fullWidth label="연도" error={this.state.dateError} placeholder="4자리" margin='dense' onKeyPress={this.onKeyPress} spellCheck="false"/>
+                                                        fullWidth label="연도" error={this.state.birthCode===-101} placeholder="4자리" margin='dense' onKeyPress={this.onKeyPress} spellCheck="false"/>
                                                 </Box>
                                                 <FormControl variant="outlined" className={classes.formControl} margin='dense' style={{paddingLeft: '4px'}}>
                                                     <InputLabel htmlFor="month" error={this.state.dateError}>월</InputLabel>
@@ -445,16 +448,17 @@ class Signup extends Component{
                                                     defaultValue=''
                                                     >
                                                     <option value='' disabled hidden></option>
-                                                    <option value={1}>1</option>
-                                                    <option value={2}>2</option>
+                                                    {([...Array(12).keys()]).map((d) => {
+                                                        return(<option value={d+1} key={d}>{d+1}</option>)
+                                                    })}
                                                     </Select>
                                                 </FormControl>
                                                 <FormControl className={classes.formControl} style={{paddingLeft: '4px'}}>
                                                     <TextField variant="outlined" value={this.state.day} onChange={this.handleChange.bind(this, "day")}
-                                                        fullWidth label="일" error={this.state.dateError} placeholder="2자리" margin='dense' onKeyPress={this.onKeyPress} spellCheck="false"/>
+                                                        fullWidth label="일" error={this.state.birthCode===-300} placeholder="2자리" margin='dense' onKeyPress={this.onKeyPress} spellCheck="false"/>
                                                 </FormControl>
                                             </Box>
-                                            <FormHelperText error={true} variant='outlined'>{this.state.dateError? "생년월일 형식이 올바르지 않습니다.": false}</FormHelperText>
+                                            <FormHelperText error={this.state.birthCode<0} variant='outlined'>{this.state.birthCode<0? "생년월일 형식이 올바르지 않습니다.": false}</FormHelperText>
                                         </FormControl>
 
                                         <FormControl variant="outlined" margin='dense' style={{width: '100%'}}>
