@@ -82,12 +82,12 @@ class App extends Component {
             <Route exact path="/" component={ Main } /> 
               
             <Switch>
+              <Route exact path="/accounts" component={ Account } />
               <Route path="/accounts/name" component={ AccountNameChange } />
               <Route path="/accounts/password" component={ AccountPassword } />
               <Route path="/accounts/withdrawal" component={ AccountWithdrawal } />
               <Route path="/accounts/birthday" component={ AccountBirthday } />
               <Route path="/accounts/gender" component={ AccountGender } />
-              <Route path="/accounts" component={ Account } />
             </Switch>
 
             <Route path="/terms" component={ Terms } />

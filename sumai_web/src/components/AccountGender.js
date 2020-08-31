@@ -11,10 +11,17 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 import * as root from '../rootValue';
 import { connect } from 'react-redux';
-import { nameChangeRequest } from '../actions/authentication';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
+import TextField from '@material-ui/core/TextField';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+import clsx from 'clsx';
+import axios from 'axios';
 
 const useStyles = theme => ({
     AppBarStyle: {
@@ -33,8 +40,15 @@ const useStyles = theme => ({
         alignItems: "center",
         textDecoration: 'none'
     },
+    displayNone: {
+      display: "none",
+    },
 });
 
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 class AccountNameChange extends React.Component {
 
@@ -42,76 +56,85 @@ class AccountNameChange extends React.Component {
         super(props)
         this.state = {
             email: this.props.status.currentEmail,
-            nameCurrent: this.props.status.currentUser,
-            nameChange: this.props.status.currentUser,
-            nameError: false,
+            genderCurrent: this.props.gender,
+            genderCustom: '',
+            genderError: 0,
         }
         this.textFieldRef = [React.createRef()]
     }
 
-    componentDidMount() {
-        if(this.props.status.isLoggedIn === false) {
-            this.props.history.push("/")
-        } 
+    // componentDidMount() {
+    //     if(this.props.status.isLoggedIn === false) {
+    //         this.props.history.push("/")
+    //     } 
+    // }
+
+    handleClose = () => {
+        this.setState({ genderError: 0 })
     }
 
-    componentWillReceiveProps() {
-        setTimeout(function() { 
-            this.setState({
-                nameCurrent: this.props.status.currentUser,
-                nameChange: this.props.status.currentUser,
-            }) 
-        }.bind(this), 0)
-    }
-
-    handleChangeName = (e) => {
+    handleChangeGender = (e) => {
         this.setState({
-            nameChange: e.target.value,
+            genderCurrent: e.target.value,
+            genderError: 1,
         })
-
-        this.validation(e.target.value.trim())
     }
 
-    validation = (value) => {
-        const nameRegex = /^[a-zA-Z가-힣0-9]{2,10}$/;
-        if(!nameRegex.test(value) && value !== "") {
-            this.setState({
-                nameError: true,
-            })
-        } else {
-            this.setState({
-                nameError: false,
-            })
-        } 
-    }
-
-    onClickSave = () => {
+    handleChangeGenderCustom = (e) => {
         this.setState({
-            nameCurrent: this.props.status.currentUser
+            genderCustom: e.target.value,
         })
+    }
 
-        if(this.state.nameChange === "" || this.state.nameError || this.state.nameCurrent === this.state.nameChange) {
-            this.textFieldRef[0].current.focus()
+    validation = () => {
+
+        if(this.state.genderCurrent === "" || this.state.genderCurrent === undefined) {
+            this.setState({ genderError: -1 })
             return
-        }
-
-        if(this.state.email !== "" && !this.state.nameError) {
-            this.onNameChange(this.state.email, this.state.nameChange).then(data => {
+        } 
+        
+        if(this.state.genderCurrent === "사용자 지정" && this.state.genderCustom === "") {
+            this.textFieldRef[0].current.focus()
+            this.setState({ genderError: -2 })
+            return
+        } 
+        
+        if(this.state.genderCurrent !== "" && this.state.genderCurrent !== "사용자 지정") {
+            this.onGenderChange(this.state.email, this.state.genderCurrent).then(data => {
                 if (data.success) {
                     this.props.history.goBack()
                 }
             })
+            return
         }
+
+        if(this.state.genderCurrent === "사용자 지정" && this.state.genderCustom !== "") {
+            this.onGenderChange(this.state.email, this.state.genderCustom).then(data => {
+                if (data.success) {
+                    this.props.history.goBack()
+                }
+            })
+            return
+        }
+
     }
 
-    onNameChange = (email, nameChange) => {
-        return this.props.nameChangeRequest(email, nameChange).then(
+    onClickSave = () => {
+        this.validation()
+    }
+
+    onGenderChange = (email, gender) => {
+        return axios.post('/api/account/genderChange', { email, gender }).then(
             () => {
-                if(this.props.status.currentUser !== "") {
-                    return { success: true }
+                if(this.props.status.isLoggedIn === true) {
+                    return { success: true };
                 } else {
                     return { success: false }
                 }
+            }
+        ).catch(
+            (error) => {
+                return { success: false }
             }
         );
     }
@@ -127,16 +150,16 @@ class AccountNameChange extends React.Component {
 
                         <a href="/accounts" className={classes.link} >
                             <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
-                            <Typography style={{color: "#0000008A", paddingLeft: "10px", fontSize: "28px"}}>계정</Typography>
+                            <Typography style={{color: "#0000008A", paddingLeft: "10px", fontSize: "28px", minWidth: "60px"}}>계정</Typography>
                         </a>
 
                     </Toolbar>
 
                     <Box display="flex" alignItems="center" justifyContent="center" style={{paddingTop: "20px"}}>
                         <IconButton onClick={() => this.props.history.goBack()}>
-                            <ArrowBackIcon style={{color: "#0000008A"}}/>  
+                            <ArrowBackIcon style={{color: "#0000008A", paddingLeft: "12px"}}/>  
                         </IconButton>
-                        <Typography variant="h5" style={{color: "#0000008A", paddingLeft: "10px", width: "600px"}}>성별</Typography>
+                        <Typography variant="h5" style={{color: "#0000008A", paddingLeft: "10px", width: "480px", minWidth: "230px"}}>성별</Typography>
                     </Box>
                 </AppBar> 
 
@@ -144,19 +167,31 @@ class AccountNameChange extends React.Component {
                     <Grid container justify="center" style={{padding: "24px"}}>
 
                         <Paper variant="outlined" style={{width: "100%", minWidth: "200px", maxWidth: "450px", padding: "24px"}}>
-                            <Typography variant="caption" style={{fontFamily: "NotoSansKR-Regular", color: "#0000008A"}}>
-                                성별
-                            </Typography>
+                            <FormControl component="fieldset" >
+                                <Typography variant="caption" style={{fontFamily: "NotoSansKR-Regular", color: "#0000008A"}}>
+                                    성별
+                                </Typography>
 
-                            <TextField autoFocus fullWidth variant="outlined" value={this.state.nameChange || ""} onChange={this.handleChangeName} label={"이름"} 
-                                        style={{width: "100%", margin: "30px 0px 7.5px 0px"}} spellCheck="false" error={this.state.nameError} inputRef={this.textFieldRef[0]}
-                                        helperText={this.state.nameError ? "한글 또는 영어 2~10자리를 입력해주세요." : false} />
+                                <RadioGroup style={{color: "#0000008A", padding: "20px 20px 0px 20px"}} aria-label="gender" name="gender" value={this.state.genderCurrent || ''} onChange={this.handleChangeGender}>
+                                    <FormControlLabel value="여성" control={<Radio color="primary"/>} label="여성" />
+                                    <FormControlLabel value="남성" control={<Radio color="primary"/>} label="남성" />
+                                    <FormControlLabel value="공개 안함" control={<Radio color="primary"/>} label="공개 안함" />
+                                    <FormControlLabel value="사용자 지정" control={<Radio color="primary"/>} label="사용자 지정" />
+                                </RadioGroup>
 
-                            <Box display="flex" flexDirection="row-reverse" style={{marginTop: "10px"}}>
+                                <Box style={{minWidth: "150px", margin: "5px 20px 0px 20px"}}>
+                                    <TextField fullWidth variant="outlined" value={this.state.genderCustom || ''} label="성별 입력" style={{width: "100%"}} onChange={this.handleChangeGenderCustom}
+                                        className={clsx("none", {[classes.displayNone]: this.state.genderCurrent !== "사용자 지정"})}
+                                        error={this.state.genderError === -2} inputRef={this.textFieldRef[0]}
+                                        helperText={this.state.genderError === -2 ? "사용자 지정 성별을 입력해주세요." : false} />
+                                </Box>
+                            </FormControl>
+                                
+                            <Box display="flex" flexDirection="row-reverse" mt={5}>
                                 <Button onClick={this.onClickSave} style={{background: root.PrimaryColor, color: "#fff"}}>
                                     저장
                                 </Button>
-                                <Button style={{color: root.PrimaryColor}} onClick={() => this.props.history.goBack()}>
+                                <Button style={{color: root.PrimaryColor, marginRight: "20px"}} onClick={() => this.props.history.goBack()}>
                                     취소
                                 </Button>
                             </Box>
@@ -165,7 +200,11 @@ class AccountNameChange extends React.Component {
                     </Grid>
                 </Box>
 
-
+                <Snackbar autoHideDuration={3000} open={this.state.genderError === -1} onClose={this.handleClose}>
+                    <Alert onClose={this.handleClose} severity="error">
+                        {"성별을 선택해주세요."}
+                    </Alert>
+                </Snackbar>
                   
             </div>
           );
@@ -179,12 +218,4 @@ const mapStateToProps = (state) => {
     };
 };
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        nameChangeRequest: (email, name) => {
-            return dispatch(nameChangeRequest(email, name));
-        },
-    };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(useStyles)(withRouter(AccountNameChange)));
+export default connect(mapStateToProps, null)(withStyles(useStyles)(withRouter(AccountNameChange)));

@@ -55,14 +55,13 @@ class AccountNameChange extends React.Component {
         } 
     }
 
-    static getDerivedStateFromProps(nextProps, prevState) {
-        if(nextProps.status !== prevState.status) {
-            return {
-                nameCurrent : nextProps.status.currentUser,
-                nameChange: nextProps.status.currentUser,
-            };
-        }
-        return null
+    componentWillReceiveProps() {
+        setTimeout(function() { 
+            this.setState({
+                nameCurrent: this.props.status.currentUser,
+                nameChange: this.props.status.currentUser,
+            }) 
+        }.bind(this), 0)
     }
 
     handleChangeName = (e) => {
@@ -128,16 +127,16 @@ class AccountNameChange extends React.Component {
 
                         <a href="/accounts" className={classes.link} >
                             <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
-                            <Typography style={{color: "#0000008A", paddingLeft: "10px", fontSize: "28px"}}>계정</Typography>
+                            <Typography style={{color: "#0000008A", paddingLeft: "10px", fontSize: "28px", minWidth: "60px"}}>계정</Typography>
                         </a>
 
                     </Toolbar>
 
                     <Box display="flex" alignItems="center" justifyContent="center" style={{paddingTop: "20px"}}>
                         <IconButton onClick={() => this.props.history.goBack()}>
-                            <ArrowBackIcon style={{color: "#0000008A"}}/>  
+                            <ArrowBackIcon style={{color: "#0000008A", paddingLeft: "12px"}}/>  
                         </IconButton>
-                        <Typography variant="h5" style={{color: "#0000008A", paddingLeft: "10px", width: "600px"}}>이름</Typography>
+                        <Typography variant="h5" style={{color: "#0000008A", paddingLeft: "10px", width: "480px", minWidth: "230px"}}>이름</Typography>
                     </Box>
                 </AppBar> 
 
@@ -153,11 +152,11 @@ class AccountNameChange extends React.Component {
                                         style={{width: "100%", margin: "30px 0px 7.5px 0px"}} spellCheck="false" error={this.state.nameError} inputRef={this.textFieldRef[0]}
                                         helperText={this.state.nameError ? "한글 또는 영어 2~10자리를 입력해주세요." : false} />
 
-                            <Box display="flex" flexDirection="row-reverse" style={{marginTop: "10px"}}>
+                            <Box display="flex" flexDirection="row-reverse" mt={5}>
                                 <Button onClick={this.onClickSave} style={{background: root.PrimaryColor, color: "#fff"}}>
                                     저장
                                 </Button>
-                                <Button style={{color: root.PrimaryColor}} onClick={() => this.props.history.goBack()}>
+                                <Button style={{color: root.PrimaryColor, marginRight: "20px"}} onClick={() => this.props.history.goBack()}>
                                     취소
                                 </Button>
                             </Box>
