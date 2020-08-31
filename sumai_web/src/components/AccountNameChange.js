@@ -49,10 +49,13 @@ class AccountNameChange extends React.Component {
         this.textFieldRef = [React.createRef()]
     }
 
-    componentDidMount() {
-        if(this.props.status.isLoggedIn === false) {
-            this.props.history.push("/")
-        } 
+    componentDidUpdate() {
+        if(this.props.status.loaded) {
+            console.log(1)
+            if(this.props.status.isLoggedIn === false) {
+                this.props.history.push("/")
+            } 
+        }
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
