@@ -71,7 +71,8 @@ router.post('/signup', (req, res) => {
         // CREATE ACCOUNT
         // hash 를 이용해 비밀번호 보안
         hashing.encrypt(req.body.password).then(password => {
-            db.query("INSERT INTO summary.account_info (email, name, password, salt) VALUES (LOWER('"+ req.body.email +"'), '"+ req.body.name +"', '"+ password.hashed +"', '"+ password.salt +"')", (err, exists) => {
+            const id = ('000'+window.crypto.getRandomValues(new Uint32Array(1))[0]).slice(-10)+String(Date.now()).slice(-10)
+            db.query("INSERT INTO summary.account_info (type, id, email, name, password, salt) VALUES ('SUMAI', "+ id + ", LOWER('"+ req.body.email +"'), '"+ req.body.name +"', '"+ password.hashed +"', '"+ password.salt +"')", (err, exists) => {
                 if(!err) {
                     return res.json({ success: true });
                 } else {
@@ -104,6 +105,8 @@ router.post('/login', (req, res) => {
             hashing.confirm(req.body.password, account[0].salt).then(password => {
                 if(account[0].password === password.hashed) {
                     req.session.loginInfo = {
+                        type: 'sumai',
+                        id: account[0].id,
                         email: account[0].email,
                         name: account[0].name
                     };
@@ -305,6 +308,37 @@ router.get('/imageLoad/:email', (req, res, next) => {
             return res.json({ image: '' });
         } else {
             return res.json({ image: 'https://sumai-profile.s3.ap-northeast-2.amazonaws.com/image/'+account[0].image })
+        }
+    });
+})
+
+router.get('/imageDelete/:email', (req, res, next) => {
+    db.query("SELECT * FROM summary.account_info WHERE email = '"+ req.params.email + "'", (err, account) => {
+        if (account[0].image === null) {
+
+        } else {
+            const params = {
+                Bucket: 'sumai-profile', 
+                Delete: { 
+                Objects: [ // required
+                    {
+                    Key: 'image/'+decodeURIComponent(account[0].image) // required
+                    },
+                ],
+                },
+            };
+            s3.deleteObjects(params, function(err, data) {
+                if (err) console.log(err, err.stack); // an error occurred
+                else     console.log(data);           // successful response
+            });
+        }
+    });
+    db.query("UPDATE summary.account_info SET image = NULL WHERE email = '"+ req.params.email + "'", (err, account) => {
+        if (err) {
+            console.log(err);
+            return res.send(err);
+        } else {
+            return res.json();
         }
     });
 })

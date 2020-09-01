@@ -111,7 +111,9 @@ class RecordLastest extends Component{
                     this.setState({
                         data: this.state.data.concat(this.props.lastest.data),
                     })
-                    if(this.state.data[this.state.data.length-1] && this.state.data[this.state.data.length-1].idx === 1) {
+                    // if(this.state.data[this.state.data.length-1] && this.state.data[this.state.data.length-1].idx === 1) {
+                    console.log(this.props.lastest.data)
+                    if(this.props.lastest.data.length < 10) {
                         this.setState({
                             isAllLoad: true,
                         })
@@ -144,7 +146,7 @@ class RecordLastest extends Component{
         // IE에서는 document.documentElement 를 사용.
         const scrollTop = (document.documentElement && document.documentElement.scrollTop) || document.body.scrollTop;
 
-        if (this.state.data[this.state.data.length-1] && scrollHeight - innerHeight - scrollTop < 150 && this.state.data[this.state.data.length-1].idx > 1) {
+        if (this.state.data[this.state.data.length-1] && scrollHeight - innerHeight - scrollTop < 150 && !this.state.isAllLoad) {
             if(!this.state.loadingScroll){
                 console.log("load 10");
                 this.setState({
@@ -245,25 +247,33 @@ class RecordLastest extends Component{
                 </Grid>
                 
                 {list ? list.slice(0, this.state.dataCount).map( (el, key) => {
+                    const name = el.name || '익명'
+                    const image = 'https://sumai-profile.s3.ap-northeast-2.amazonaws.com/image/' + el.image
                     let re_name = ''
                     let time = el.time.slice(0, 10) + " " + el.time.slice(11, 16)
-                    if(/[a-zA-Z]/.test(el.name.charAt(0))) {
-                        re_name = el.name.charAt(0)
-                    } else if(el.name.length >= 3){
-                        if (/[a-zA-Z0-9]/.test(el.name.substring(el.name.length-2, el.name.length))) {
-                            re_name = el.name.charAt(0)
+                    if(/[a-zA-Z]/.test(name.charAt(0))) {
+                        re_name = name.charAt(0)
+                    } else if(name.length >= 3){
+                        if (/[a-zA-Z0-9]/.test(name.substring(name.length-2, name.length))) {
+                            re_name = name.charAt(0)
                         } else {
-                            re_name = el.name.substring(el.name.length-2, el.name.length)
+                            re_name = name.substring(name.length-2, name.length)
                         }
                     } else {
-                        re_name = el.name
+                        re_name = name
                     }
                     return(
                         <Card elevation={5} style={{marginBottom: "10px"}} key={key} ref={this.getOrCreateRef(key)}>
                             <CardHeader avatar={
-                                <Avatar style={{backgroundColor: '#' + CryptoJS.MD5(el.name).toString().substring(1, 7), width: "2.2em", height: "2.2em", fontWeight: 'bold'}}>
+                                el.image === null?
+                                    el.name === null?
+                                    <Avatar style={{width: "2.2em", height: "2.2em", fontWeight: 'bold'}}>
+                                        {re_name}
+                                    </Avatar> :
+                                <Avatar style={{backgroundColor: '#' + CryptoJS.MD5(el.email || el.id).toString().substring(1, 7), width: "2.2em", height: "2.2em", fontWeight: 'bold'}}>
                                     {re_name}
-                                </Avatar>
+                                </Avatar> :
+                                <Avatar src={image} style={{width: "2.2em", height: "2.2em"}} />
                             } action={
                                 <Grid container direction="row" justify="center">
                                     <Typography style={{fontSize: "20px", paddingTop: "18px"}}>{(el.like) + (this.state.isClick[key]? 1:0)}</Typography>
@@ -272,7 +282,7 @@ class RecordLastest extends Component{
                                     </IconButton>
                                 </Grid>
                                 
-                            } titleTypographyProps={{variant:'h6' }} title={el.name} subheader={time} className={classes.cardTitleText}/>
+                            } titleTypographyProps={{variant:'h6' }} title={name} subheader={time} className={classes.cardTitleText}/>
                             <CardContent onClick={this.onClickExpand.bind(this, key)} style={{padding: "0px", position: "relative"}}>
                                 <Grid container direction="row" className={clsx(classes.showExpand, {[classes.hideExpand]: !this.state.isExpand[key]})}>
                                     <Grid item xs={7} sm={7} md={7} lg={7} xl={7}>
@@ -303,10 +313,12 @@ class RecordLastest extends Component{
 
 RecordLastest.propTypes = {
     isLoggedIn: PropTypes.bool,
+    currentEmail: PropTypes.string,
 };
   
 RecordLastest.defaultProps = {
     isLoggedIn: false,
+    currentEmail: '',
 };
 
 const mapStateToProps = (state) => {

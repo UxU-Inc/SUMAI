@@ -23,6 +23,7 @@ import AccountImage from "./AccountImage";
 import axios from 'axios';
 import sha1 from 'crypto-js/sha1';
 import Base64 from 'crypto-js/enc-base64';
+import CryptoJS from 'crypto-js';
 
 const useStyles = theme => ({
     AppBarStyle: {
@@ -50,7 +51,10 @@ class Account extends Component{
 
       this.state = {
         open: false,
+        email: '',
         imagesrc: '',
+        avatarname: '',
+        avatarcolor: '',
       }
     }
 
@@ -66,11 +70,14 @@ class Account extends Component{
                     console.log(Base64.stringify(sha1(email)))
                     axios.get('/api/account/imageLoad/'+email).then((data) => {
                     this.setState({
-                      imagesrc: data.data.image
+                      email : email,
+                      imagesrc: data.data.image,
+                      avatarname: this.avatarName(this.props.status.currentUser),
+                      avatarcolor: '#' + CryptoJS.MD5(email).toString().substring(1, 7),
                     })
-                  })
-                  resolve();
-                  clearInterval(Interval)
+                    })
+                    resolve();
+                    clearInterval(Interval)
                   }
               }
           });
@@ -96,7 +103,12 @@ class Account extends Component{
     }
 
     handleclose = (image) => {
-      if(image !== '') {
+      if(image === 'delete') {
+        this.setState({
+          open: false,
+          imagesrc: ''
+        })
+      } else if(image !== '') {
         this.setState({
           open: false,
           imagesrc: image
@@ -106,6 +118,20 @@ class Account extends Component{
           ...this.state,
           open: false,
         })
+      }
+    }
+
+    avatarName = (name) => {
+      if(/[a-zA-Z]/.test(name.charAt(0))) {
+          return name.charAt(0)
+      } else if(name.length >= 3){
+          if (/[a-zA-Z0-9]/.test(name.substring(name.length-2, name.length))) {
+            return name.charAt(0)
+          } else {
+            return name.substring(name.length-2, name.length)
+          }
+      } else {
+        return name
       }
     }
 
@@ -142,7 +168,7 @@ class Account extends Component{
                               <Paper variant="outlined" style={{maxWidth: "800px"}}>
 
                                   <Box display="flex" alignItems="center" style={{width: "100%", textTransform: "none"}}>
-                                      {this.state.open? <AccountImage onClose={this.handleclose} email={this.props.status.currentEmail}/> : null}
+                                      {this.state.open? <AccountImage onClose={this.handleclose} email={this.props.status.currentEmail} imagesrc={this.state.imagesrc}/> : null}
                                       <Button onClick={this.handleopen} style={{padding: "15px 24px 16px", borderRadius: "0px"}}>
                                         <Typography variant="caption" style={{width: "156px", textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#0000008A"}}>
                                           사진
@@ -151,8 +177,12 @@ class Account extends Component{
                                           프로필 사진 설정
                                         </Typography>
                                         <Box>
-                                          <Avatar alt="profileImage" src={this.state.imagesrc} style={{width: "60px", height: "60px"}} />
-                                          
+                                          {this.state.imagesrc !== ''? 
+                                            <Avatar alt="profileImage" src={this.state.imagesrc} style={{width: "60px", height: "60px"}} /> : 
+                                            <Avatar alt="profileImage" style={{width: "60px", height: "60px", backgroundColor: this.state.avatarcolor}}>
+                                              {this.state.avatarname}
+                                            </Avatar>
+                                          }
                                         </Box>
                                       </Button>
                                   </Box>
@@ -305,7 +335,7 @@ class Account extends Component{
                               <Paper variant="outlined" style={{width: "100%"}}>
 
                                   <Box display="flex" style={{width: "100%", borderRadius: "0px", textTransform: "none"}}>
-                                      {this.state.open? <AccountImage onClose={this.handleclose} email={this.props.status.currentEmail}/> : null}
+                                      {this.state.open? <AccountImage onClose={this.handleclose} email={this.props.status.currentEmail} imagesrc={this.state.imagesrc}/> : null}
                                       <Button onClick={this.handleopen} style={{padding: "15px 24px 16px", width: "100%"}}>
                                         <Box style={{width: "100%", paddingRight: "10px", textTransform: "none"}} >
                                           <Typography style={{textAlign: "left", fontSize: "12px", fontFamily: "NotoSansKR-Light", color: "#0000008A"}}>
@@ -316,8 +346,12 @@ class Account extends Component{
                                           </Typography>
                                         </Box>
                                         <Box>
-                                          <Avatar alt="profileImage" src={this.state.imagesrc} style={{width: "60px", height: "60px"}} />
-                                          
+                                        {this.state.imagesrc !== ''? 
+                                            <Avatar alt="profileImage" src={this.state.imagesrc} style={{width: "60px", height: "60px"}} /> : 
+                                            <Avatar alt="profileImage" style={{width: "60px", height: "60px", backgroundColor: '#' + CryptoJS.MD5(this.state.email).toString().substring(1, 7)}}>
+                                              {this.state.avatarname}
+                                            </Avatar>
+                                          }
                                         </Box>
                                       </Button>
                                   </Box>
