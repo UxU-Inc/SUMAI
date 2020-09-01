@@ -8,6 +8,7 @@ var fs = require('fs');
 const dbconfig   = require('../security/database');
 const hashing = require('../security/hashing');
 const s3config  = require('../security/s3config');
+const  getRandomValues = require('get-random-values')
 
 const db = mysql.createPool(dbconfig)
 const router = express.Router();
@@ -70,8 +71,8 @@ router.post('/signup', (req, res) => {
         }
         // CREATE ACCOUNT
         // hash 를 이용해 비밀번호 보안
+        const id = getRandomValues(new Uint8Array(10)).join('').slice(-10)+String(Date.now()).slice(-10)
         hashing.encrypt(req.body.password).then(password => {
-            const id = ('000'+window.crypto.getRandomValues(new Uint32Array(1))[0]).slice(-10)+String(Date.now()).slice(-10)
             db.query("INSERT INTO summary.account_info (type, id, email, name, password, salt) VALUES ('SUMAI', "+ id + ", LOWER('"+ req.body.email +"'), '"+ req.body.name +"', '"+ password.hashed +"', '"+ password.salt +"')", (err, exists) => {
                 if(!err) {
                     // 회원가입 로그

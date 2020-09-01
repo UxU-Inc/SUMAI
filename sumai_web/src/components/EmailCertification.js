@@ -88,15 +88,14 @@ function EmailCertificationComponent(props) {
                     </Typography>
                 </Box>
 
-                <Box display="flex" alignItems="center" justifyContent="center" className={clsx("none", {[classes.displayNone]: code !== 0 || code !== 5})}>
+                <Box display="flex" alignItems="center" justifyContent="center" className={clsx("none", {[classes.displayNone]: code !== 0 && code !== 5})}>
                     <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
 
                     <Typography style={{color: "#0000008A", fontSize: "28px", marginLeft: "10px", fontFamily: "NotoSansKR-Regular"}}>
                         회원가입을 진심으로 환영합니다!
                     </Typography>
                 </Box>
-
-                <Box display="flex" alignItems="center" justifyContent="center" mt={2} className={clsx("none", {[classes.displayNone]: code !== 0 || code !== 5})}>
+                <Box display="flex" alignItems="center" justifyContent="center" mt={2} className={clsx("none", {[classes.displayNone]: code !== 0 && code !== 5})}>
                     <Button className={classes.loginMoveButton}>
                         로그인 하러가기
                     </Button>
