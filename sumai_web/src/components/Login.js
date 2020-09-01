@@ -245,7 +245,7 @@ class Login extends Component{
                                     fullWidth label="비밀번호" placeholder="비밀번호를 입력해주세요." type="password" style={{height: "70px"}} inputRef={this.textFieldRef[1]}
                                     onKeyPress={this.onKeyPress}/>
                                 <Box textAlign="right" fontSize={13}>
-                                    <Link to="/login/signup" style={{textDecoration: 'none'}}><Button className={classes.accountCreateButton}>비밀번호 찾기</Button></Link>
+                                    <Link to="/login/password/reset" style={{textDecoration: 'none'}}><Button className={classes.accountCreateButton}>비밀번호 찾기</Button></Link>
                                     <Link to="/login/signup" style={{textDecoration: 'none'}}><Button className={classes.accountCreateButton}>계정 만들기</Button></Link>
                                 </Box>
                                 <Typography variant="body2" className={clsx("none", {[classes.displayNone]: this.state.cookieState === true})} style={{color: "#f44336"}}>
