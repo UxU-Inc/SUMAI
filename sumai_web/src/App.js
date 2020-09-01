@@ -8,6 +8,7 @@ import Terms from "./components/Terms";
 import Privacy from "./components/Privacy";
 import Notices from "./components/Notices";
 import LoginMain from "./components/LoginMain";
+import PasswordReset from './components/PasswordReset';
 import Account from "./components/Account";
 import AccountNameChange from "./components/AccountNameChange";
 import AccountPassword from "./components/AccountPassword";
@@ -103,6 +104,7 @@ class App extends Component {
 
             <Switch>
               <Route path="/login/signup" component={ LoginMain } />
+              <Route path="/login/password/reset" component={ PasswordReset } />
               <Route path="/login" component={ LoginMain } />
             </Switch>
           </div> 
