@@ -192,8 +192,8 @@ class Main extends React.Component {
                     )
                 })}
                 <div style={isWidthUp('md', this.props.width)? null: {display:"none"}}>
-                    {this.state.convertSort? <RecordRecommend convertSortFunction={this.convertSortFunction} isLoggedIn={this.props.status.isLoggedIn}/>:
-                    <RecordLastest convertSortFunction={this.convertSortFunction} isLoggedIn={this.props.status.isLoggedIn}/>}
+                    {this.state.convertSort? <RecordRecommend convertSortFunction={this.convertSortFunction} isLoggedIn={this.props.status.isLoggedIn} currentEmail={this.props.status.currentEmail}/>:
+                    <RecordLastest convertSortFunction={this.convertSortFunction} isLoggedIn={this.props.status.isLoggedIn} currentEmail={this.props.status.currentEmail}/>}
                 </div> 
             </div>
         )
