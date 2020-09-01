@@ -293,7 +293,7 @@ router.get('/kakaocallback', (req, res) => {
                             req.session.loginInfo = {
                                 type: "kakao",
                                 id: user.id,
-                                email: email_,
+                                email: user.id,
                                 name: user.username
                             };
                             return req.session.save(() => {
@@ -544,7 +544,7 @@ router.get('/facebookcallback', (req, res) => {
                             req.session.loginInfo = {
                                 type: "facebook",
                                 id: user.id,
-                                email: email_,
+                                email: user.id,
                                 name: user.displayName
                             };
                             return req.session.save(() => {
