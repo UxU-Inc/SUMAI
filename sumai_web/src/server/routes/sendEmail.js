@@ -54,41 +54,46 @@ router.post("/sendEmailCertification", function(req, res){
     cert: cert,
     certState: false
   }
-  
-  const message = `http://localhost/EmailCertification?id=${req.sessionID}&cert=${cert}`
-  let mailOptions = {
-    to: 'uxu.co.kr@gmail.com' , // 수신 메일 주소
-    subject: `이메일 인증`,   // 제목
-    text: message,  // 내용
-  };
+  req.session.save(
+    () => {
+      const message = `http://localhost/EmailCertification?id=${req.sessionID}&cert=${cert}`
+      let mailOptions = {
+        to: 'uxu.co.kr@gmail.com' , // 수신 메일 주소
+        subject: `이메일 인증`,   // 제목
+        text: message,  // 내용
+      };
+    
+      transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+          console.log(error);
+          res.status(500).send()
+        }
+        else {
+          console.log('Email sent: ' + info.response);
+          res.status(200).send()
+        }
+      });
+    }
+  )
 
-  transporter.sendMail(mailOptions, function(error, info){
-    if (error) {
-      console.log(error);
-      res.status(500).send()
-    }
-    else {
-      console.log('Email sent: ' + info.response);
-      res.status(200).send()
-    }
-  });
+  
 })
 
 router.post("/EmailCertification", function(req, res){
   const id = req.body.id
   const cert = req.body.cert
   if (id===undefined || cert===undefined) {
-    return res.json({message: '주소가 잘못된듯', code: 2})
+    return res.json({message: '이메일 인증에 실패했습니다.', code: 2})
   }
   sessionStore.get(id, (err, session)=> {
     if (session.emailCert === undefined) {
-      return res.json({message: '인증상태가 아니넹', code: 3})
+      return res.json({message: '이메일 인증에 실패했습니다.', code: 3})
     }
     const email = session.emailCert.email
     const emailCert = session.emailCert.cert
     const certState = session.emailCert.certState
-    if(certState) return res.json({message: '이미 성공한 인증인듯', code: 5})
-    if (email === undefined || emailCert === undefined) return res.json({message: '인증상태가 이상한듯', code: 4})
+    if(certState) return res.json({message: '이미 이메일 인증이 완료되었습니다.', code: 5, email: email})
+    if (email === undefined || emailCert === undefined) return res.json({message: '이메일 인증에 실패했습니다.', code: 4})
     if(emailCert === req.body.cert) {
       session.emailCert = {
         email: email,
@@ -96,10 +101,10 @@ router.post("/EmailCertification", function(req, res){
         certState: true
       }
       return sessionStore.set(id, session, () => {
-        return res.json({message: '인증 성공한듯', code: 0})
+        return res.json({message: '이메일 인증이 완료되었습니다.', code: 0, email: email})
       })
     }else{
-      return res.json({message: '인증 실패한듯', code: 1})
+      return res.json({message: '이메일 인증에 실패했습니다.', code: 1, email: email})
     }
   })
 })

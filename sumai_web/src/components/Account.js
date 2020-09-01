@@ -87,11 +87,11 @@ class Account extends Component{
                   axios.get('/api/account/accountLoad/'+email).then((data) => {
                     this.setState({
                       imagesrc: data.data.image,
-                      passwordChangeTime: moment(data.data.passwordChangeTime).format('YYYY. M. D.'),
-                      accountType: (data.data.type === null ? "SUMAI" : data.data.type),
+                      passwordChangeTime: data.data.passwordChangeTime,
+                      accountType: data.data.type,
                       accountId: data.data.id,
-                      birthday: (data.data.birthday === null ? "생년월일 설정" : moment(data.data.birthday).format('YYYY년 M월 D일')),
-                      gender: (data.data.gender === null ? "성별 설정" : data.data.gender),
+                      birthday: data.data.birthday,
+                      gender: data.data.gender,
                     })
                   })
                   resolve();
@@ -103,7 +103,6 @@ class Account extends Component{
     }
 
     onClickLink = (url) => (e) => {
-      // this.props.history.push(url)
       this.props.history.push({
         pathname: url,
         state: { birthday: this.state.birthday }
@@ -204,7 +203,7 @@ class Account extends Component{
                                             ••••••••
                                           </Typography>
                                           <Typography variant="subtitle2" style={{width: "376.4px", textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#202020"}}>
-                                            최종 변경일: {this.state.passwordChangeTime}
+                                            최종 변경일: {moment(this.state.birthday).format('YYYY년 M월 D일') === "Invalid date" ? "" : moment(this.state.passwordChangeTime).format('YYYY. M. D.')}
                                           </Typography>
                                         </Box>
                                         <ArrowForwardIosIcon fontSize="small" style={{marginLeft: "auto", color: "#0000008A"}}/>
@@ -218,7 +217,7 @@ class Account extends Component{
                                           회원가입 계정
                                         </Typography>
                                         <Typography variant="subtitle2" style={{width: "376.4px", textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#202020"}}>
-                                          {this.state.accountType}
+                                          {this.state.accountType === null ? "SUMAI" : this.state.accountType}
                                         </Typography>
                                   </Box>
 
@@ -243,7 +242,7 @@ class Account extends Component{
                                           생년월일
                                         </Typography>
                                         <Typography variant="subtitle1" style={{width: "376.4px", textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#202020"}}>
-                                          {this.state.birthday}
+                                          {this.state.birthday === null || moment(this.state.birthday).format('YYYY년 M월 D일') === "Invalid date" ? "생년월일 설정" : moment(this.state.birthday).format('YYYY년 M월 D일')}
                                         </Typography>
                                         <ArrowForwardIosIcon fontSize="small" style={{marginLeft: "auto", color: "#0000008A"}}/>
                                     </Button>
@@ -257,7 +256,7 @@ class Account extends Component{
                                           성별
                                         </Typography>
                                         <Typography variant="subtitle1" style={{width: "376.4px", textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#202020"}}>
-                                          {this.state.gender}
+                                          {this.state.gender === null ? "성별 설정" : this.state.gender}
                                         </Typography>
                                         <ArrowForwardIosIcon fontSize="small" style={{marginLeft: "auto", color: "#0000008A"}}/>
                                     </Button>
@@ -356,7 +355,7 @@ class Account extends Component{
                                             ••••••••
                                           </Typography>
                                           <Typography variant="subtitle2" style={{textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#000008A"}}>
-                                            최종 변경일: {this.state.passwordChangeTime}
+                                            최종 변경일: {moment(this.state.birthday).format('YYYY년 M월 D일') === "Invalid date" ? "" : moment(this.state.passwordChangeTime).format('YYYY. M. D.')}
                                           </Typography>
                                         </Box>
                                         <ArrowForwardIosIcon fontSize="small" style={{marginLeft: "auto", color: "#0000008A"}}/>
@@ -371,7 +370,7 @@ class Account extends Component{
                                           회원가입 계정
                                         </Typography>
                                         <Typography variant="subtitle2" style={{textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#000008A"}}>
-                                          {this.state.accountType}
+                                          {this.state.accountType === null ? "SUMAI" : this.state.accountType}
                                         </Typography>
                                       </Box>
                                   </Box>
@@ -398,7 +397,7 @@ class Account extends Component{
                                             생년월일
                                           </Typography>
                                           <Typography variant="subtitle2" style={{textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#000008A"}}>
-                                            {this.state.birthday}
+                                            {this.state.birthday === null || moment(this.state.birthday).format('YYYY년 M월 D일') === "Invalid date" ? "생년월일 설정" : moment(this.state.birthday).format('YYYY년 M월 D일')}
                                           </Typography>
                                         </Box>
                                         <ArrowForwardIosIcon fontSize="small" style={{marginLeft: "auto", color: "#0000008A"}}/>
@@ -414,7 +413,7 @@ class Account extends Component{
                                             성별
                                           </Typography>
                                           <Typography variant="subtitle2" style={{textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#000008A"}}>
-                                            {this.state.gender}
+                                            {this.state.gender === null ? "성별 설정" : this.state.gender}
                                           </Typography>
                                         </Box>
                                         <ArrowForwardIosIcon fontSize="small" style={{marginLeft: "auto", color: "#0000008A"}}/>

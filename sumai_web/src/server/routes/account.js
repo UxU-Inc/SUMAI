@@ -209,22 +209,48 @@ router.post('/passwordChange', (req, res) => {
 })
 
 router.post('/birthdayChange', (req, res) => {
-    db.query("UPDATE summary.account_info SET birth = '"+ req.body.birthday + "'  WHERE email = '"+ req.body.email + "'", (err, account) => {
-        console.log(account)
+    // 회원가입 날짜보다 생년월일이 느릴경우 체크
+    db.query("SELECT 0 <= DATEDIFF(modifiedDate, '"+ req.body.birthday +"') AS bool FROM summary.account_change WHERE email = '"+ req.body.email + "' AND changeData = 'signup' ORDER BY modifiedDate DESC LIMIT 1", (err, bool) => {
         if (err) {
             console.log(err);
             return res.send(err);
-        } else {
-            // 계정 변경 사항 account_change [birth]
-            db.query("SELECT * FROM summary.account_info WHERE email = '"+ req.body.email + "'", (err, account) => {
-                db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, birth) VALUES (now(), 'birth', IF('"
-                + account[0].type +"'='null', NULL, '"+ account[0].type + "'), IF('"+ account[0].id + "'='null', NULL, '"+ account[0].id + "'), '"+ account[0].email + "', '"+ req.body.birthday + "')")
-            });
-            return req.session.save(() => {
-                res.json({ success: true });
+        } else if (bool[0].bool === 1) {
+            db.query("UPDATE summary.account_info SET birth = '"+ req.body.birthday + "'  WHERE email = '"+ req.body.email + "'", (err, account) => {
+                console.log(account)
+                if (err) {
+                    console.log(err);
+                    return res.send(err);
+                } else {
+                    // 계정 변경 사항 account_change [birth]
+                    db.query("SELECT * FROM summary.account_info WHERE email = '"+ req.body.email + "'", (err, account) => {
+                        db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, birth) VALUES (now(), 'birth', IF('"
+                        + account[0].type +"'='null', NULL, '"+ account[0].type + "'), IF('"+ account[0].id + "'='null', NULL, '"+ account[0].id + "'), '"+ account[0].email + "', '"+ req.body.birthday + "')")
+                    });
+                    return req.session.save(() => {
+                        res.json({ 
+                            success: true, 
+                            code: 1
+                        });
+                    })
+                }
             })
+        } else if (bool[0].bool === 0) {
+            return req.session.save(() => {
+                res.json({ 
+                    success: true, 
+                    code: -1
+                });
+            });
+        } else {
+            return req.session.save(() => {
+                res.json({ 
+                    success: true, 
+                    code: -2
+                });
+            });
         }
     })
+    
 })
 
 router.post('/genderChange', (req, res) => {
