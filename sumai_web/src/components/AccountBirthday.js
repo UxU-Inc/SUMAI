@@ -40,7 +40,8 @@ const useStyles = theme => ({
     },  
     formControl: {
         margin: "0px 15px",
-        minWidth: 120,
+        width: "100%",
+        minWidth: "80px",
     },
 });
 
@@ -58,6 +59,15 @@ class AccountNameChange extends React.Component {
         }
         this.textFieldRef = [React.createRef(), React.createRef()]
     }
+
+    componentDidMount() {
+        this.setState({
+            year: moment(this.props.location.state.birthday).format('YYYY') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('YYYY'),
+            month: moment(this.props.location.state.birthday).format('MM') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('MM'),
+            date: moment(this.props.location.state.birthday).format('D') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('D'),
+        }) 
+    }
+
     componentDidUpdate() {
         if(this.props.status.loaded) {
             if(this.props.status.isLoggedIn === false) {
@@ -69,9 +79,9 @@ class AccountNameChange extends React.Component {
     componentWillReceiveProps() {
         setTimeout(function() { 
             this.setState({
-                year: this.props.location.state.birthday,
-                // month: moment(this.props.state.birthday).format('M'),
-                // date: moment(this.props.state.birthday).format('D'),
+                year: moment(this.props.location.state.birthday).format('YYYY') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('YYYY'),
+                month: moment(this.props.location.state.birthday).format('MM') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('MM'),
+                date: moment(this.props.location.state.birthday).format('D') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('D'),
             }) 
         }.bind(this), 0)
     }
@@ -173,11 +183,17 @@ class AccountNameChange extends React.Component {
     }
 
     onBirthdayChange = (email, birthday) => {
-        return axios.post('/api/account/birthdayChange', { email, birthday }).then(
-            () => {
+        return axios.post('/api/account/birthdayChange', { email, birthday }).then((res) => {
+            console.log(res.data)
                 if(this.props.status.isLoggedIn === true) {
-                    return { success: true };
+                    if(res.data.code === 1) return { success: true };
+                    else if(res.data.code === -1) {
+                        this.setState({ errorMassage: '입력한 생일이 계정을 만든 날짜보다 이후입니다.' })
+                        return { success: false }
+                    }
                 } else {
+            console.log(res.data)
+
                     return { success: false }
                 }
             }
@@ -187,11 +203,10 @@ class AccountNameChange extends React.Component {
             }
         );
     }
-
+    
 
     render() {
         const { classes } = this.props;
-        console.log(this.props.location.state.birthday)
         
         return (
             <div >
@@ -216,14 +231,14 @@ class AccountNameChange extends React.Component {
                 <Box style={{background: "#fff"}}>
                     <Grid container justify="center" style={{padding: "24px"}}>
 
-                        <Paper variant="outlined" style={{width: "100%", minWidth: "400px", maxWidth: "450px", padding: "24px"}}>
+                        <Paper variant="outlined" style={{width: "100%", minWidth: "250px", maxWidth: "450px", padding: "24px"}}>
                             <Typography variant="caption" style={{fontFamily: "NotoSansKR-Regular", color: "#0000008A"}}>
                                 생년월일 선택
                             </Typography>
 
                             <Box display="flex" mt={3}>
                                 <TextField autoFocus fullWidth variant="outlined" value={this.state.year || ""} onChange={event => this.handleChange(event.target.value, "year")}
-                                            label={"연"} style={{width: "100%", minWidth: "120px"}} spellCheck="false" inputRef={this.textFieldRef[0]} />
+                                            label={"연"} style={{width: "100%", minWidth: "70px"}} spellCheck="false" inputRef={this.textFieldRef[0]} />
 
                                 <FormControl variant="outlined" className={classes.formControl}>
                                     <InputLabel id="demo-simple-select-outlined-label">월</InputLabel>
@@ -236,7 +251,7 @@ class AccountNameChange extends React.Component {
                                 </FormControl>
 
                                 <TextField fullWidth variant="outlined" value={this.state.date || ""} onChange={event => this.handleChange(event.target.value, "date")} 
-                                            label={"일"} style={{width: "100px", minWidth: "100px"}} spellCheck="false" inputRef={this.textFieldRef[1]}/>
+                                            label={"일"} style={{width: "100%", minWidth: "50px"}} spellCheck="false" inputRef={this.textFieldRef[1]}/>
                             </Box>
 
                             <Typography variant="body2" style={{fontFamily: "NotoSansKR-Regular", color: "#f44336", marginTop: "3px"}}>
