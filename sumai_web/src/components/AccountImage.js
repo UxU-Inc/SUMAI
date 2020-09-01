@@ -39,7 +39,7 @@ export default function AccountImage(props) {
       } else {
         const options = {
           maxSizeMB: 1,
-          maxWidthOrHeight: 500,
+          maxWidthOrHeight: 300,
           useWebWorker: true
         }
         imageCompression(event.target.files[0], options)
@@ -48,6 +48,10 @@ export default function AccountImage(props) {
             console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
        
             setImgFile(compressedFile); // write your own logic
+          }).catch(() => {
+            setImgBase64("");
+            setImgFile(null);
+            setImgContents("오류가 발생했습니다.")
           })
       }
     }
@@ -80,6 +84,10 @@ export default function AccountImage(props) {
             console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
        
             setImgFile(compressedFile); // write your own logic
+          }).catch(() => {
+            setImgBase64("");
+            setImgFile(null);
+            setImgContents("오류가 발생했습니다.")
           })
       }
     }
