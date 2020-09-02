@@ -53,6 +53,7 @@ class Main extends React.Component {
                     email: ''
                 };
                 document.cookie = 'key=' + btoa(JSON.stringify(loginData));
+                window.location.reload()
             }
         );
     }
@@ -175,6 +176,7 @@ class Main extends React.Component {
     }
 
     render() {
+        console.log(this.props.status)
         return ( 
             <div>
                 {[''].map( (key) => {
@@ -200,8 +202,8 @@ class Main extends React.Component {
                     )
                 })}
                 <div style={isWidthUp('md', this.props.width)? null: {display:"none"}}>
-                    {this.state.convertSort? <RecordRecommend convertSortFunction={this.convertSortFunction} isLoggedIn={this.props.status.isLoggedIn} currentEmail={this.props.status.currentEmail}/>:
-                    <RecordLastest convertSortFunction={this.convertSortFunction} isLoggedIn={this.props.status.isLoggedIn} currentEmail={this.props.status.currentEmail}/>}
+                    {this.state.convertSort? <RecordRecommend convertSortFunction={this.convertSortFunction} isLoggedIn={this.props.status.isLoggedIn} currentId={this.props.status.currentId}/>:
+                    <RecordLastest convertSortFunction={this.convertSortFunction} isLoggedIn={this.props.status.isLoggedIn} currentId={this.props.status.currentId}/>}
                 </div> 
             </div>
         )

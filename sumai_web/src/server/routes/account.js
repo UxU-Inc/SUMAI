@@ -114,7 +114,7 @@ router.post('/login', (req, res) => {
                         name: account[0].name
                     };
                     return req.session.save(() => {
-                        res.json({ success: true, email: account[0].email, name: account[0].name }); 
+                        res.json({ success: true, id: account[0].id, email: account[0].email, name: account[0].name }); 
                     })
                 } else {
                     return res.status(400).json({
@@ -314,8 +314,8 @@ router.post('/withdrawal', (req, res) => {
 
 })
 
-router.post('/imageUpload/:email', upload.single("img"), (req, res, next) => {
-    db.query("SELECT * FROM summary.account_info WHERE email = '"+ req.params.email + "'", (err, account) => {
+router.post('/imageUpload/:id', upload.single("img"), (req, res, next) => {
+    db.query("SELECT * FROM summary.account_info WHERE id = '"+ req.params.id + "'", (err, account) => {
         if (account[0].image === null) {
 
         } else {
@@ -341,7 +341,7 @@ router.post('/imageUpload/:email', upload.single("img"), (req, res, next) => {
             console.log(err);
             return res.send(err);
         } else {
-            db.query("SELECT * FROM summary.account_info WHERE email = '"+ req.params.email + "'", (err, account) => {
+            db.query("SELECT * FROM summary.account_info WHERE id = '"+ req.params.id + "'", (err, account) => {
                 db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, image) VALUES (now(), 'image', IF('"
                 + account[0].type +"'='null', NULL, '"+ account[0].type + "'), IF('"+ account[0].id + "'='null', NULL, '"+ account[0].id + "'), '"+ account[0].email + "', '"+ req.file.location.substring(60, req.file.location.length) + "')")
             });
@@ -350,20 +350,20 @@ router.post('/imageUpload/:email', upload.single("img"), (req, res, next) => {
     });
 })
 
-router.get('/accountLoad/:email', (req, res, next) => {
-    db.query("SELECT * FROM summary.account_info WHERE email = '"+ req.params.email + "'", (err, account) => {
+router.get('/accountLoad/:id', (req, res, next) => {
+    db.query("SELECT * FROM summary.account_info WHERE id = '"+ req.params.id + "'", (err, account) => {
         if (err || account.length === 0) {
             console.log(err);
             return res.send(err);
         } else if (account[0].image === null) {
-            db.query("SELECT modifiedDate FROM summary.account_change WHERE email = '"+ req.params.email + "' AND changeData = 'password' ORDER BY modifiedDate DESC LIMIT 1", (err2, passwordChangeTime) => {
+            db.query("SELECT modifiedDate FROM summary.account_change WHERE id = '"+ req.params.id + "' AND changeData = 'password' ORDER BY modifiedDate DESC LIMIT 1", (err2, passwordChangeTime) => {
                 if(!err2) {
                     if(passwordChangeTime[0] !== undefined) return res.json({ image: '', passwordChangeTime: passwordChangeTime[0].modifiedDate, type: account[0].type, id: account[0].id, birthday: account[0].birth, gender: account[0].gender });
                     else return res.json({ image: '', passwordChangeTime: account[0].joinDate, type: account[0].type, id: account[0].id, birthday: account[0].birth, gender: account[0].gender });
                 }
             })
         } else {
-            db.query("SELECT modifiedDate FROM summary.account_change WHERE email = '"+ req.params.email + "' AND changeData = 'password' ORDER BY modifiedDate DESC LIMIT 1", (err2, passwordChangeTime) => {
+            db.query("SELECT modifiedDate FROM summary.account_change WHERE id = '"+ req.params.id + "' AND changeData = 'password' ORDER BY modifiedDate DESC LIMIT 1", (err2, passwordChangeTime) => {
                 if(!err2) {
                     if(passwordChangeTime[0] !== undefined) return res.json({ image: 'https://sumai-profile.s3.ap-northeast-2.amazonaws.com/image/'+account[0].image, passwordChangeTime: passwordChangeTime[0].modifiedDate, type: account[0].id, birthday: account[0].birth, gender: account[0].gender })
                     else return res.json({ image: 'https://sumai-profile.s3.ap-northeast-2.amazonaws.com/image/'+account[0].image, passwordChangeTime: account[0].joinDate, type: account[0].id, birthday: account[0].birth, gender: account[0].gender })
@@ -373,8 +373,8 @@ router.get('/accountLoad/:email', (req, res, next) => {
     });
 })
 
-router.get('/imageDelete/:email', (req, res, next) => {
-    db.query("SELECT * FROM summary.account_info WHERE email = '"+ req.params.email + "'", (err, account) => {
+router.get('/imageDelete/:id', (req, res, next) => {
+    db.query("SELECT * FROM summary.account_info WHERE id = '"+ req.params.id + "'", (err, account) => {
         if (account[0].image === null) {
 
         } else {
@@ -394,7 +394,7 @@ router.get('/imageDelete/:email', (req, res, next) => {
             });
         }
     });
-    db.query("UPDATE summary.account_info SET image = NULL WHERE email = '"+ req.params.email + "'", (err, account) => {
+    db.query("UPDATE summary.account_info SET image = NULL WHERE id = '"+ req.params.id + "'", (err, account) => {
         if (err) {
             console.log(err);
             return res.send(err);
