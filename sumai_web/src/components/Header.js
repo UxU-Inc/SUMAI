@@ -159,7 +159,7 @@ function FeedbackDialog(props) {
     e.preventDefault();
     console.log(message)
     
-    axios.post('/api/sendEmail/sendEmail', {message: message}).then((res) => { // email을 추가하려면 {massage: message, email: 변수}
+    axios.post('/api/Email/sendEmail', {message: message}).then((res) => { // email을 추가하려면 {massage: message, email: 변수}
       setSendEmailStatus(res.status)
       dispatch(sendAct('send feedback is success'))
       setSnackbarOpen(true)
