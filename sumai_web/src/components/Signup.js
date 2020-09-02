@@ -450,7 +450,7 @@ class Signup extends Component{
                     }
                 })
             }else if(this.state.slideOpen===1 && this.validationBirthday() && this.validationGender()){ // 2번째 페이지에서 다음을 누를 경우..
-                axios.post('/api/sendEmail/sendEmailCertification', {email: this.state.email}).then((res) => {
+                axios.post('/api/email/sendEmailCertification', {email: this.state.email}).then((res) => {
                     console.log('인증메일 전송했당께')
                 })
                 this.setState({ slideOpen: 2 })
@@ -468,7 +468,7 @@ class Signup extends Component{
     }
     onClickSendMail = () => {
         if(0 < this.state.emailSendCount) {
-            // axios.post('/api/sendEmail/sendEmailCertification', {email: this.state.email}).then((res) => {
+            // axios.post('/api/email/sendEmailCertification', {email: this.state.email}).then((res) => {
             //      console.log('인증메일 전송했당께')
             // })
             this.setState({ 

@@ -64,7 +64,7 @@ function EmailCertificationComponent(props) {
         const cert=location.search?.slice(1)?.split('cert=')[1]?.split('&')[0]
         // console.log(location.search)
         // getID()
-        axios.post('/api/sendEmail/EmailCertification', {id: id, cert: cert}).then((res) => {
+        axios.post('/api/email/EmailCertification', {id: id, cert: cert}).then((res) => {
             console.log(res)
             setEmail(res.data.email)
             setComments(res.data.message)
