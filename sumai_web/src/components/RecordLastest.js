@@ -13,7 +13,6 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import clsx from 'clsx';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
-import PropTypes from 'prop-types';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -100,20 +99,30 @@ class RecordLastest extends Component{
         references.ref = []
     }
     componentDidMount() {
-        this.lastest(-1);
+        this.accountInit();
         window.addEventListener('resize', this.handleResize, {once: true})
         window.addEventListener("scroll", this.handleScroll)
     }
-    lastest = (idx) => {
-        this.props.lastestRequest(idx).then(
+    accountInit = () => {
+        new Promise(async (resolve, reject) => {
+            const Interval = setInterval(() => {
+                if(typeof this.props.currentId !== "undefined") {
+                    const id = this.props.currentId
+                    this.lastest(id, -1);
+                    resolve();
+                    clearInterval(Interval)
+                }
+            });
+        })
+      }
+    lastest = (id, idx) => {
+        this.props.lastestRequest(id, idx).then(
             () => {
                 if(this.props.lastest.status === "SUCCESS") {
                     this.setState({
                         data: this.state.data.concat(this.props.lastest.data),
                     })
-                    // if(this.state.data[this.state.data.length-1] && this.state.data[this.state.data.length-1].idx === 1) {
-                    console.log(this.props.lastest.data)
-                    if(this.props.lastest.data.length < 10) {
+                    if(this.state.data[this.state.data.length-1] && this.state.data[this.state.data.length-1].idx === 1) {
                         this.setState({
                             isAllLoad: true,
                         })
@@ -122,8 +131,8 @@ class RecordLastest extends Component{
             }
         );
     }
-    like = (sign, idx) => {
-        this.props.likeRequest(sign, idx).then(
+    like = (id, sign, idx) => {
+        this.props.likeRequest(id, sign, idx).then(
             () => {
                 if(this.props.like.status === "SUCCESS") {
                     
@@ -153,7 +162,7 @@ class RecordLastest extends Component{
                     dataCount: this.state.dataCount + 10,
                     loadingScroll: true,
                 })
-                this.lastest(this.state.data[this.state.data.length-1].idx-1);
+                this.lastest(this.props.currentId, this.state.data[this.state.data.length-1].idx-1);
             }
         } else {
             if(this.state.loadingScroll){
@@ -193,14 +202,11 @@ class RecordLastest extends Component{
             isExpand: tempState,
         })
     }
-    onClickChangeColor = (key, idx) => {
+    onClickChangeColor = (key, clicked, idx) => {
         const tempState = this.state.isClick.slice()
-        let sign = 1
         tempState[key] = !this.state.isClick[key]
-        if(!tempState[key]) {
-            sign = -1
-        }
-        this.like(sign, idx)
+        const sign = clicked === 1? this.state.isClick[key]? 1:-1:this.state.isClick[key]? -1:1
+        this.like(this.props.currentId, sign, idx)
         this.setState({
             isClick: tempState,
         })
@@ -270,15 +276,15 @@ class RecordLastest extends Component{
                                     <Avatar style={{width: "2.2em", height: "2.2em", fontWeight: 'bold'}}>
                                         {re_name}
                                     </Avatar> :
-                                <Avatar style={{backgroundColor: '#' + CryptoJS.MD5(el.email || el.id).toString().substring(1, 7), width: "2.2em", height: "2.2em", fontWeight: 'bold'}}>
+                                <Avatar style={{backgroundColor: '#' + CryptoJS.MD5(el.id).toString().substring(1, 7), width: "2.2em", height: "2.2em", fontWeight: 'bold'}}>
                                     {re_name}
                                 </Avatar> :
                                 <Avatar src={image} style={{width: "2.2em", height: "2.2em"}} />
                             } action={
                                 <Grid container direction="row" justify="center">
-                                    <Typography style={{fontSize: "20px", paddingTop: "18px"}}>{(el.like) + (this.state.isClick[key]? 1:0)}</Typography>
-                                    <IconButton onClick={this.props.isLoggedIn? this.onClickChangeColor.bind(this, key, el.idx): this.onClickNotLogin} style={{marginTop: "4px", marginRight: "4px", marginLeft: "-8px", marginBottom: "-8px"}}>
-                                        <ThumbUpAltIcon fontSize="large" color={this.state.isClick[key]? "primary":"inherit"}/>
+                                    <Typography style={{fontSize: "20px", paddingTop: "18px"}}>{(el.like) + (el.clicked === 1? this.state.isClick[key]? -1:0:this.state.isClick[key]? 1:0)}</Typography>
+                                    <IconButton onClick={this.props.isLoggedIn? this.onClickChangeColor.bind(this, key, el.clicked, el.idx): this.onClickNotLogin} style={{marginTop: "4px", marginRight: "4px", marginLeft: "-8px", marginBottom: "-8px"}}>
+                                        <ThumbUpAltIcon fontSize="large" color={el.clicked === 1? this.state.isClick[key]? "inherit":"primary":this.state.isClick[key]? "primary":"inherit"}/>
                                     </IconButton>
                                 </Grid>
                                 
@@ -311,15 +317,6 @@ class RecordLastest extends Component{
     } 
 }
 
-RecordLastest.propTypes = {
-    isLoggedIn: PropTypes.bool,
-    currentEmail: PropTypes.string,
-};
-  
-RecordLastest.defaultProps = {
-    isLoggedIn: false,
-    currentEmail: '',
-};
 
 const mapStateToProps = (state) => {
     return {
@@ -330,11 +327,11 @@ const mapStateToProps = (state) => {
  
 const mapDispatchToProps = (dispatch) => {
     return {
-        lastestRequest: (idx) => {
-            return dispatch(lastestRequest(idx));
+        lastestRequest: (id, idx) => {
+            return dispatch(lastestRequest(id, idx));
         },
-        likeRequest: (sign, idx) => {
-            return dispatch(likeRequest(sign, idx));
+        likeRequest: (id, sign, idx) => {
+            return dispatch(likeRequest(id, sign, idx));
         }
     };
 };

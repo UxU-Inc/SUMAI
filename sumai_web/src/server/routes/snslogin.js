@@ -74,6 +74,9 @@ router.get('/googlecallback', (req, res) => {
 	passport.authenticate('google', (err, user) => {
         console.log('passport.authenticate(google)실행');
         console.log(user);
+        if(!user) {
+            return res.send("<script>window.close();</script>")
+        }
         const imageName = crypto.createHash('sha1').update(user.id+Date.now()).digest("base64") + ".jpg"
         db.query("SELECT * FROM summary.account_info WHERE id = '"+ user.id + "'", (err, account) => {
             if (err) {
@@ -180,6 +183,9 @@ router.get('/kakaocallback', (req, res) => {
     passport.authenticate('kakao', (err, user) => {
         console.log('passport.authenticate(kakao)실행');
         console.log(user);
+        if(!user) {
+            return res.send("<script>window.close();</script>")
+        }
         db.query("SELECT * FROM summary.account_info WHERE id = '"+ user.id + "'", (err, account) => {
             const email = typeof user._json.kakao_account.email === "undefined"? null : "'"+user._json.kakao_account.email+"'"
             const email_ = typeof user._json.kakao_account.email === "undefined"? null : user._json.kakao_account.email
@@ -330,6 +336,9 @@ router.get('/navercallback', (req, res) => {
     passport.authenticate('naver', (err, user) => {
         console.log('passport.authenticate(naver)실행');
         console.log(user);
+        if(!user) {
+            return res.send("<script>window.close();</script>")
+        }
         db.query("SELECT * FROM summary.account_info WHERE id = '"+ user.id + "'", (err, account) => {
             const age = typeof user._json.age === "undefined"? null : "'"+user._json.age.replace(/[^0-9]/g,"")+"'"
             const imageName = typeof user._json.profile_image === "undefined"? null : "image/" + crypto.createHash('sha1').update(user.id+Date.now()).digest("base64") + ".jpg"
@@ -441,6 +450,9 @@ router.get('/facebookcallback', (req, res) => {
     passport.authenticate('facebook', (err, user) => {
         console.log('passport.authenticate(facebook)실행');
         console.log(user);
+        if(!user) {
+            return res.send("<script>window.close();</script>")
+        }
         const email = typeof user.emails === "undefined"? null : "'"+user.emails[0].value+"'"
         const email_ = typeof user.emails === "undefined"? null : user.emails[0].value
         const gender = typeof user.gender === "undefined"? null : "'"+user.gender+"'"
@@ -575,23 +587,22 @@ router.get('/facebookcallback', (req, res) => {
 
 router.get('/confirm', (req, res) => {
     return new Promise(async (resolve, reject) => {
-        const Interval = setInterval(() => {
-            req.session.reload((err) => {
-                if(typeof req.session.loginInfo !== "undefined"){
-                    console.log(req.session.loginInfo);
-                    if(req.session.loginInfo.id === -1) {
-                        const logintype = req.session.loginInfo.type
-                        delete req.session.loginInfo;
-                        req.session.save(() => {
-                            resolve(res.status(400).send(logintype));
-                        })
-                    } else {
-                        resolve(res.send(req.session.loginInfo));
-                    }
-                    clearInterval(Interval)
+        req.session.reload((err) => {
+            if(typeof req.session.loginInfo !== "undefined"){
+                console.log(req.session.loginInfo);
+                if(req.session.loginInfo.id === -1) {
+                    const logintype = req.session.loginInfo.type
+                    delete req.session.loginInfo;
+                    req.session.save(() => {
+                        resolve(res.status(400).send(logintype));
+                    })
+                } else {
+                    resolve(res.send(req.session.loginInfo));
                 }
-            })
-        }, 500);
+            } else {
+                resolve(res.status(499).send("cancel"))
+            }
+        })
     })
 })
 

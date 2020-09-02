@@ -70,7 +70,7 @@ export default function AccountImage(props) {
     } else {
       let data = new FormData();
       data.append('img', imgFile, imgFile.name);
-      axios.post('/api/account/imageUpload/'+props.email, data, { headers: {
+      axios.post('/api/account/imageUpload/'+props.id, data, { headers: {
         'accept': 'application/json',
         'Content-Type': `multipart/form-data; boundary=${data._boundary}`,
       }}).then((data) => {
@@ -88,7 +88,7 @@ export default function AccountImage(props) {
   };
 
   const handleDelete = () => {
-    axios.get('/api/account/imageDelete/'+props.email).then(() => {
+    axios.get('/api/account/imageDelete/'+props.id).then(() => {
       props.onClose('delete');
     })
   };

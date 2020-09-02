@@ -201,17 +201,17 @@ class Login extends Component{
             if (data.success) {
                 
             } else {
-                let typeName
+                let snsloginerror = ''
                 switch(data.error) {
-                    case "GOOGLE": typeName = "구글"; break;
-                    case "NAVER": typeName = "네이버"; break;
-                    case "KAKAO": typeName = "카카오"; break;
-                    case "FACEBOOK": typeName = "페이스북"; break;
-                    case "NORMAL": typeName = "일반"; break;
+                    case "GOOGLE": snsloginerror = "구글"; break;
+                    case "NAVER": snsloginerror = "네이버"; break;
+                    case "KAKAO": snsloginerror = "카카오"; break;
+                    case "FACEBOOK": snsloginerror = "페이스북"; break;
+                    case "NORMAL": snsloginerror = "일반"; break;
                     default:
                 }
                 this.setState({
-                    snsloginerror: typeName,
+                    snsloginerror: snsloginerror,
                 })
             }
         })
