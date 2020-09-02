@@ -49,7 +49,7 @@ class Account extends Component{
 
       this.state = {
         open: false,
-        email: '',
+        id: '',
         imagesrc: '',
         passwordChangeTime: '',
         accountType: '',
@@ -81,14 +81,13 @@ class Account extends Component{
     accountInit = () => {
       new Promise(async (resolve, reject) => {
           const Interval = setInterval(() => {
-              if(typeof this.props.status.currentEmail !== "undefined") {
-                  if(this.props.status.currentEmail === '') {
+              if(typeof this.props.status.currentId !== "undefined") {
+                  if(this.props.status.currentId === '') {
                     resolve();
                     clearInterval(Interval)
                   } else {
-                    const email = this.props.status.currentEmail
-                  console.log(Base64.stringify(sha1(email)))
-                  axios.get('/api/account/accountLoad/'+email).then((data) => {
+                    const id = this.props.status.currentId
+                  axios.get('/api/account/accountLoad/'+id).then((data) => {
                     this.setState({
                       imagesrc: data.data.image,
                       passwordChangeTime: data.data.passwordChangeTime,
@@ -96,9 +95,9 @@ class Account extends Component{
                       accountId: data.data.id,
                       birthday: data.data.birthday,
                       gender: data.data.gender,
-                      email : email,
+                      id : id,
                       avatarname: this.avatarName(this.props.status.currentUser),
-                      avatarcolor: '#' + CryptoJS.MD5(email).toString().substring(1, 7),
+                      avatarcolor: '#' + CryptoJS.MD5(id).toString().substring(1, 7),
                     })
                     })
                     resolve();
@@ -191,7 +190,7 @@ class Account extends Component{
                               <Paper variant="outlined" style={{maxWidth: "800px"}}>
 
                                   <Box display="flex" alignItems="center" style={{width: "100%", textTransform: "none"}}>
-                                      {this.state.open? <AccountImage onClose={this.handleclose} email={this.props.status.currentEmail} imagesrc={this.state.imagesrc}/> : null}
+                                      {this.state.open? <AccountImage onClose={this.handleclose} id={this.props.status.currentId} imagesrc={this.state.imagesrc}/> : null}
                                       <Button onClick={this.handleopen} style={{padding: "15px 24px 16px", borderRadius: "0px"}}>
                                         <Typography variant="caption" style={{width: "156px", textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#0000008A"}}>
                                           사진
@@ -343,7 +342,7 @@ class Account extends Component{
                               <Paper variant="outlined" style={{width: "100%"}}>
 
                                   <Box display="flex" style={{width: "100%", borderRadius: "0px", textTransform: "none"}}>
-                                      {this.state.open? <AccountImage onClose={this.handleclose} email={this.props.status.currentEmail} imagesrc={this.state.imagesrc}/> : null}
+                                      {this.state.open? <AccountImage onClose={this.handleclose} id={this.props.status.currentId} imagesrc={this.state.imagesrc}/> : null}
                                       <Button onClick={this.handleopen} style={{padding: "15px 24px 16px", width: "100%"}}>
                                         <Box style={{width: "100%", paddingRight: "10px", textTransform: "none"}} >
                                           <Typography style={{textAlign: "left", fontSize: "12px", fontFamily: "NotoSansKR-Light", color: "#0000008A"}}>
@@ -356,7 +355,7 @@ class Account extends Component{
                                         <Box>
                                         {this.state.imagesrc !== ''? 
                                             <Avatar alt="profileImage" src={this.state.imagesrc} style={{width: "60px", height: "60px"}} /> : 
-                                            <Avatar alt="profileImage" style={{width: "60px", height: "60px", backgroundColor: '#' + CryptoJS.MD5(this.state.email).toString().substring(1, 7)}}>
+                                            <Avatar alt="profileImage" style={{width: "60px", height: "60px", backgroundColor: this.state.avatarcolor}}>
                                               {this.state.avatarname}
                                             </Avatar>
                                           }
