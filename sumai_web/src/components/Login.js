@@ -126,6 +126,7 @@ class Login extends Component{
             loginerror: false,
             snsloginerror: '',
             toomanyerror: false,
+            errorNotice: false,
         }
         this.textFieldRef = [React.createRef(), React.createRef()]
     }
@@ -151,6 +152,8 @@ class Login extends Component{
         if (reason === 'clickaway') {
           return;
         }
+
+        if(this.state.errorNotice === true) this.setState({ errorNotice: false })
     }
     onClickLogin = () => {
         if(this.state.email === "") {
@@ -172,6 +175,7 @@ class Login extends Component{
                         loginerror: false,
                         snsloginerror: '',
                         toomanyerror: true,
+                        errorNotice: true,
                     })
                 } else {
                     this.textFieldRef[1].current.focus()
@@ -180,6 +184,7 @@ class Login extends Component{
                         loginerror: true,
                         snsloginerror: '',
                         toomanyerror: false,
+                        errorNotice: true,
                     })
                 }
             })
@@ -212,6 +217,7 @@ class Login extends Component{
                 }
                 this.setState({
                     snsloginerror: typeName,
+                    errorNotice: true,
                 })
             }
         })
@@ -300,7 +306,7 @@ class Login extends Component{
                         </Box>
                     </Grid>
                     
-                    <Snackbar open={this.state.loginerror || this.state.snsloginerror !== '' || this.state.toomanyerror}>
+                    <Snackbar open={this.state.errorNotice} autoHideDuration={3000} onClose={this.snackBarHandleClose}>
                         <Alert severity="error">
                             {this.state.loginerror? "가입하지 않은 이메일이거나, 잘못된 비밀번호입니다.":null}
                             {this.state.snsloginerror !== ''? "해당 이메일은 " + this.state.snsloginerror + " 로그인으로 가입되었습니다.":null}
@@ -379,7 +385,7 @@ class Login extends Component{
                         <Link to="/privacy" style={{textDecoration: 'none'}}><Button className={classes.termsButton}>개인정보처리방침</Button></Link>
                     </Box>
 
-                    <Snackbar open={this.state.loginerror || this.state.snsloginerror !== '' || this.state.toomanyerror}>
+                    <Snackbar open={this.state.errorNotice} autoHideDuration={3000} onClose={this.snackBarHandleClose}>
                         <Alert severity="error">
                             {this.state.loginerror? "가입하지 않은 이메일이거나, 잘못된 비밀번호입니다.":null}
                             {this.state.snsloginerror !== ''? "해당 이메일은 " + this.state.snsloginerror + " 로그인으로 가입되었습니다.":null}

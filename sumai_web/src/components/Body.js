@@ -18,6 +18,7 @@ import clsx from 'clsx';
 import Fab from '@material-ui/core/Fab';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import * as root from '../rootValue';
+import InsertCommentIcon from '@material-ui/icons/InsertComment';
 
 const useStyles = theme => ({
   root: {
@@ -61,7 +62,7 @@ const useStyles = theme => ({
     textAlign: "right",
   },
   summaryLayout: {
-    minHeight: theme.spacing(28.8),
+    minHeight: theme.spacing(30.15),
     fontSize: '24px',
     lineHeight: '35px',
   },
@@ -126,6 +127,10 @@ class Body extends React.Component {
       this.props.onClick(e)
     }
 
+    onClickRecord = () => {
+      this.props.onClickRecord()
+    }
+
     scrollTop = () => {
       window.scrollTo({top:0, left:0, behavior:'smooth'})
     }
@@ -148,7 +153,6 @@ class Body extends React.Component {
       this.props.errorSet()
     };
 
-
     scrollFab = () => {
       let scrollLine = 100
       if(scrollLine <= document.documentElement.scrollTop && !this.state.fabTag) {
@@ -164,13 +168,13 @@ class Body extends React.Component {
     }
 
     componentDidMount() {
+      this.props.recordTrue()
       window.addEventListener('scroll', this.scrollFab)
     }
     
     componentWillUnmount() {
       window.removeEventListener('scroll', this.scrollFab)
     }
-
 
     render() {
         const { classes } = this.props;
@@ -189,7 +193,12 @@ class Body extends React.Component {
                           <CloseIcon className={clsx("none", {[classes.displayNone]: this.props.state.text.length === 0})} onClick={this.textRemove} style={{color: "#737373"}} />
                         </Box>
                       </Box>
-                      <Typography className={clsx(classes.textLimit, {[classes.textLimitAccent]: this.props.state.text.length >= 5000})}>{this.props.state.text.length} / 5000</Typography>
+                      <Box display="flex" alignItems="center">
+                        {this.props.state.record
+                        ? <InsertCommentIcon fontSize="large" style={{color: root.PrimaryColor, cursor: "pointer"}} onClick={this.onClickRecord}/>
+                        : <InsertCommentIcon fontSize="large" style={{color: "#00000060", cursor: "pointer"}} onClick={this.onClickRecord}/>}
+                        <Typography style={{width: "100%"}} className={clsx(classes.textLimit, {[classes.textLimitAccent]: this.props.state.text.length >= 5000})}>{this.props.state.text.length} / 5000</Typography>
+                      </Box>
                   </CardContent>
                   <CardActions className={classes.summaryButtonLayout}>
                       <Button onClick={this.fetchUsers} value={this.props.state.text} className={classes.summaryButton}>

@@ -56,11 +56,24 @@ class AccountNameChange extends React.Component {
         super(props)
         this.state = {
             email: this.props.status.currentEmail,
-            genderCurrent: this.props.gender,
+            genderCurrent: '',
             genderCustom: '',
             genderError: 0,
         }
         this.textFieldRef = [React.createRef()]
+    }
+
+    componentDidMount() {
+        this.setState({ email: this.props.status.currentEmail }) 
+        if(this.props.location.state.gender === "여성" || this.props.location.state.gender === "남성" || this.props.location.state.gender === "공개 안함") {
+            this.setState({ genderCurrent: this.props.location.state.gender }) 
+        } else if(this.props.location.state.gender !== "" && this.props.location.state.gender !== null && this.props.location.state.gender !== undefined) {
+            console.log(this.props.location.state.gender)
+            this.setState({ 
+                genderCurrent: "사용자 지정",
+                genderCustom: this.props.location.state.gender,
+            }) 
+        }
     }
 
     componentDidUpdate() {
@@ -69,6 +82,21 @@ class AccountNameChange extends React.Component {
                 this.props.history.push("/")
             } 
         }
+    }
+
+    componentWillReceiveProps() {
+        setTimeout(function() { 
+        this.setState({ email: this.props.status.currentEmail }) 
+        if(this.props.location.state.gender === "여성" || this.props.location.state.gender === "남성" || this.props.location.state.gender === "공개 안함") {
+            this.setState({ genderCurrent: this.props.location.state.gender }) 
+        } else if(this.props.location.state.gender !== "" && this.props.location.state.gender !== null && this.props.location.state.gender !== undefined) {
+            console.log(this.props.location.state.gender)
+            this.setState({ 
+                genderCurrent: "사용자 지정",
+                genderCustom: this.props.location.state.gender,
+            }) 
+        }
+        }.bind(this), 0)
     }
 
     handleClose = () => {
@@ -144,6 +172,7 @@ class AccountNameChange extends React.Component {
 
     render() {
         const { classes } = this.props;
+        console.log(this.props.location.state.gender)
 
         return (
             <div >

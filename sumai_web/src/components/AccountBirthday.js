@@ -62,6 +62,7 @@ class AccountNameChange extends React.Component {
 
     componentDidMount() {
         this.setState({
+            email: this.props.status.currentEmail,
             year: moment(this.props.location.state.birthday).format('YYYY') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('YYYY'),
             month: moment(this.props.location.state.birthday).format('MM') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('MM'),
             date: moment(this.props.location.state.birthday).format('D') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('D'),
@@ -79,6 +80,7 @@ class AccountNameChange extends React.Component {
     componentWillReceiveProps() {
         setTimeout(function() { 
             this.setState({
+                email: this.props.status.currentEmail,
                 year: moment(this.props.location.state.birthday).format('YYYY') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('YYYY'),
                 month: moment(this.props.location.state.birthday).format('MM') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('MM'),
                 date: moment(this.props.location.state.birthday).format('D') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('D'),
@@ -166,11 +168,11 @@ class AccountNameChange extends React.Component {
                 return
             }
             else {
-                if(this.state.email !== "") {
-                    this.onBirthdayChange(this.state.email, birthday).then(data => {
+                    if(this.state.email !== "") {
+                        this.onBirthdayChange(this.state.email, birthday).then(data => {
                         if (data.success) {
                             this.props.history.goBack()
-                        }
+                        } 
                     })
                 }
             }
@@ -199,6 +201,7 @@ class AccountNameChange extends React.Component {
             }
         ).catch(
             (error) => {
+                console.log(error)
                 return { success: false }
             }
         );
