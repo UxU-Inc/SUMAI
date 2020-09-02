@@ -56,7 +56,7 @@ router.post("/sendEmailCertification", function(req, res){
   }
   req.session.save(
     () => {
-      const message = `http://localhost/EmailCertification?id=${req.sessionID}&cert=${cert}`
+      const message = `http://localhost/email/certification?id=${req.sessionID}&cert=${cert}` // 주소 함수를 이용해서 받아야 할 듯
       let mailOptions = {
         to: 'uxu.co.kr@gmail.com' , // 수신 메일 주소
         subject: `이메일 인증`,   // 제목
@@ -108,79 +108,85 @@ router.post("/EmailCertification", function(req, res){
   })
 })
 
-router.get("/temporary/login", function(req, res){
+router.post("/temporary/login", function(req, res){
   const id = req.body.id
-  const tempPassword = req.body.tempPassword
+  const cert = req.body.cert
   if (id===undefined || cert===undefined) {0
     return res.json({message: '경로가 잘못되었습니다.', code: 2})
   }
   sessionStore.get(id, (err, session)=> {
-    if (session.emailLogin === undefined) {
+    if (session.password2email === undefined) {
       return res.json({message: '이메일 로그인 상태가 아닙니다.', code: 3})
     }
-    const email = session.emailLogin.email
-    const tempPassword = session.emailLogin.tempPassword
-    const expires = session.emailLogin.expires
-    if (email === undefined || tempPassword === undefined) return res.json({message: '세션 상태가 이상합니다.', code: 4})
-    if(tempPassword === req.body.tempPassword) {
-      session.emailLogin = {
-        email: email,
-        cert: emailLogin,
-        certState: true
-      }
+    const email = session.password2email.email
+    const cert = session.password2email.cert
+    const expires = session.password2email.expires
+    if (expires === undefined || expires < parseInt(Date.now()/1000)) {
+      session.password2email = {expires: 0}
       return sessionStore.set(id, session, () => {
-        return res.json({message: '인증 성공한듯', code: 0})
+        res.json({message: '인증이 만료되었습니다.', code: 6})
+      })
+    } 
+    if (email === undefined || cert === undefined) return res.json({message: '세션 상태가 이상합니다.', code: 4})
+    if(cert === req.body.cert) {
+      db.query("SELECT * FROM summary.account_info WHERE email = '"+ email + "'", (err, account) => {
+        if(!err) {
+          if(account.length !== 1) {
+            console.log('해킹당한듯?')
+          }
+          res.json({message: '인증 성공', code: 0})
+        } else {
+          console.log(err)
+          return res.json({message: '쿼리 오류', code: 7})
+        }
       })
     }else{
+      console.log()
       return res.json({message: '인증 실패한듯', code: 1})
     }
   })
-  
 })
 
-router.get('/temporary/wait', function(req, res) {
-  res.set({
-    "Content-Type": "text/event-stream",
-    "Cache-Control": "no-cache",
-    Connection: "keep-alive",
-
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers":
-    "Origin, X-Requested-With, Content-Type, Accept",
-  })
-  setInterval(() => {
-    res.write(`data: ${JSON.stringify('hi')}\n\n`)
-    console.log(req.locals.hello)
-  }, 3000)
+router.post("/temporary/login/change", function(req, res) {
+  // 미들웨어로 /temporary/login/에서 함 더 검증해야할 듯
+  const password = req.body.password
+  hashing.encrypt(password).then(password => {
+    db.query("UPDATE summary.account_info SET password = '"+ password.hashed +"', salt = '"+ password.salt +"' WHERE email = '"+ req.body.email + "'", (err, exists) => {
+        if(!err) {
+            // 계정 변경 사항 account_change [password]
+            // db.query("SELECT * FROM summary.account_info WHERE email = '"+ req.body.email + "'", (err, account) => {
+            //     db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, password, salt) VALUES (now(), 'password', IF('"
+            //     + account[0].type +"'='null', NULL, '"+ account[0].type + "'), IF('"+ account[0].id + "'='null', NULL, '"+ account[0].id + "'), '"+ account[0].email + "', '"+ password.hashed +"', '"+ password.salt + "')")
+            // });
+            return res.json({ code: 0, message: '비밀번호가 변경되었습니다.' });
+        } else {
+            console.log(err);
+            return res.json({ code: 8, message: '죄송합니다. 잠시후 다시 시도해주세요.'});
+        }
+    });
+})
 })
 
 router.post("/temporary/send", function(req, res){
   // UPDATE `summary`.`action_log` SET `ipv4` = '123', `sns_type` = '123' WHERE (`index` = '2191');
   const email=req.body.email
-  const tempPassword = Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)
-  req.session.emailLogin = {
+  const cert = Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)
+  req.session.password2email = {
     email: email,
-    tempPassword: tempPassword,
-    expires: Date.now()/1000+1800
+    cert: cert,
+    expires: parseInt(Date.now()/1000+1800)
   }
-  // hashing.encrypt(tempPassword).then(password => {
-  //   db.query(`UPDATE summary.account_info SET \`password\` = '${password.hashed}', \`salt\` = '${password.salt}' WHERE (\`email\` = '${req.body.email}')`, (err, exists) => {
-  //       if(!err) {
-  //           return res.json({ success: true });
-  //       } else {
-  //           console.log(err);
-  //           return res.send(err);
-  //       }
-  //   });
-  // }).catch( (error) => {
-  //   console.log(error)
-  // })
-  console.log(tempPassword)
-  // const message = `${tempPassword}`
+  console.log(cert)
+  console.log(`http://localhost/email/login/login?id=${req.sessionID}&cert=${cert}`)
+  return req.session.save(()=> {
+    res.send(200)
+    
+  })
+  // const message = `${cert}`
   // let mailOptions = {
   //   to: 'uxu.co.kr@gmail.com' , // 수신 메일 주소
   //   subject: `임시 비밀번호`,   // 제목
-  //   text: message,  // 내용
+  //   text: `http://localhost/email/login/login?id=${req.sessionID}&cert=${cert}`,  // 내용
   // };
 
   // transporter.sendMail(mailOptions, function(error, info){

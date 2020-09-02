@@ -16,6 +16,7 @@ import AccountWithdrawal from "./components/AccountWithdrawal";
 import AccountBirthday from "./components/AccountBirthday";
 import AccountGender from "./components/AccountGender";
 import EmailCertification from "./components/EmailCertification"
+import EmailLogin from "./components/EmailLogin"
 
 import { connect } from 'react-redux';
 import { getStatusRequest, logoutRequest, getStatusFailure } from './actions/authentication';
@@ -100,7 +101,8 @@ class App extends Component {
             <Route path="/terms" component={ Terms } />
             <Route path="/privacy" component={ Privacy } />
             <Route path="/notices" component={ Notices } />
-            <Route path="/EmailCertification" component={ EmailCertification } />
+            <Route path="/email/certification" component={ EmailCertification } />
+            <Route path="/email/login" component={ EmailLogin } />
 
             <Switch>
               <Route path="/login/signup" component={ LoginMain } />
