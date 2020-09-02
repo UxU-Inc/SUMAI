@@ -2,12 +2,12 @@ import axios from 'axios';
 import * as types from './ActionTypes';
 
 /* LASTEST */
-export function lastestRequest(idx) {
+export function lastestRequest(id, idx) {
     return (dispatch) => {
         // Inform signup API is starting
         dispatch(lastest());
  
-        return axios.post('/api/record/lastest', { idx })
+        return axios.post('/api/record/lastest', { id, idx })
         .then((response) => {
             dispatch(lastestSuccess(response.data));
         }).catch((error) => {
@@ -37,12 +37,12 @@ export function lastestFailure(error) {
 }
 
 /* RECOMMEND */
-export function recommendRequest() {
+export function recommendRequest(id) {
     return (dispatch) => {
         // Inform signup API is starting
         dispatch(recommend());
  
-        return axios.get('/api/record/recommend')
+        return axios.post('/api/record/recommend', { id })
         .then((response) => {
             dispatch(recommendSuccess(response.data));
         }).catch((error) => {
@@ -72,12 +72,12 @@ export function recommendFailure(error) {
 }
 
 /* LIKE */
-export function likeRequest(sign, idx) {
+export function likeRequest(id, sign, idx) {
     return (dispatch) => {
         // Inform signup API is starting
         dispatch(like());
  
-        return axios.post('/api/record/like', { sign, idx })
+        return axios.post('/api/record/like', { id, sign, idx })
         .then((response) => {
             dispatch(likeSuccess());
         }).catch((error) => {

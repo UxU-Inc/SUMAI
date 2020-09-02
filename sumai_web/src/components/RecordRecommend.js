@@ -13,7 +13,6 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import clsx from 'clsx';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
-import PropTypes from 'prop-types';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -58,6 +57,7 @@ const useStyles = theme => ({
         background: "linear-gradient(rgba( 255, 255, 255, 0.6 ), rgba( 255, 255, 255, 1 ))",
         textAlign:'center',
         transform: 'rotate(0deg)',
+        cursor: "pointer",
     },
     expandBarOpen: {
         background: "linear-gradient(rgba( 255, 255, 255, 0 ), rgba( 255, 255, 255, 0 ))",
@@ -99,12 +99,24 @@ class RecordRecommend extends Component{
         references.ref = []
     }
     componentDidMount() {
-        this.recommend();
+        this.accountInit();
         window.addEventListener('resize', this.handleResize, {once: true})
         window.addEventListener("scroll", this.handleScroll)
     }
-    recommend = () => {
-        this.props.recommendRequest().then(
+    accountInit = () => {
+        new Promise(async (resolve, reject) => {
+            const Interval = setInterval(() => {
+                if(typeof this.props.currentId !== "undefined") {
+                    const id = this.props.currentId
+                    this.recommend(id);
+                    resolve();
+                    clearInterval(Interval)
+                }
+            });
+        })
+      }
+    recommend = (id) => {
+        this.props.recommendRequest(id).then(
             () => {
                 if(this.props.recommend.status === "SUCCESS") {
                     this.setState({
@@ -119,8 +131,8 @@ class RecordRecommend extends Component{
             }
         );
     }
-    like = (sign, idx) => {
-        this.props.likeRequest(sign, idx).then(
+    like = (id, sign, idx) => {
+        this.props.likeRequest(id, sign, idx).then(
             () => {
                 if(this.props.like.status === "SUCCESS") {
                     
@@ -191,14 +203,11 @@ class RecordRecommend extends Component{
             isExpand: tempState,
         })
     }
-    onClickChangeColor = (key, idx) => {
+    onClickChangeColor = (key, clicked, idx) => {
         const tempState = this.state.isClick.slice()
-        let sign = 1
         tempState[key] = !this.state.isClick[key]
-        if(!tempState[key]) {
-            sign = -1
-        }
-        this.like(sign, idx)
+        const sign = clicked === 1? this.state.isClick[key]? 1:-1:this.state.isClick[key]? -1:1
+        this.like(this.props.currentId, sign, idx)
         this.setState({
             isClick: tempState,
         })
@@ -245,34 +254,42 @@ class RecordRecommend extends Component{
                 </Grid>
                 
                 {list ? list.slice(0, this.state.dataCount).map( (el, key) => {
+                    const name = el.name || '익명'
+                    const image = 'https://sumai-profile.s3.ap-northeast-2.amazonaws.com/image/' + el.image
                     let re_name = ''
                     let time = el.time.slice(0, 10) + " " + el.time.slice(11, 16)
-                    if(/[a-zA-Z]/.test(el.name.charAt(0))) {
-                        re_name = el.name.charAt(0)
-                    } else if(el.name.length >= 3){
-                        if (/[a-zA-Z0-9]/.test(el.name.substring(el.name.length-2, el.name.length))) {
-                            re_name = el.name.charAt(0)
+                    if(/[a-zA-Z]/.test(name.charAt(0))) {
+                        re_name = name.charAt(0)
+                    } else if(name.length >= 3){
+                        if (/[a-zA-Z0-9]/.test(name.substring(name.length-2, name.length))) {
+                            re_name = name.charAt(0)
                         } else {
-                            re_name = el.name.substring(el.name.length-2, el.name.length)
+                            re_name = name.substring(name.length-2, name.length)
                         }
                     } else {
-                        re_name = el.name
+                        re_name = name
                     }
                     return(
                         <Card elevation={5} style={{marginBottom: "10px"}} key={key} ref={this.getOrCreateRef(key)}>
                             <CardHeader avatar={
-                                <Avatar style={{backgroundColor: '#' + CryptoJS.MD5(el.name).toString().substring(1, 7), width: "2.2em", height: "2.2em", fontWeight: 'bold'}}>
+                                el.image === null?
+                                    el.name === null?
+                                    <Avatar style={{width: "2.2em", height: "2.2em", fontWeight: 'bold'}}>
+                                        {re_name}
+                                    </Avatar> :
+                                <Avatar style={{backgroundColor: '#' + CryptoJS.MD5(el.id).toString().substring(1, 7), width: "2.2em", height: "2.2em", fontWeight: 'bold'}}>
                                     {re_name}
-                                </Avatar>
+                                </Avatar> :
+                                <Avatar src={image} style={{width: "2.2em", height: "2.2em"}} />
                             } action={
                                 <Grid container direction="row" justify="center">
-                                    <Typography style={{fontSize: "20px", paddingTop: "18px"}}>{(el.like) + (this.state.isClick[key]? 1:0)}</Typography>
-                                    <IconButton onClick={this.props.isLoggedIn? this.onClickChangeColor.bind(this, key, el.idx): this.onClickNotLogin} style={{marginTop: "4px", marginRight: "4px", marginLeft: "-8px", marginBottom: "-8px"}}>
-                                        <ThumbUpAltIcon fontSize="large" color={this.state.isClick[key]? "primary":"inherit"}/>
+                                    <Typography style={{fontSize: "20px", paddingTop: "18px"}}>{(el.like) + (el.clicked === 1? this.state.isClick[key]? -1:0:this.state.isClick[key]? 1:0)}</Typography>
+                                    <IconButton onClick={this.props.isLoggedIn? this.onClickChangeColor.bind(this, key, el.clicked, el.idx): this.onClickNotLogin} style={{marginTop: "4px", marginRight: "4px", marginLeft: "-8px", marginBottom: "-8px"}}>
+                                        <ThumbUpAltIcon fontSize="large" color={el.clicked === 1? this.state.isClick[key]? "inherit":"primary":this.state.isClick[key]? "primary":"inherit"}/>
                                     </IconButton>
                                 </Grid>
                                 
-                            } titleTypographyProps={{variant:'h6' }} title={el.name} subheader={time} className={classes.cardTitleText}/>
+                            } titleTypographyProps={{variant:'h6' }} title={name} subheader={time} className={classes.cardTitleText}/>
                             <CardContent onClick={this.onClickExpand.bind(this, key)} style={{padding: "0px", position: "relative"}}>
                                 <Grid container direction="row" className={clsx(classes.showExpand, {[classes.hideExpand]: !this.state.isExpand[key]})}>
                                     <Grid item xs={7} sm={7} md={7} lg={7} xl={7}>
@@ -302,14 +319,6 @@ class RecordRecommend extends Component{
     } 
 }
 
-RecordRecommend.propTypes = {
-    isLoggedIn: PropTypes.bool,
-};
-  
-RecordRecommend.defaultProps = {
-    isLoggedIn: false,
-};
-
 const mapStateToProps = (state) => {
     return {
         recommend: state.mainRecord.recommend,
@@ -319,11 +328,11 @@ const mapStateToProps = (state) => {
  
 const mapDispatchToProps = (dispatch) => {
     return {
-        recommendRequest: () => {
-            return dispatch(recommendRequest());
+        recommendRequest: (id) => {
+            return dispatch(recommendRequest(id));
         },
-        likeRequest: (sign, idx) => {
-            return dispatch(likeRequest(sign, idx));
+        likeRequest: (id, sign, idx) => {
+            return dispatch(likeRequest(id, sign, idx));
         }
     };
 };
