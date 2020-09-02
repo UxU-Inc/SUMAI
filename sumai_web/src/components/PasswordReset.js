@@ -40,6 +40,9 @@ const useStyles = theme => ({
         padding: theme.spacing(1),
         paddingLeft: theme.spacing(2),
     },
+    buttonLayout: {
+        padding: theme.spacing(0),
+    },
     blueButton: {
         variant: 'contained',
         color: '#ffffff',
@@ -53,7 +56,6 @@ const useStyles = theme => ({
         fontWeight: 'bold',
         borderRadius: '0px',
     },
-
 }) 
 
 function PasswordResetComponent(props) {
@@ -68,10 +70,10 @@ function PasswordResetComponent(props) {
     const {classes} = props
 
 
-    useEffect(() => {
-        let eventSource = new EventSource("http://localhost:3306/api/sendEmail/temporary/wait")
-        eventSource.onmessage = e => console.log(JSON.parse(e.data))
-    }, [])
+    // useEffect(() => {
+    //     let eventSource = new EventSource("http://localhost:3306/api/sendEmail/temporary/wait")
+    //     eventSource.onmessage = e => console.log(JSON.parse(e.data))
+    // }, [])
 
 
     const onKeyPress = (e) => {
@@ -97,9 +99,7 @@ function PasswordResetComponent(props) {
             axios.post('/api/account/checkSignupEmail', {email}).then((res) => { // 이메일 체크용으로 악용 가능?
                 if(errorCode===1){
                     setRefresh(true)
-                    console.log(true)
                     setTimeout(() => {
-                        console.log(false)
                         setRefresh(false)
                     }, 200);
                 } else {
@@ -107,7 +107,7 @@ function PasswordResetComponent(props) {
                 }
             }).catch((err) => {
                 setSlideNumber(slideNumber+1)
-                axios.post('/api/sendEmail/sendTemporaryPassword', {email}).then((res) => {
+                axios.post('/api/email/temporary/send', {email}).then((res) => {
                     console.log(res)
                 })  
             })
@@ -115,7 +115,6 @@ function PasswordResetComponent(props) {
              history.push("/")
         }
     }
-    
     const onEnterSlide = (e) => {
         e.style.position='relative'
         setBeforeSlide(afterSlide)
@@ -124,8 +123,6 @@ function PasswordResetComponent(props) {
     const onExitingSlide = (e) => {
         beforeSlide.style.position='absolute'
     }
-
-
     return (
         <Box className={classes.root}>
             <Box display="flex" justifyContent="center" >
@@ -134,9 +131,7 @@ function PasswordResetComponent(props) {
                         title={
                             <Box display="flex" alignItems="center">
                                 <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
-                                <Typography style={{color: "#0000008A", fontSize: "28px", marginLeft: "10px"}}>
-                                    비밀번호 찾기
-                                </Typography>
+                                <Typography style={{color: "#0000008A", fontSize: "28px", marginLeft: "10px"}}>비밀번호 찾기</Typography>
                             </Box>
                         }   
                     />
@@ -157,12 +152,12 @@ function PasswordResetComponent(props) {
                         </Slide>
                     </Box>
 
-                    <CardActions>
+                    <CardActions className={classes.buttonLayout}>
                     <Button className={classes.blueButton} onClick={onClickNextButton}>{slideNumber===0? '다음': '완료'}</Button>
                     </CardActions>
                 </Card>
             </Box>
-            
+
             <Snackbar open={errorCode!==0 && !refresh}> 
                 <Alert severity="error">
                     {
