@@ -32,7 +32,7 @@ router.post('/lastest', (req, res) => {
         LEFT JOIN \
         summary.account_info \
         ON (summary.summary_data.email = summary.account_info.email) OR (summary.summary_data.id = summary.account_info.id) \
-        WHERE summary.summary_data.idx <= "+ req.body.idx +" \
+        WHERE remove = 0 AND summary.summary_data.idx <= "+ req.body.idx +" \
         ORDER BY summary.summary_data.idx DESC LIMIT 10", (err, data) => {
         if(!err) {
             res.send(data);

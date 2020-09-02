@@ -33,6 +33,8 @@ class Main extends React.Component {
             fabTag: false,
 
             convertSort: false,
+
+            record: false,
         }
         
     }
@@ -122,6 +124,10 @@ class Main extends React.Component {
         })
     }
 
+    onClickRecord = () => { this.setState({ record: !this.state.record }) }
+    recordTrue = () => { this.setState({ record: true }) }
+    recordFalse = () => { this.setState({ record: false }) }
+
     fetchUsers = async () => {
         try {
           this.setState({
@@ -132,7 +138,9 @@ class Main extends React.Component {
           const response = await axios.post(
             'https://bbbnjogjj6.execute-api.us-east-1.amazonaws.com/production',
             {
-                summarize: this.state.text
+                summarize: this.state.text,
+                id: this.props.status.currentId,
+                record: this.state.record,
             }
           );
           this.setState({
@@ -176,16 +184,16 @@ class Main extends React.Component {
                             <Header isLoggedIn={this.props.status.isLoggedIn} currentUser={this.props.status.currentUser} 
                                     onLogout={this.handleLogout} props={this.props}/> 
                             <div >
-                                <Body state={this.state} handleChange={this.handleChange} onClick={this.onClick} 
-                                        textRemove={this.textRemove} fetchUsers={this.fetchUsers} errorSet={this.errorSet} />
+                                <Body state={this.state} handleChange={this.handleChange} onClick={this.onClick} textRemove={this.textRemove} 
+                                        onClickRecord={this.onClickRecord} recordTrue={this.recordTrue} fetchUsers={this.fetchUsers} errorSet={this.errorSet} />
                             </div>
                         </div> :
                         <div className="MainMob" key={key}> 
                             <HeaderMob isLoggedIn={this.props.status.isLoggedIn} currentUser={this.props.status.currentUser} 
                                     onLogout={this.handleLogout} props={this.props}/> 
                             <div >
-                                <BodyMob state={this.state} handleChange={this.handleChange} 
-                                        textRemove={this.textRemove} fetchUsers={this.fetchUsers} errorSet={this.errorSet} />
+                                <BodyMob state={this.state} handleChange={this.handleChange} textRemove={this.textRemove} 
+                                        recordFalse={this.recordFalse} fetchUsers={this.fetchUsers} errorSet={this.errorSet} />
                             </div>
                             
                         </div> 

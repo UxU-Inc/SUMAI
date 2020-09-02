@@ -10,6 +10,7 @@ import CryptoJS from 'crypto-js';
 import IconButton from '@material-ui/core/IconButton';
 import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import DeleteIcon from '@material-ui/icons/Delete';
 import clsx from 'clsx';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
@@ -19,6 +20,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import { connect } from 'react-redux';
 import { lastestRequest, likeRequest  } from '../actions/mainRecord';
+import * as root from '../rootValue';
 
 const useStyles = theme => ({
     root: {
@@ -73,6 +75,16 @@ const useStyles = theme => ({
     expandOpen: {
         transform: 'rotate(180deg)',
     },
+    deleteStyle: {
+        margin: "4px 10px -8px -8px",
+        cursor: "pointer",
+        "&:hover": {
+            color: root.PrimaryColor
+        },
+        "&:active": {
+            color: root.HoberColor
+        },
+    }
 });
 
 const references = {
@@ -238,7 +250,7 @@ class RecordLastest extends Component{
                 <div className={classes.lineTop}/>
                 <Grid container direction="row" style={{justifyContent: "space-between"}}>
                     <Typography style={{color: "#0000008A", fontSize: "28px", marginLeft: "10px", marginBottom: "10px"}}>
-                        기록2
+                        요약 기록
                     </Typography>
                     <ButtonGroup variant="text" size="large" style={{marginRight: "5px", marginBottom: "10px"}}>
                         <Button color="primary">최신순</Button>
@@ -275,9 +287,10 @@ class RecordLastest extends Component{
                                 </Avatar> :
                                 <Avatar src={image} style={{width: "2.2em", height: "2.2em"}} />
                             } action={
-                                <Grid container direction="row" justify="center">
+                                <Grid container direction="row" justify="center" alignItems="center">
+                                    <DeleteIcon fontSize="large" className={classes.deleteStyle} />
                                     <Typography style={{fontSize: "20px", paddingTop: "18px"}}>{(el.like) + (this.state.isClick[key]? 1:0)}</Typography>
-                                    <IconButton onClick={this.props.isLoggedIn? this.onClickChangeColor.bind(this, key, el.idx): this.onClickNotLogin} style={{marginTop: "4px", marginRight: "4px", marginLeft: "-8px", marginBottom: "-8px"}}>
+                                    <IconButton onClick={this.props.isLoggedIn? this.onClickChangeColor.bind(this, key, el.idx): this.onClickNotLogin} style={{margin: "4px 4px -8px -8px"}}>
                                         <ThumbUpAltIcon fontSize="large" color={this.state.isClick[key]? "primary":"inherit"}/>
                                     </IconButton>
                                 </Grid>

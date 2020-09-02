@@ -236,7 +236,7 @@ class RecordRecommend extends Component{
                 <div className={classes.lineTop}/>
                 <Grid container direction="row" style={{justifyContent: "space-between"}}>
                     <Typography style={{color: "#0000008A", fontSize: "28px", marginLeft: "10px", marginBottom: "10px"}}>
-                        기록2
+                        요약 기록
                     </Typography>
                     <ButtonGroup variant="text" size="large" style={{marginRight: "5px", marginBottom: "10px"}}>
                         <Button onClick={this.onClickConvertSort.bind(this, false)}>최신순</Button>
@@ -247,7 +247,7 @@ class RecordRecommend extends Component{
                 {list ? list.slice(0, this.state.dataCount).map( (el, key) => {
                     let re_name = ''
                     let time = el.time.slice(0, 10) + " " + el.time.slice(11, 16)
-                    if(/[a-zA-Z]/.test(el.name.charAt(0))) {
+                    if(/[a-zA-Z0-9]/.test(el.name.charAt(0))) {
                         re_name = el.name.charAt(0)
                     } else if(el.name.length >= 3){
                         if (/[a-zA-Z0-9]/.test(el.name.substring(el.name.length-2, el.name.length))) {

@@ -97,7 +97,6 @@ class Account extends Component{
                       birthday: data.data.birthday,
                       gender: data.data.gender,
                       email : email,
-                      imagesrc: data.data.image,
                       avatarname: this.avatarName(this.props.status.currentUser),
                       avatarcolor: '#' + CryptoJS.MD5(email).toString().substring(1, 7),
                     })
@@ -113,7 +112,10 @@ class Account extends Component{
     onClickLink = (url) => (e) => {
       this.props.history.push({
         pathname: url,
-        state: { birthday: this.state.birthday }
+        state: { 
+          birthday: this.state.birthday,
+          gender: this.state.gender,
+        }
       })
     }
 
