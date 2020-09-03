@@ -512,7 +512,7 @@ class Signup extends Component{
                             <CardHeader className={classes.cardTitleText} 
                                         title={
                                                 <Box display="flex" alignItems="center">
-                                                    <IconButton onClick={this.onClickBack()} style={{marginRight: "10px"}}>
+                                                    <IconButton style={{marginRight: "10px"}}>
                                                         <ArrowBackIcon style={{color: "#0000008A"}}/>  
                                                     </IconButton>
 

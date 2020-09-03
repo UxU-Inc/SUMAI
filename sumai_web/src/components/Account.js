@@ -62,18 +62,15 @@ class Account extends Component{
     }
 
     componentDidMount() {
-      // 로그인 상태 아니면 접근 불가
-      if(this.props.status.isLoggedIn === false) {
-        this.props.history.push("/")
-      }
-
       this.accountInit()
     }
 
     componentDidUpdate() {
       if(this.props.status.loaded) {
           if(this.props.status.isLoggedIn === false) {
-              this.props.history.push("/")
+            setTimeout(function() { 
+              this.props.history.push("/") 
+            }.bind(this), 0)
           } 
       }
   }
