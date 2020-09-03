@@ -5,6 +5,7 @@ const MySQLStore = require('express-mysql-session')(session);
 const passport = require('passport');
 const rateLimit = require ('express-rate-limit'); 
 const api = require('./routes/index');
+const cookieParser = require('cookie-parser')
 
 const app = express();
 // const cors = require('cors');
@@ -48,6 +49,9 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+// 쿠키 읽기 위해 사용
+app.use(cookieParser())
 
 
 app.use('/api', api);

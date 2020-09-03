@@ -188,7 +188,7 @@ class AccountPassword extends React.Component {
                             isLoggedIn: false,
                             email: ''
                         };
-                        document.cookie = 'key=' + btoa(JSON.stringify(loginData));
+                        document.cookie = 'key=' + btoa(JSON.stringify(loginData)) + ';path=/;';
                     }
                 );
 
