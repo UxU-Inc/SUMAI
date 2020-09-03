@@ -17,6 +17,8 @@ const db = mysql.createPool(dbconfig)
 const router = express.Router();
 const s3 = new AWS.S3(s3config);
 
+const ActionLog = require('../function/ActionLog')
+
 passport.use(new GoogleStrategy({
     clientID: snsconfig.google_clientId,
     clientSecret: snsconfig.google_clientSecret,
@@ -597,6 +599,7 @@ router.get('/confirm', (req, res) => {
                         resolve(res.status(400).send(logintype));
                     })
                 } else {
+                    ActionLog(req, `[S]sns login`)
                     resolve(res.send(req.session.loginInfo));
                 }
             } else {

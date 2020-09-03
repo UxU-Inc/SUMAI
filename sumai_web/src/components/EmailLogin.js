@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import imgLogo from '../images/sumai_logo_blue.png';
@@ -55,22 +55,13 @@ const useStyles = theme => ({
     },
 }) 
 
+const useFocus = () => {
+    const htmlElRef = useRef(null)
+    const setFocus = () => {htmlElRef.current &&  htmlElRef.current.focus()}
 
-function PasswordChangeMassage(props) {
-    const { enqueueSnackbar } = useSnackbar()
-    const { code, setCode } = props
-
-    React.useEffect(() => {
-        console.log(code)
-        if(code === 1) enqueueSnackbar('비밀번호가 변경되었습니다.', {variant: "success"} )
-        if(code === 2) enqueueSnackbar('해당 계정이 존재하지 않습니다.', {variant: "error"})
-        if(code === 3) enqueueSnackbar('현재 비밀번호가 틀립니다.', {variant: "error"})
-        if(code === 4) enqueueSnackbar('로그인 상태가 아닙니다.', {variant: "error"})
-        if(code !== 1) setCode(0)
-    }, [code])
-
-    return (<React.Fragment></React.Fragment>)
+    return [ htmlElRef, setFocus ] 
 }
+
 function EmailLoginComponent(props) {
     const location = useLocation()
     const history = useHistory()
@@ -78,20 +69,23 @@ function EmailLoginComponent(props) {
     const [passwordCheck, setPasswordCheck] = useState('')
     const [passwordChangeError, setPasswordChangeError] = useState(false)
     const [passwordCheckError, setPasswordCheckError] = useState(false)
-    const [refresh, setRefresh] = useState(false)
     const [slideNumber, setSlideNumber] = useState(0)
     const [beforeSlide, setBeforeSlide] = useState()
     const [afterSlide, setAfterSlide] = useState() // 나중에 slide function화
+    const id=location.search?.slice(1)?.split('id=')[1]?.split('&')[0]
+    const cert=location.search?.slice(1)?.split('cert=')[1]?.split('&')[0]
+    const [inputPasswordChange, inputPasswordChangeFocus] = useFocus()
+    const [inputPasswordCheck, inputPasswordCheckFocus] = useFocus()
     
     const { classes } = props;
 
     useEffect(() => {
-        const id=location.search?.slice(1)?.split('id=')[1]?.split('&')[0]
-        const cert=location.search?.slice(1)?.split('cert=')[1]?.split('&')[0]
-        axios.post('/api/email/temporary/login', {id: id, cert: cert}).then((res) => {
-            if(res.data.code === 0) {
-                history.push('/accounts/password')
+        axios.post('/api/email/temporary/login/check', {id: id, cert: cert}).then((res) => {
+            if(res.data.code !== 0) {
+                history.push('/')
             }
+        }).catch(()=> {
+            history.push('/')
         })
     }, [])
 
@@ -109,32 +103,35 @@ function EmailLoginComponent(props) {
             // 비밀번호 유형 검사 (영어, 숫자 8~15자리)
             const passwordRegex = /^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[`~!@#$%^&+*()\-_+=.,<>/?'";:[\]{}\\|]).*$/;
             setPasswordChangeError(!passwordRegex.test(value) && value !== "")
-        } else if (type === "passwordCheck") {
-            // 비밀번호 확인
-            setPasswordCheckError((passwordChangeError || passwordChange !== value) && value !== "")
         }
     }
 
     
     const onKeyPress = (e) => {
         if(e.key === 'Enter') {
-            // this.onClickSave();
+            this.onClickNextButton(e);
         }
     }
 
     const onClickNextButton = (e) => {
         if(slideNumber === 0) {
-            if(!(passwordChangeError && passwordCheckError)) {
-                axios.post('/api/email/temporary/login/change', {password: passwordChange}).then((res) => {
-                    if(res.data.code === 0) {
-                        console.log('성공한듯')
+            if(passwordChangeError || passwordChange === ''){
+                console.log(inputPasswordChange)
+                inputPasswordChangeFocus()
+            } else if(passwordCheckError || passwordCheck !== passwordChange) {
+                inputPasswordCheckFocus()
+                setPasswordCheckError(true)
+            }else{
+                axios.post('/api/email/temporary/login/change', {id: id, cert: cert, password: passwordChange}).then((res) => {
+                    if(res.data.code === 0) { // 인증 성공
+                        setSlideNumber(1)
                     }else{
-                        console.log('실패한듯')
+                        history.push('/')
                     }
                 })
-            }else{
-                console.log('입력 에러', passwordChangeError, passwordCheckError)
             }
+        } else if(slideNumber === 1) {
+            history.push('/')
         }
     }
     const onEnterSlide = (e) => {
@@ -150,7 +147,7 @@ function EmailLoginComponent(props) {
         
         <Box className={classes.root}>
             <Box display="flex" justifyContent="center" >
-                <Card elevation={3} style={{minWidth: "450px", position: 'relative'}}>
+                <Card elevation={3} style={{maxWidth: '450px', width:'100%', minWidth:'300px', position: 'relative'}}>
                     <CardHeader className={classes.cardTitleText} 
                         title={
                             <Box display="flex" alignItems="center">
@@ -159,21 +156,23 @@ function EmailLoginComponent(props) {
                             </Box>
                         }   
                     />
-                    <Box style={{padding: "16px 10%", }}>
-                        <Slide  style={{position: 'relative', }} direction="left" in={slideNumber===0} mountOnEnter unmountOnExit onEnter={onEnterSlide} onExiting={onExitingSlide}>
+                    <Box style={{padding: "16px 10%", minHeight:'350px'}}>
+                        <Slide style={{position: 'relative', }} direction="left" in={slideNumber===0} mountOnEnter unmountOnExit onEnter={onEnterSlide} onExiting={onExitingSlide}>
                             <CardContent style={{padding: 0}}>
-                                <TextField variant="outlined" value={passwordChange} onChange={(e) => handleChange(e, "passwordChange")} error={passwordChangeError}
-                                        fullWidth label="변경할 비밀번호 입력" type="password" style={{margin: "30px 0px 7.5px 0px"}}
-                                        helperText={passwordChangeError? "영어, 숫자, 특수문자 포함, 8~15자리": false} onKeyPress={onKeyPress}/>
-                                <TextField variant="outlined" value={passwordCheck} onChange={(e) => handleChange(e, "passwordCheck")} error={passwordCheckError}
-                                        fullWidth label="비밀번호 확인" type="password" style={{margin: "7.5px 0px 15px 0px"}}
-                                        helperText={passwordCheckError? "비밀번호가 다릅니다.": false} onKeyPress={onKeyPress}/>
+                                    <TextField variant="outlined" value={'ksm@test.com'} 
+                                            fullWidth label="이메일" style={{margin: "15px 0px 7.5px 0px"}} autoComplete='new-password'/>
+                                    <TextField variant="outlined" value={passwordChange} onChange={(e) => handleChange(e, "passwordChange")} error={passwordChangeError} autoComplete='new-password'
+                                            fullWidth label="변경할 비밀번호 입력" type="password" style={{margin: "30px 0px 7.5px 0px"}} ref={inputPasswordChange} autoFocus
+                                            helperText={passwordChangeError? "영어, 숫자, 특수문자 포함, 8~15자리": false} onKeyPress={onKeyPress}/>
+                                    <TextField variant="outlined" value={passwordCheck} onChange={(e) => handleChange(e, "passwordCheck")} error={passwordCheckError}
+                                            fullWidth label="비밀번호 확인" type="password" style={{margin: "7.5px 0px 15px 0px"}} ref={inputPasswordCheck} autoFocus
+                                            helperText={passwordCheckError? "비밀번호가 다릅니다.": false} onKeyPress={onKeyPress}/>
                             </CardContent>
                         </Slide>
-                        <Slide  style={{position: 'absolute', }} direction="left" in={slideNumber===1} mountOnEnter unmountOnExit onEnter={onEnterSlide} onExiting={onExitingSlide}>
+                        <Slide style={{position: 'absolute', }} direction="left" in={slideNumber===1} mountOnEnter unmountOnExit onEnter={onEnterSlide} onExiting={onExitingSlide}>
                             <CardContent style={{padding: 0}}>
-                                <Typography>
-                                    완료?
+                                <Typography style={{fontFamily: 'NotoSansKR-Regular', color: '#424242', fontSize: '18px'}}>
+                                    비밀번호 변경이 완료되었습니다. <br/>변경된 비밀번호로 로그인 해주세요.
                                 </Typography>
                             </CardContent>
                         </Slide>
@@ -184,9 +183,6 @@ function EmailLoginComponent(props) {
                     </CardActions>
                 </Card>
             </Box>
-            {/* <SnackbarProvider maxSnack={3}> 
-                <PasswordChangeMassage code={code} setCode={handleCode}/>
-            </SnackbarProvider> */}
         </Box>
     )
 }
