@@ -54,7 +54,7 @@ router.post('/recommend', (req, res) => {
         summary.account_info \
         ON (summary.summary_data.id = summary.account_info.id) \
         WHERE remove = 0 \
-        ORDER BY `like` DESC LIMIT 100", (err, data) => {
+        ORDER BY `like` DESC, summary.summary_data.time DESC LIMIT 100", (err, data) => {
         if(!err) {
             res.send(data);
         } else {
