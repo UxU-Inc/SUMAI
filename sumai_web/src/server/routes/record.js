@@ -17,7 +17,8 @@ router.post('/lastest', (req, res) => {
         summary.summary_data.summarize, \
         (SELECT COUNT(*) FROM summary.like_log WHERE summary_data_idx = summary.summary_data.idx)  AS 'like', \
         (SELECT IF(summary.summary_data.idx = summary_data_idx, 1, -1) FROM summary.like_log WHERE id = '"+req.body.id+"' AND summary_data_idx = summary.summary_data.idx)  AS 'clicked',\
-        summary.account_info.image \
+        summary.account_info.image, \
+        summary.summary_data.ip_addr \
         FROM \
         summary.summary_data \
         LEFT JOIN \
@@ -45,7 +46,8 @@ router.post('/recommend', (req, res) => {
         summary.summary_data.summarize, \
         (SELECT COUNT(*) FROM summary.like_log WHERE summary_data_idx = summary.summary_data.idx)  AS 'like', \
         (SELECT IF(summary.summary_data.idx = summary_data_idx, 1, -1) FROM summary.like_log WHERE id = '"+req.body.id+"' AND summary_data_idx = summary.summary_data.idx)  AS 'clicked',\
-        summary.account_info.image \
+        summary.account_info.image, \
+        summary.summary_data.ip_addr \
         FROM \
         summary.summary_data \
         LEFT JOIN \
@@ -83,6 +85,18 @@ router.post('/like', (req, res) => {
             }
         })
     }
+})
+
+// 기록삭제
+router.post('/delete', (req, res) => {
+    db.query("UPDATE `summary`.`summary_data` SET `remove` = '1' WHERE (`idx` = '"+req.body.idx+"')", (err, data) => {
+        if(!err) {
+            res.send(data);
+        } else {
+            console.log(err);
+            res.send(err);
+        }
+    })
 })
 
 module.exports = router;
