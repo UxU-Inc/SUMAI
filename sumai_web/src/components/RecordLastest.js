@@ -377,7 +377,7 @@ class RecordLastest extends Component{
                         로그인을 해주세요.
                     </Alert>
                 </Snackbar>
-                <Snackbar open={this.state.deleteCheck} autoHideDuration={3000} onClose={this.snackBarDeleteHandleClose.bind(this, this.state.deleteIdx)}>
+                <Snackbar open={this.state.deleteCheck} autoHideDuration={3000} onClose={this.snackBarDeleteHandleClose}>
                     <Alert severity="success"
                         action={
                         <Button onClick={this.recordDeleteCancel}color="inherit" size="small">
