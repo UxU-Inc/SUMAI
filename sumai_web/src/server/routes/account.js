@@ -15,6 +15,8 @@ const router = express.Router();
 
 const s3 = new AWS.S3(s3config);
 
+const ActionLog = require('../function/ActionLog')
+
 const upload = multer({
     storage: multerS3({
       s3: s3,
@@ -76,6 +78,7 @@ router.post('/signup', (req, res) => {
             db.query("INSERT INTO summary.account_info (type, id, email, name, password, salt) VALUES ('SUMAI', "+ id + ", LOWER('"+ req.body.email +"'), '"+ req.body.name +"', '"+ password.hashed +"', '"+ password.salt +"')", (err, exists) => {
                 if(!err) {
                     // 회원가입 로그
+                    ActionLog(req, `[S]signup. id: ${id}`)
                     db.query("INSERT INTO summary.account_change (modifiedDate, changeData, email, name, password, salt) VALUES (now(), 'signup', '"+ req.body.email +"', '"+ req.body.name +"', '"+ password.hashed +"', '"+ password.salt +"')")
                     return res.json({ success: true });
                 } else {
@@ -114,6 +117,7 @@ router.post('/login', (req, res) => {
                         name: account[0].name
                     };
                     return req.session.save(() => {
+                        ActionLog(req, `[S]login.`);
                         res.json({ success: true, id: account[0].id, email: account[0].email, name: account[0].name }); 
                     })
                 } else {
@@ -316,7 +320,6 @@ router.post('/withdrawal', (req, res) => {
     });
 
 })
-
 router.post('/imageUpload/:id', upload.single("img"), (req, res, next) => {
     db.query("SELECT * FROM summary.account_info WHERE id = '"+ req.params.id + "'", (err, account) => {
         if (account[0].image === null) {

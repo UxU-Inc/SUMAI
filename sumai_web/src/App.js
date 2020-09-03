@@ -35,7 +35,7 @@ class App extends Component {
                   isLoggedIn: false,
                   email: ''
               };
-              document.cookie = 'key=' + btoa(JSON.stringify(loginData));
+              document.cookie = 'key=' + btoa(JSON.stringify(loginData)) + ';path=/;';
           }
       );
     }
@@ -77,7 +77,7 @@ class App extends Component {
                     email: ''
                 };
 
-                document.cookie='key=' + btoa(JSON.stringify(loginData));
+                document.cookie='key=' + btoa(JSON.stringify(loginData)) + ';path=/;';
             }
         }
     );

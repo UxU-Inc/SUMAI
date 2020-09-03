@@ -170,6 +170,8 @@ class Signup extends Component{
             birthCode:0,
             emailSendCount: 5,
             emailSendMessage: false,
+            beforeSlide: null,
+            afterSlide: null,
         }
         this.textFieldRef = [React.createRef(), React.createRef(), React.createRef(), React.createRef()]
         this.textFieldRefBirthday = [React.createRef(), React.createRef()]
@@ -213,7 +215,7 @@ class Signup extends Component{
     validation = (type, value, checked) => {
         if(type === "email") {
             // 이메일 형식 검사
-            const emailRegex = /^[0-9a-z]([-_.]?[0-9a-z])*@[0-9a-z]([-_.]?[0-9a-z])*\.[a-z]{2,3}$/i;
+            const emailRegex = /^[0-9a-z]([-_.]?[0-9a-z])*@[0-9a-z]([-_.]?[0-9a-z])*\.[a-z]{2,}$/i;
             if(!emailRegex.test(value) && value !== "") {
                 this.setState({
                     emailerror: true,
@@ -249,15 +251,6 @@ class Signup extends Component{
             }
         } else if (type === "passwordcheck") {
             // 비밀번호 확인
-            if((this.state.passworderror || this.state.password !== value) && value !== "") {
-                this.setState({
-                    passwordcheckerror: true,
-                })
-            } else {
-                this.setState({
-                    passwordcheckerror: false,
-                })
-            }
         } else if (type === "terms" && checked) {
             // 이용약관 동의 확인
             this.setState({
@@ -420,10 +413,19 @@ class Signup extends Component{
             } else if(this.state.password === "" || this.state.passworderror) {
                 this.textFieldRef[2].current.focus()
                 return
-            } else if(this.state.passwordcheck === "" || this.state.passwordcheckerror) {
+            } else if(this.state.password !== this.state.passwordcheck) {
+                this.setState({
+                    passwordcheckerror: true,
+                    passwordcheck: '',
+                })
                 this.textFieldRef[3].current.focus()
                 return
-            } else if(!this.state.termsChecked) {
+            } else if(this.state.password === this.state.passwordcheck) {
+                this.setState({
+                    passwordcheckerror: false,
+                })
+            } 
+            if(!this.state.termsChecked) {
                 this.setState({
                     termsCheckederror: true,
                 })
@@ -486,10 +488,16 @@ class Signup extends Component{
         }
     }
 
-    onClickBack = () => {
-        if(this.state.slideOpen === 0) {
-            this.props.history.goBack()
-        } 
+    
+    onEnterSlide = (e) => {
+        e.style.position='relative'
+        this.setState({
+            beforeSlide: this.state.afterSlide,
+            afterSlide: e
+        })
+    }
+    onExitingSlide = (e) => {
+        this.state.beforeSlide.style.position='absolute'
     }
 
     render(){ 
@@ -500,7 +508,7 @@ class Signup extends Component{
             return ( 
                 <div className={classes.root}>
                     <Box display="flex" justifyContent="center" >
-                        <Card elevation={3} style={{minWidth: "450px",}} >
+                        <Card elevation={3} style={{maxWidth: '450px', width:'100%', minWidth:'300px', position: 'relative'}}>
                             <CardHeader className={classes.cardTitleText} 
                                         title={
                                                 <Box display="flex" alignItems="center">
@@ -516,9 +524,9 @@ class Signup extends Component{
                                                 </Box>
                                             }   
                             />
-                            <Box height={'450px'} overflow='hidden' position='relative' >
-                                <Slide direction="left" in={this.state.slideOpen===0} mountOnEnter unmountOnExit>
-                                    <CardContent style={{padding: "16px 10%", position: 'absolute'}}>
+                            <Box style={{padding: "16px 10%",}}>
+                                <Slide style={{position: 'relative', }} direction="left" in={this.state.slideOpen===0} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)}>
+                                    <CardContent style={{padding: 0}}>
                                         <TextField autoFocus variant="outlined" value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.emailerror || this.state.errorCode===1}
                                             fullWidth label="이메일" placeholder="이메일을 입력해주세요." style={{margin: "15px 0px 7.5px 0px"}} inputRef={this.textFieldRef[0]}
                                             helperText={this.state.emailerror? "이메일 형식이 올바르지 않습니다.": false} onKeyPress={this.onKeyPress} spellCheck="false"/>
@@ -544,8 +552,8 @@ class Signup extends Component{
                                     </CardContent>
                                 </Slide>
 
-                                <Slide direction="left" in={this.state.slideOpen===1} mountOnEnter unmountOnExit>
-                                    <CardContent style={{display: 'flex', flexDirection: 'column', padding: "16px 10%", position: 'absolute'}}>
+                                <Slide style={{position: 'relative', }} direction="left" in={this.state.slideOpen===1} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)}>
+                                    <CardContent style={{padding: 0}}>
                                         <Box height='388px'>
                                             <Typography style={{color: '#0000008A', fontFamily: 'NotoSansKR-Regular'}}>생년월일 (선택사항)</Typography>
                                             <Box display="flex" mt={2}>
@@ -589,8 +597,8 @@ class Signup extends Component{
                                     </CardContent>
                                 </Slide>
                                 
-                                <Slide direction="left" in={this.state.slideOpen===2} mountOnEnter unmountOnExit>
-                                    <CardContent style={{display: 'flex', flexDirection: 'column', padding: "16px 10%", position: 'absolute'}}>
+                                <Slide style={{position: 'relative', }} direction="left" in={this.state.slideOpen===2} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)}>
+                                    <CardContent style={{padding: 0}}>
                                         <Box height='auto' mt={2}>
                                             <Typography variant='subtitle1' align="center" style={{color: '#0000008A'}}>
                                                 인증 메일이 <span style={{color: root.PrimaryColor}}>{this.state.email}</span>(으)로 전송되었습니다.<br/>
