@@ -10,6 +10,7 @@ import CryptoJS from 'crypto-js';
 import IconButton from '@material-ui/core/IconButton';
 import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import DeleteIcon from '@material-ui/icons/Delete';
 import clsx from 'clsx';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
@@ -18,6 +19,8 @@ import MuiAlert from '@material-ui/lab/Alert';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import { connect } from 'react-redux';
 import { recommendRequest, likeRequest  } from '../actions/mainRecord';
+import * as root from '../rootValue';
+import axios from 'axios'
 
 const useStyles = theme => ({
     root: {
@@ -72,6 +75,16 @@ const useStyles = theme => ({
     expandOpen: {
         transform: 'rotate(180deg)',
     },
+    deleteStyle: {
+        margin: "4px 10px -8px -8px",
+        cursor: "pointer",
+        "&:hover": {
+            color: root.PrimaryColor
+        },
+        "&:active": {
+            color: root.HoberColor
+        },
+    }
 });
 
 const references = {
@@ -92,11 +105,19 @@ class RecordRecommend extends Component{
             windowWidth: undefined,
             dataCount: 10,
             isClick: [],
+            isDelete: [],
+            deleteCheck: false,
+            deleteKey: '',
+            deleteIdx: '',
             notLoginError: false,
             isAllLoad: false,
             loadingScroll: false,
+            ip: '',
         }
         references.ref = []
+        fetch('https://api.ipify.org?format=json')
+        .then(res => res.json())
+        .then(json => this.setState({ip: json.ip}))
     }
     componentDidMount() {
         this.accountInit();
@@ -140,7 +161,31 @@ class RecordRecommend extends Component{
             }
         );
     }
+    recordDelete = (key, idx) => {
+        if(this.state.deleteCheck) {
 
+        } else {
+            const tempState = this.state.isDelete.slice()
+            tempState[key] = true
+            this.setState({
+                deleteCheck: true,
+                deleteKey: key,
+                deleteIdx: idx,
+                isDelete: tempState,
+            })
+        }
+        
+    }
+    recordDeleteCancel = () => {
+        const tempState = this.state.isDelete.slice()
+        tempState[this.state.deleteKey] = false
+        this.setState({
+            deleteCheck: false,
+            deleteKey: '',
+            deleteIdx: '',
+            isDelete: tempState,
+        })
+    }
     handleResize = () => {
         setTimeout(function() {
             this.setState({
@@ -237,6 +282,25 @@ class RecordRecommend extends Component{
             notLoginError: false,
         })
     }
+    snackBarDeleteHandleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+
+        if(this.state.deleteIdx !== '') {
+            console.log("delete")
+            const idx = this.state.deleteIdx
+            this.setState({
+                deleteCheck: false,
+            })
+            axios.post('/api/record/delete', { idx })
+            .then((response) => {
+
+            }).catch(() => {
+
+            })
+        }
+    }
     render(){ 
         const { classes } = this.props
         const list = this.state.data
@@ -270,7 +334,7 @@ class RecordRecommend extends Component{
                         re_name = name
                     }
                     return(
-                        <Card elevation={5} style={{marginBottom: "10px"}} key={key} ref={this.getOrCreateRef(key)}>
+                        <Card elevation={5} style={this.state.isDelete[key]? {display: "none"}:{marginBottom: "10px"}} key={key} ref={this.getOrCreateRef(key)}>
                             <CardHeader avatar={
                                 el.image === null?
                                     el.name === null?
@@ -282,7 +346,8 @@ class RecordRecommend extends Component{
                                 </Avatar> :
                                 <Avatar src={image} style={{width: "2.2em", height: "2.2em"}} />
                             } action={
-                                <Grid container direction="row" justify="center">
+                                <Grid container direction="row" justify="center" alignItems="center">
+                                    {(this.props.currentId !== '' && el.id === this.props.currentId) || (el.id === '' && el.ip_addr === this.state.ip)?<DeleteIcon onClick={this.recordDelete.bind(this, key, el.idx)} fontSize="large" className={classes.deleteStyle} />: null}
                                     <Typography style={{fontSize: "20px", paddingTop: "18px"}}>{(el.like) + (el.clicked === 1? this.state.isClick[key]? -1:0:this.state.isClick[key]? 1:0)}</Typography>
                                     <IconButton onClick={this.props.isLoggedIn? this.onClickChangeColor.bind(this, key, el.clicked, el.idx): this.onClickNotLogin} style={{marginTop: "4px", marginRight: "4px", marginLeft: "-8px", marginBottom: "-8px"}}>
                                         <ThumbUpAltIcon fontSize="large" color={el.clicked === 1? this.state.isClick[key]? "inherit":"primary":this.state.isClick[key]? "primary":"inherit"}/>
@@ -311,6 +376,16 @@ class RecordRecommend extends Component{
                 <Snackbar open={this.state.notLoginError} autoHideDuration={3000} onClose={this.snackBarHandleClose}>
                     <Alert onClose={this.snackBarHandleClose} severity="error">
                         로그인을 해주세요.
+                    </Alert>
+                </Snackbar>
+                <Snackbar open={this.state.deleteCheck} autoHideDuration={3000} onClose={this.snackBarDeleteHandleClose.bind(this, this.state.deleteIdx)}>
+                    <Alert severity="success"
+                        action={
+                        <Button onClick={this.recordDeleteCancel}color="inherit" size="small">
+                            삭제 취소
+                        </Button>
+                        }>
+                        기록이 삭제되었습니다
                     </Alert>
                 </Snackbar>
             </div> 

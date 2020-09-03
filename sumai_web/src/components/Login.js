@@ -156,39 +156,40 @@ class Login extends Component{
         if(this.state.errorNotice === true) this.setState({ errorNotice: false })
     }
     onClickLogin = () => {
-        if(this.state.email === "") {
-            this.textFieldRef[0].current.focus()
-        } else if(this.state.password === "" || this.state.loginerror) {
-            this.textFieldRef[1].current.focus()
-        } else {
-            this.props.onLogin(this.state.email, this.state.password).then(data => {
-                if (data.success) {
-                    if(data.error === 92) {  // 로그인이 확인됐으나 쿠키 차단 상태
+        if(this.props.loginStatus !== 'WAITING') {
+            if(this.state.email === "") {
+                this.textFieldRef[0].current.focus()
+            } else if(this.state.password === "" || this.state.loginerror) {
+                this.textFieldRef[1].current.focus()
+            } else {
+                this.props.onLogin(this.state.email, this.state.password).then(data => {
+                    if (data.success) {
+                        if(data.error === 92) {  // 로그인이 확인됐으나 쿠키 차단 상태
+                            this.setState({
+                                cookieState: false,
+                            })
+                        }
+                        
+                    } else if (data.error === 429) {
                         this.setState({
-                            cookieState: false,
+                            password: "",
+                            loginerror: false,
+                            snsloginerror: '',
+                            toomanyerror: true,
+                            errorNotice: true,
+                        })
+                    } else {
+                        this.textFieldRef[1].current.focus()
+                        this.setState({
+                            password: "",
+                            loginerror: true,
+                            snsloginerror: '',
+                            toomanyerror: false,
+                            errorNotice: true,
                         })
                     }
-                    
-                } else if (data.error === 429) {
-                    this.setState({
-                        password: "",
-                        loginerror: false,
-                        snsloginerror: '',
-                        toomanyerror: true,
-                        errorNotice: true,
-                    })
-                } else {
-                    this.textFieldRef[1].current.focus()
-                    this.setState({
-                        password: "",
-                        loginerror: true,
-                        snsloginerror: '',
-                        toomanyerror: false,
-                        errorNotice: true,
-                    })
-                }
-            })
-            
+                })
+            }
         }
     }
     onKeyPress = (e) => {
@@ -197,30 +198,32 @@ class Login extends Component{
         }
     }
     SNSLogin = (SNS) => {
-        this.setState({
-            loginerror: false,
-            snsloginerror: '',
-            toomanyerror: false,
-        })
-        this.props.onSNSLogin(SNS).then(data => {
-            if (data.success) {
-                
-            } else {
-                let snsloginerror = ''
-                switch(data.error) {
-                    case "GOOGLE": snsloginerror = "구글"; break;
-                    case "NAVER": snsloginerror = "네이버"; break;
-                    case "KAKAO": snsloginerror = "카카오"; break;
-                    case "FACEBOOK": snsloginerror = "페이스북"; break;
-                    case "NORMAL": snsloginerror = "일반"; break;
-                    default:
+        if(this.props.loginStatus !== 'WAITING') {
+            this.setState({
+                loginerror: false,
+                snsloginerror: '',
+                toomanyerror: false,
+            })
+            this.props.onSNSLogin(SNS).then(data => {
+                if (data.success) {
+                    
+                } else {
+                    let snsloginerror = ''
+                    switch(data.error) {
+                        case "GOOGLE": snsloginerror = "구글"; break;
+                        case "NAVER": snsloginerror = "네이버"; break;
+                        case "KAKAO": snsloginerror = "카카오"; break;
+                        case "FACEBOOK": snsloginerror = "페이스북"; break;
+                        case "NORMAL": snsloginerror = "일반"; break;
+                        default: return
+                    }
+                    this.setState({
+                        snsloginerror: snsloginerror,
+                        errorNotice: true,
+                    })
                 }
-                this.setState({
-                    snsloginerror: snsloginerror,
-                    errorNotice: true,
-                })
-            }
-        })
+            })
+        }
     }
 
     render() { 
