@@ -76,7 +76,9 @@ class AccountPassword extends React.Component {
     componentDidUpdate() {
         if(this.props.status.loaded) {
             if(this.props.status.isLoggedIn === false) {
-                this.props.history.push("/")
+                setTimeout(function() { 
+                    this.props.history.push("/") 
+                }.bind(this), 0)            
             } 
         }
     }
@@ -154,7 +156,7 @@ class AccountPassword extends React.Component {
         }
 
         if(!this.state.passwordCurrentError && !this.state.passwordChangeError && !this.state.passwordCheckError) {
-            this.onPasswordChange(this.props.status.currentEmail, this.state.passwordCurrent, this.state.passwordChange).then(data => {
+            this.onPasswordChange(this.props.status.currentId, this.state.passwordCurrent, this.state.passwordChange).then(data => {
                 if (data.success) {
                     this.setState({
                         code: data.code
@@ -171,8 +173,8 @@ class AccountPassword extends React.Component {
         }
     }
 
-    onPasswordChange = (email, passwordCurrent, passwordChange) => {
-        return axios.post('/api/account/passwordChange', { email, passwordCurrent, passwordChange }).then(
+    onPasswordChange = (id, passwordCurrent, passwordChange) => {
+        return axios.post('/api/account/passwordChange', { id, passwordCurrent, passwordChange }).then(
             () => {
                 if(this.props.status.isLoggedIn === true) {
                     return { success: true, code: 1 };
@@ -204,8 +206,8 @@ class AccountPassword extends React.Component {
                     </Toolbar>
 
                     <Box display="flex" alignItems="center" justifyContent="center" style={{paddingTop: "20px"}}>
-                        <IconButton onClick={() => this.props.history.goBack()}>
-                            <ArrowBackIcon style={{color: "#0000008A", paddingLeft: "12px"}}/>  
+                        <IconButton onClick={() => this.props.history.goBack()} style={{marginLeft: "10px"}}>
+                            <ArrowBackIcon style={{color: "#0000008A"}}/>  
                         </IconButton>
                         <Typography variant="h5" style={{color: "#0000008A", paddingLeft: "10px", width: "480px", minWidth: "230px"}}>비밀번호</Typography>
                     </Box>

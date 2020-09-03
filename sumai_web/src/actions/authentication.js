@@ -158,14 +158,14 @@ export function logout() {
 }
 
 /* nameChange */
-export function nameChangeRequest(email, name) {
+export function nameChangeRequest(id, email, name) {
     return (dispatch) => {
         // Inform nameChange API is starting
         dispatch(nameChange());
  
-        return axios.post('/api/account/nameChange', { email, name })
+        return axios.post('/api/account/nameChange', { id, name })
         .then((response) => {
-            dispatch(nameChangeSuccess(email, name));
+            dispatch(nameChangeSuccess(id, email, name));
         }).catch((error) => {
             dispatch(nameChangeFailure(error.response.data.code || -1));
         });
@@ -178,9 +178,10 @@ export function nameChange() {
     };
 }
  
-export function nameChangeSuccess(email, name) {
+export function nameChangeSuccess(id, email, name) {
     return {
         type: types.NAME_CHANGE_SUCCESS,
+        id: id,
         email: email,
         name: name,
     };

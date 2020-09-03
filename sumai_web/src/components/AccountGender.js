@@ -55,7 +55,7 @@ class AccountNameChange extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            email: this.props.status.currentEmail,
+            id: this.props.status.currentId,
             genderCurrent: '',
             genderCustom: '',
             genderError: 0,
@@ -64,7 +64,7 @@ class AccountNameChange extends React.Component {
     }
 
     componentDidMount() {
-        this.setState({ email: this.props.status.currentEmail }) 
+        this.setState({ id: this.props.status.currentId }) 
         if(this.props.location.state.gender === "여성" || this.props.location.state.gender === "남성" || this.props.location.state.gender === "공개 안함") {
             this.setState({ genderCurrent: this.props.location.state.gender }) 
         } else if(this.props.location.state.gender !== "" && this.props.location.state.gender !== null && this.props.location.state.gender !== undefined) {
@@ -79,14 +79,16 @@ class AccountNameChange extends React.Component {
     componentDidUpdate() {
         if(this.props.status.loaded) {
             if(this.props.status.isLoggedIn === false) {
-                this.props.history.push("/")
+                setTimeout(function() { 
+                    this.props.history.push("/") 
+                }.bind(this), 0)            
             } 
         }
     }
 
     componentWillReceiveProps() {
         setTimeout(function() { 
-        this.setState({ email: this.props.status.currentEmail }) 
+        this.setState({ id: this.props.status.currentId }) 
         if(this.props.location.state.gender === "여성" || this.props.location.state.gender === "남성" || this.props.location.state.gender === "공개 안함") {
             this.setState({ genderCurrent: this.props.location.state.gender }) 
         } else if(this.props.location.state.gender !== "" && this.props.location.state.gender !== null && this.props.location.state.gender !== undefined) {
@@ -130,7 +132,7 @@ class AccountNameChange extends React.Component {
         } 
         
         if(this.state.genderCurrent !== "" && this.state.genderCurrent !== "사용자 지정") {
-            this.onGenderChange(this.state.email, this.state.genderCurrent).then(data => {
+            this.onGenderChange(this.state.id, this.state.genderCurrent).then(data => {
                 if (data.success) {
                     this.props.history.goBack()
                 }
@@ -139,7 +141,7 @@ class AccountNameChange extends React.Component {
         }
 
         if(this.state.genderCurrent === "사용자 지정" && this.state.genderCustom !== "") {
-            this.onGenderChange(this.state.email, this.state.genderCustom).then(data => {
+            this.onGenderChange(this.state.id, this.state.genderCustom).then(data => {
                 if (data.success) {
                     this.props.history.goBack()
                 }
@@ -153,8 +155,8 @@ class AccountNameChange extends React.Component {
         this.validation()
     }
 
-    onGenderChange = (email, gender) => {
-        return axios.post('/api/account/genderChange', { email, gender }).then(
+    onGenderChange = (id, gender) => {
+        return axios.post('/api/account/genderChange', { id, gender }).then(
             () => {
                 if(this.props.status.isLoggedIn === true) {
                     return { success: true };
@@ -187,8 +189,8 @@ class AccountNameChange extends React.Component {
                     </Toolbar>
 
                     <Box display="flex" alignItems="center" justifyContent="center" style={{paddingTop: "20px"}}>
-                        <IconButton onClick={() => this.props.history.goBack()}>
-                            <ArrowBackIcon style={{color: "#0000008A", paddingLeft: "12px"}}/>  
+                        <IconButton onClick={() => this.props.history.goBack()} style={{marginLeft: "10px"}}>
+                            <ArrowBackIcon style={{color: "#0000008A"}}/>  
                         </IconButton>
                         <Typography variant="h5" style={{color: "#0000008A", paddingLeft: "10px", width: "480px", minWidth: "230px"}}>성별</Typography>
                     </Box>

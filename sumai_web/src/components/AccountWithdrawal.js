@@ -87,7 +87,9 @@ class AccountPassword extends React.Component {
     componentDidUpdate() {
         if(this.props.status.loaded) {
             if(this.props.status.isLoggedIn === false) {
-                this.props.history.push("/")
+                setTimeout(function() { 
+                    this.props.history.push("/") 
+                }.bind(this), 0)
             } 
         }
     }
@@ -128,7 +130,7 @@ class AccountPassword extends React.Component {
             return
         }
 
-        this.onPasswordCheck(this.props.status.currentEmail, this.state.password).then(data => {
+        this.onPasswordCheck(this.props.status.currentId, this.state.password).then(data => {
             if (data.success) {
                 this.setState({
                     dialogOpen: true,
@@ -174,7 +176,7 @@ class AccountPassword extends React.Component {
             return
         }
 
-        this.onWithdrawal(this.props.status.currentEmail, this.state.password).then(data => {
+        this.onWithdrawal(this.props.status.currentId, this.state.password).then(data => {
             if (data.success) {
                 this.setState({
                     code: 1,
@@ -205,8 +207,8 @@ class AccountPassword extends React.Component {
             }
         })
     }
-    onWithdrawal = (email, password) => {
-        return axios.post('/api/account/withdrawal', { email, password }).then(
+    onWithdrawal = (id, password) => {
+        return axios.post('/api/account/withdrawal', { id, password }).then(
             () => {
                 if(this.props.status.isLoggedIn === true) {
                     return { success: true };
@@ -224,7 +226,7 @@ class AccountPassword extends React.Component {
 
     render() {
         const { classes } = this.props;
-
+        
         return (
             <div >
                 <AppBar position="static" className={classes.AppBarStyle}>
@@ -238,10 +240,10 @@ class AccountPassword extends React.Component {
                     </Toolbar>
 
                     <Box display="flex" alignItems="center" justifyContent="center" style={{paddingTop: "20px"}}>
-                        <IconButton onClick={() => this.props.history.goBack()}>
+                        <IconButton onClick={() => this.props.history.goBack()} style={{marginLeft: "10px"}}>
                             <ArrowBackIcon style={{color: "#0000008A"}}/>  
                         </IconButton>
-                        <Typography variant="h5" style={{color: "#0000008A", paddingLeft: "10px", width: "600px"}}>회원탈퇴</Typography>
+                        <Typography variant="h5" style={{color: "#0000008A", paddingLeft: "10px", width: "480px", minWidth: "230px"}}>회원탈퇴</Typography>
                     </Box>
                 </AppBar> 
 
