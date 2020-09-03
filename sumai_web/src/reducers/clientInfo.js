@@ -82,15 +82,8 @@ function ClientInfoComponent() {
 
   const RecordLog = (act) => {
     axios.post('/api/recordLog/recordLog', {
-      ipv4: clientInfo?.ipv4 ?? '', 
-      sns_type: statusInfo?.snsType ?? '',
       id: statusInfo?.id ?? '',
-      email: statusInfo?.currentEmail ?? '',
       action: clientInfo.act
-    }).then(() => {
-      console.log('record success')
-    }).catch(() => {
-      console.log('record false')
     })
   }
 
@@ -104,36 +97,12 @@ function ClientInfoComponent() {
       })
     }
     ClientInfo()
-    
   }, [dispatch])
 
   // 호스트 경로가 바뀔 때 마다 act
   useEffect(()=> {
     dispatch(sendAct(`move ${location.pathname}`))
   }, [location.pathname, dispatch])
-
-  // 로그인
-  useEffect(() => {
-    if(loginInfo.status==='SUCCESS') {
-      if(statusInfo.isLoggedIn) console.log('로그인')
-      else console.log('로그아웃') // 로직 수정 필요
-    } else {
-      if(!statusInfo.isLoggedIn && statusInfo.valid) // 로직 수정 필요
-      console.log('로그아웃')
-    }
-  }, [loginInfo.status, statusInfo, dispatch])
-
-  // 회원가입
-  useEffect(() => {
-    if(signupInfo.status==='SUCCESS') console.log('회원가입 성공')
-    else if(signupInfo.status==='FAILURE') console.log(`회원가입 오류 ${signupInfo.error}`)
-  }, [signupInfo.status, signupInfo.error])
-
-
-  useEffect(() => {
-    console.log(state)
-  })
-
 
   // recv
   useEffect(() => {

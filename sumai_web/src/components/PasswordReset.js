@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState } from 'react'
 import { withStyles } from '@material-ui/core/styles';
 import withWidth from '@material-ui/core/withWidth';
 import Box from '@material-ui/core/Box';
@@ -11,9 +11,9 @@ import TextField from '@material-ui/core/TextField';
 import imgLogo from '../images/sumai_logo_blue.png';
 import * as root from '../rootValue';
 import Snackbar from '@material-ui/core/Snackbar';
-import { Alert } from '@material-ui/lab';
 import axios from 'axios'
 import { useHistory } from 'react-router-dom';
+import MuiAlert from '@material-ui/lab/Alert';
 
 const useStyles = theme => ({
     root: {
@@ -58,6 +58,11 @@ const useStyles = theme => ({
     },
 }) 
 
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
 function PasswordResetComponent(props) {
     const history = useHistory()
     const [email, setEmail] = useState('')
@@ -93,7 +98,7 @@ function PasswordResetComponent(props) {
 
     const onClickNextButton = (e) => {
         if(slideNumber===0) {
-            if(emailError) { //focus 좀
+            if(emailError || email==='') { //focus 좀
                 return 
             }
             axios.post('/api/account/checkSignupEmail', {email}).then((res) => { // 이메일 체크용으로 악용 가능?
@@ -106,10 +111,19 @@ function PasswordResetComponent(props) {
                     setErrorCode(1)
                 }
             }).catch((err) => {
-                setSlideNumber(slideNumber+1)
                 axios.post('/api/email/temporary/send', {email}).then((res) => {
+                    setSlideNumber(slideNumber+1)
                     console.log(res)
-                })  
+                }).catch((err) => {
+                    if(errorCode===2){
+                        setRefresh(true)
+                        setTimeout(() => {
+                            setRefresh(false)
+                        }, 200);
+                    } else {
+                        setErrorCode(2)
+                    }
+                })
             })
         }else if(slideNumber===1) {
              history.push("/")
@@ -123,10 +137,17 @@ function PasswordResetComponent(props) {
     const onExitingSlide = (e) => {
         beforeSlide.style.position='absolute'
     }
+
+    const onSnackbarClose = (e, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setErrorCode(0)
+    }
     return (
         <Box className={classes.root}>
-            <Box display="flex" justifyContent="center" >
-                <Card elevation={3} style={{minWidth: "450px", position: 'relative'}}>
+            <Box display="flex" justifyContent="center">
+                <Card elevation={3} style={{maxWidth: '450px', width:'100%', minWidth:'300px', position: 'relative'}}>
                     <CardHeader className={classes.cardTitleText} 
                         title={
                             <Box display="flex" alignItems="center">
@@ -135,7 +156,7 @@ function PasswordResetComponent(props) {
                             </Box>
                         }   
                     />
-                    <Box style={{padding: "16px 10%", }}>
+                    <Box style={{padding: "16px 10%", minHeight:'350px'}}>
                         <Slide  style={{position: 'relative', }} direction="left" in={slideNumber===0} mountOnEnter unmountOnExit onEnter={onEnterSlide} onExiting={onExitingSlide}>
                             <CardContent style={{padding: 0}}>
                                 <TextField autoFocus variant="outlined" value={email} onChange={onChangeValue} error={emailError}
@@ -145,7 +166,7 @@ function PasswordResetComponent(props) {
                         </Slide>
                         <Slide  style={{position: 'absolute', }} direction="left" in={slideNumber===1} mountOnEnter unmountOnExit onEnter={onEnterSlide} onExiting={onExitingSlide}>
                             <CardContent style={{padding: 0}}>
-                                <Typography>
+                                <Typography style={{fontFamily: 'NotoSansKR-Regular', color: '#424242', fontSize: '18px'}}>
                                     <span style={{color:root.PrimaryColor}}>{email}</span>로 이메일을 전송하였습니다. <br/>해당 메일을 통해 인증 해주세요.
                                 </Typography>
                             </CardContent>
@@ -158,10 +179,11 @@ function PasswordResetComponent(props) {
                 </Card>
             </Box>
 
-            <Snackbar open={errorCode!==0 && !refresh}> 
+            <Snackbar open={errorCode!==0 && !refresh} autoHideDuration={3000} onClose={onSnackbarClose}> 
                 <Alert severity="error">
                     {
-                        (errorCode===1 && "해당 이메일로 가입한 계정은 존재하지 않습니다.")
+                        (errorCode===1 && "해당 이메일로 가입한 계정은 존재하지 않습니다.") ||
+                        (errorCode===2 && "죄송합니다. 메일 보내기에 실패하였습니다.")
                     }
                 </Alert>
             </Snackbar>

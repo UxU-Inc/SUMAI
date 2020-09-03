@@ -52,7 +52,7 @@ class Main extends React.Component {
                     isLoggedIn: false,
                     email: ''
                 };
-                document.cookie = 'key=' + btoa(JSON.stringify(loginData));
+                document.cookie = 'key=' + btoa(JSON.stringify(loginData)) + ';path=/;';
                 window.location.reload()
             }
         );

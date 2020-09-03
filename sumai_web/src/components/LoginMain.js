@@ -41,7 +41,7 @@ class LoginMain extends Component{
                         email: email
                     };
  
-                    document.cookie = 'key=' + btoa(JSON.stringify(loginData));
+                    document.cookie = 'key=' + btoa(JSON.stringify(loginData)) + ';path=/;';
  
                     if(navigator.cookieEnabled) {  // 쿠키 허용 상태
                         this.props.history.push('/');
@@ -66,7 +66,7 @@ class LoginMain extends Component{
                         email: email
                     };
  
-                    document.cookie = 'key=' + btoa(JSON.stringify(loginData));
+                    document.cookie = 'key=' + btoa(JSON.stringify(loginData)) + ';path=/;';
  
                     if(navigator.cookieEnabled) {  // 쿠키 허용 상태
                         this.props.history.push('/');
