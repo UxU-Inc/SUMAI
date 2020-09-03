@@ -91,7 +91,10 @@ class LoginMain extends Component{
                         <strong>로그인을 해주세요!</strong>
                     </Alert>: null}
                 <div style={{backgroundColor: "#fff"}}>
-                    {this.props.match.path === "/login/signup"? <Signup onCheckSignupEmail={this.handleChckSignupEmail} onSignup={this.handleSignup}/>:<Login onLogin={this.handleLogin} onSNSLogin={this.handleSNSLogin}/>}
+                    {this.props.match.path === "/login/signup"? 
+                        <Signup onCheckSignupEmail={this.handleChckSignupEmail} onSignup={this.handleSignup}/>:
+                        <Login onLogin={this.handleLogin} onSNSLogin={this.handleSNSLogin} loginStatus={this.props.login.status}/>
+                    }
                 </div>
             </div> 
         ) 
