@@ -22,10 +22,11 @@ import Slide from '@material-ui/core/Slide';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import MenuItem from '@material-ui/core/MenuItem';
 import moment from "moment"
 import axios from "axios"
+import IconButton from '@material-ui/core/IconButton';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 const useStyles = theme => ({
     root: {
@@ -485,6 +486,12 @@ class Signup extends Component{
         }
     }
 
+    onClickBack = () => {
+        if(this.state.slideOpen === 0) {
+            this.props.history.goBack()
+        } 
+    }
+
     render(){ 
         const { classes } = this.props;
 
@@ -497,6 +504,10 @@ class Signup extends Component{
                             <CardHeader className={classes.cardTitleText} 
                                         title={
                                                 <Box display="flex" alignItems="center">
+                                                    <IconButton onClick={this.onClickBack()} style={{marginRight: "10px"}}>
+                                                        <ArrowBackIcon style={{color: "#0000008A"}}/>  
+                                                    </IconButton>
+
                                                     <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
 
                                                     <Typography style={{color: "#0000008A", fontSize: "28px", marginLeft: "10px"}}>

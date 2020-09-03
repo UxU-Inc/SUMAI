@@ -139,6 +139,7 @@ export default function authentication(state = initialState, action) {
         status: {
           ...state.status,
           valid: true,
+          currentId: action.id,
           currentEmail: action.email,
           currentUser: action.name,
         }

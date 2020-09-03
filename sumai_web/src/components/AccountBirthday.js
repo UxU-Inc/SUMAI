@@ -51,7 +51,7 @@ class AccountNameChange extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            email: this.props.status.currentEmail,
+            id: this.props.status.currentId,
             year: '',
             month: '',
             date: '',
@@ -62,7 +62,7 @@ class AccountNameChange extends React.Component {
 
     componentDidMount() {
         this.setState({
-            email: this.props.status.currentEmail,
+            id: this.props.status.currentId,
             year: moment(this.props.location.state.birthday).format('YYYY') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('YYYY'),
             month: moment(this.props.location.state.birthday).format('MM') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('MM'),
             date: moment(this.props.location.state.birthday).format('D') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('D'),
@@ -70,9 +70,12 @@ class AccountNameChange extends React.Component {
     }
 
     componentDidUpdate() {
+        
         if(this.props.status.loaded) {
             if(this.props.status.isLoggedIn === false) {
-                this.props.history.push("/")
+                setTimeout(function() { 
+                    this.props.history.push("/") 
+                }.bind(this), 0)
             } 
         }
     }
@@ -80,7 +83,7 @@ class AccountNameChange extends React.Component {
     componentWillReceiveProps() {
         setTimeout(function() { 
             this.setState({
-                email: this.props.status.currentEmail,
+                id: this.props.status.currentId,
                 year: moment(this.props.location.state.birthday).format('YYYY') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('YYYY'),
                 month: moment(this.props.location.state.birthday).format('MM') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('MM'),
                 date: moment(this.props.location.state.birthday).format('D') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('D'),
@@ -168,8 +171,8 @@ class AccountNameChange extends React.Component {
                 return
             }
             else {
-                    if(this.state.email !== "") {
-                        this.onBirthdayChange(this.state.email, birthday).then(data => {
+                    if(this.state.id !== "") {
+                        this.onBirthdayChange(this.state.id, birthday).then(data => {
                         if (data.success) {
                             this.props.history.goBack()
                         } 
@@ -184,8 +187,8 @@ class AccountNameChange extends React.Component {
         this.validation()
     }
 
-    onBirthdayChange = (email, birthday) => {
-        return axios.post('/api/account/birthdayChange', { email, birthday }).then((res) => {
+    onBirthdayChange = (id, birthday) => {
+        return axios.post('/api/account/birthdayChange', { id, birthday }).then((res) => {
             console.log(res.data)
                 if(this.props.status.isLoggedIn === true) {
                     if(res.data.code === 1) return { success: true };
@@ -224,8 +227,8 @@ class AccountNameChange extends React.Component {
                     </Toolbar>
 
                     <Box display="flex" alignItems="center" justifyContent="center" style={{paddingTop: "20px"}}>
-                        <IconButton onClick={() => this.props.history.goBack()}>
-                            <ArrowBackIcon style={{color: "#0000008A", paddingLeft: "12px"}}/>  
+                        <IconButton onClick={() => this.props.history.goBack()} style={{marginLeft: "10px"}}>
+                            <ArrowBackIcon style={{color: "#0000008A"}}/>  
                         </IconButton>
                         <Typography variant="h5" style={{color: "#0000008A", paddingLeft: "10px", width: "480px", minWidth: "230px"}}>생년월일</Typography>
                     </Box>

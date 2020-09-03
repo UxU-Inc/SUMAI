@@ -41,6 +41,7 @@ class AccountNameChange extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            id: this.props.status.currentId,
             email: this.props.status.currentEmail,
             nameCurrent: this.props.status.currentUser,
             nameChange: this.props.status.currentUser,
@@ -51,9 +52,10 @@ class AccountNameChange extends React.Component {
 
     componentDidUpdate() {
         if(this.props.status.loaded) {
-            console.log(1)
             if(this.props.status.isLoggedIn === false) {
-                this.props.history.push("/")
+                setTimeout(function() { 
+                    this.props.history.push("/") 
+                }.bind(this), 0)
             } 
         }
     }
@@ -98,8 +100,8 @@ class AccountNameChange extends React.Component {
             return
         }
 
-        if(this.state.email !== "" && !this.state.nameError) {
-            this.onNameChange(this.state.email, this.state.nameChange).then(data => {
+        if(this.state.id !== "" && !this.state.nameError) {
+            this.onNameChange(this.state.id, this.state.email, this.state.nameChange).then(data => {
                 if (data.success) {
                     this.props.history.goBack()
                 }
@@ -107,8 +109,8 @@ class AccountNameChange extends React.Component {
         }
     }
 
-    onNameChange = (email, nameChange) => {
-        return this.props.nameChangeRequest(email, nameChange).then(
+    onNameChange = (id, email, nameChange) => {
+        return this.props.nameChangeRequest(id, email, nameChange).then(
             () => {
                 if(this.props.status.currentUser !== "") {
                     return { success: true }
@@ -136,8 +138,8 @@ class AccountNameChange extends React.Component {
                     </Toolbar>
 
                     <Box display="flex" alignItems="center" justifyContent="center" style={{paddingTop: "20px"}}>
-                        <IconButton onClick={() => this.props.history.goBack()}>
-                            <ArrowBackIcon style={{color: "#0000008A", paddingLeft: "12px"}}/>  
+                        <IconButton onClick={() => this.props.history.goBack()} style={{marginLeft: "10px"}}>
+                            <ArrowBackIcon style={{color: "#0000008A"}}/>  
                         </IconButton>
                         <Typography variant="h5" style={{color: "#0000008A", paddingLeft: "10px", width: "480px", minWidth: "230px"}}>이름</Typography>
                     </Box>
@@ -184,8 +186,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        nameChangeRequest: (email, name) => {
-            return dispatch(nameChangeRequest(email, name));
+        nameChangeRequest: (id, email, name) => {
+            return dispatch(nameChangeRequest(id, email, name));
         },
     };
 };
