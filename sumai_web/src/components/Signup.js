@@ -521,7 +521,7 @@ class Signup extends Component{
                 <div className={classes.root}>
                     <Box display="flex" justifyContent="center" >
                         <Card elevation={3} style={{maxWidth: '450px', width:'100%', minWidth:'300px', position: 'relative'}}>
-                            <CardHeader className={classes.cardTitleText} 
+                            <CardHeader className={classes.cardTitleText} style={{minHeight: '48px'}}
                                         title={
                                                 <Box display="flex" alignItems="center">
                                                     {this.state.slideOpen < 2
@@ -538,7 +538,7 @@ class Signup extends Component{
                                                 </Box>
                                             }   
                             />
-                            <Box style={{padding: "16px 10%",}}>
+                            <Box style={{padding: "16px 10%", minHeight: '450px'}}>
                                 <Slide style={{position: 'relative', }} direction="left" in={this.state.slideOpen===0} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)}>
                                     <CardContent style={{padding: 0}}>
                                         <TextField autoFocus variant="outlined" value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.emailerror || this.state.errorCode===1}
