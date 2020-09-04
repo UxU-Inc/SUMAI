@@ -92,7 +92,7 @@ class LoginMain extends Component{
                     </Alert>: null}
                 <div style={{backgroundColor: "#fff"}}>
                     {this.props.match.path === "/login/signup"? 
-                        <Signup onCheckSignupEmail={this.handleChckSignupEmail} onSignup={this.handleSignup}/>:
+                        <Signup onCheckSignupEmail={this.handleChckSignupEmail} onSignup={this.handleSignup} onLogin={this.handleLogin}/>:
                         <Login onLogin={this.handleLogin} onSNSLogin={this.handleSNSLogin} loginStatus={this.props.login.status}/>
                     }
                 </div>

@@ -1,4 +1,5 @@
 import React, { Component } from 'react'; 
+import { withRouter } from 'react-router'
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
@@ -453,19 +454,27 @@ class Signup extends Component{
                     }
                 })
             }else if(this.state.slideOpen===1 && this.validationBirthday() && this.validationGender()){ // 2번째 페이지에서 다음을 누를 경우..
-                axios.post('/api/email/sendEmailCertification', {email: this.state.email}).then((res) => {
+                axios.post('/api/email/sendEmailCertification', {email: this.state.email, name: this.state.name, password: this.state.password}).then((res) => {
                     console.log('인증메일 전송했당께')
+                    console.log(res.data)
                 })
                 this.setState({ slideOpen: 2 })
                 e.target.textContent='완료'
             }else if(this.state.slideOpen===2){
-                this.props.onSignup(this.state.email, this.state.name, this.state.password).then(data => {
+                this.props.onLogin(this.state.email, this.state.password).then(data => { // login 부분 ***********
                     if (data.success) {
-                        
+                        this.props.history.push('/')
                     } else {
-                        this.setState({ errorCode: data.error })
+                        this.setState({ errorCode: 2})
                     }
                 })
+                // this.props.onSignup(this.state.email, this.state.name, this.state.password).then(data => {
+                //     if (data.success) {
+                        
+                //     } else {
+                //         this.setState({ errorCode: data.error })
+                //     }
+                // })
             }
         }
     }
@@ -799,4 +808,4 @@ class Signup extends Component{
     } 
 }
 
-export default withStyles(useStyles)(withWidth()(Signup));
+export default withStyles(useStyles)(withWidth()(withRouter(Signup)));
