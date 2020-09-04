@@ -162,7 +162,7 @@ class Login extends Component{
             } else if(this.state.password === "" || this.state.loginerror) {
                 this.textFieldRef[1].current.focus()
             } else {
-                this.props.onLogin(this.state.email, this.state.password).then(data => {
+                this.props.onLogin(this.state.email, this.state.password).then(data => { // signup에 login을 쓰니 변경사항 있을 시 거기도 바꿔야 함...
                     if (data.success) {
                         if(data.error === 92) {  // 로그인이 확인됐으나 쿠키 차단 상태
                             this.setState({
@@ -348,7 +348,7 @@ class Login extends Component{
                         </Button>
 
                         <Box textAlign="right">
-                            <Link to="/login/signup" style={{textDecoration: 'none'}}><Button className={classes.accountCreateButton}>비밀번호 찾기</Button></Link>
+                            <Link to="/login/password/reset" style={{textDecoration: 'none'}}><Button className={classes.accountCreateButton}>비밀번호 찾기</Button></Link>
                             <Link to="/login/signup" style={{textDecoration: 'none'}}><Button className={classes.accountCreateButton}>계정 만들기</Button></Link>
                         </Box>
 
