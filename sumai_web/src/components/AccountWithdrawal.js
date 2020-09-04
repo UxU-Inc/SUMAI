@@ -130,7 +130,7 @@ class AccountPassword extends React.Component {
             return
         }
 
-        this.onPasswordCheck(this.props.status.currentId, this.state.password).then(data => {
+        this.onPasswordCheck(this.props.status.currentEmail, this.state.password).then(data => {
             if (data.success) {
                 this.setState({
                     dialogOpen: true,

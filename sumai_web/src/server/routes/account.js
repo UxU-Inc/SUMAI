@@ -301,7 +301,7 @@ router.post('/withdrawal', (req, res) => {
                             db.query("UPDATE summary.summary_data SET remove = 1 WHERE id = '"+ req.body.id + "'")
                             db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, name, password, salt, gender, birth, ageRange, image) VALUES (now(), 'withdrawal', '"
                                         + account[0].type +"', '"+ account[0].id + "', '"+ account[0].email + "', '"+ account[0].name + "', '"+ account[0].password + "', '"
-                                        + account[0].salt + "', '"+ account[0].gender + "', '"+ account[0].birth + "', '"+ account[0].ageRange + "', '"+ account[0].image + "')")
+                                        + account[0].salt + "', IF('"+ account[0].gender + "' = 'null', null, '"+ account[0].gender + "'), IF('"+ account[0].birth + "' = 'null', null, '" + account[0].birth + "'), IF('"+ account[0].ageRange + "' = 'null', null, '"+ account[0].ageRange +"'), IF('"+ account[0].image + "' = 'null', null, '"+ account[0].image +"'))")
                             return res.json({ success: true });
                         } else {
                             console.log(err);
