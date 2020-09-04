@@ -275,10 +275,7 @@ class Header extends Component{
     this.setState({ anchor: open });
   }
   onClickLink = (url) => (e) => {
-    this.props.props.history.push(url)
-  }
-  getLocation = () => {
-    return this.props.props.location.pathname
+    this.props.onClickLink(url)
   }
 
 
@@ -287,7 +284,7 @@ class Header extends Component{
   render() { 
     const { classes } = this.props;
     const loginButton = (
-      <Button onClick={this.onClickLink("login")} style={this.getLocation() === "/login"? { display: "none" }: {background: root.PrimaryColor, color: "#fff", padding: "5px", minWidth: "78px"}} >
+      <Button onClick={this.onClickLink("/login")} style={{background: root.PrimaryColor, color: "#fff", padding: "5px", minWidth: "78px"}} >
         <AccountIcon style={{marginRight: "5px"}}/>
         로그인
       </Button>
