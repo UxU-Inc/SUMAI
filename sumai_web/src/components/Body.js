@@ -1,5 +1,5 @@
 import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
@@ -19,6 +19,7 @@ import Fab from '@material-ui/core/Fab';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import * as root from '../rootValue';
 import InsertCommentIcon from '@material-ui/icons/InsertComment';
+import Tooltip from '@material-ui/core/Tooltip';
 
 const useStyles = theme => ({
   root: {
@@ -104,6 +105,24 @@ function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
+const useStylesBootstrap = makeStyles((theme) => ({
+  arrow: {
+    color: 'rgba(0, 0, 0, 0.6)',
+  },
+  tooltip: {
+    color: '#ffffff',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    fontSize: 14,
+    fontFamily: "NotoSansKR-Regular"
+  },
+}));
+
+function BootstrapTooltip(props) {
+  const classes = useStylesBootstrap();
+
+  return <Tooltip arrow classes={classes} {...props} />;
+}
+
 class Body extends React.Component {
 
     constructor(props) {
@@ -167,8 +186,14 @@ class Body extends React.Component {
       }
     }
 
+    getRecordCookie = (name) => {
+      var value = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+      return value? value[2] : null;
+    };
+
     componentDidMount() {
-      this.props.recordTrue()
+      if(this.getRecordCookie("record") === "true") this.props.recordTrue() 
+      else this.props.recordFalse()
       window.addEventListener('scroll', this.scrollFab)
     }
     
@@ -194,9 +219,11 @@ class Body extends React.Component {
                         </Box>
                       </Box>
                       <Box display="flex" alignItems="center">
-                        {this.props.state.record
-                        ? <InsertCommentIcon fontSize="large" style={{color: root.PrimaryColor, cursor: "pointer"}} onClick={this.onClickRecord}/>
-                        : <InsertCommentIcon fontSize="large" style={{color: "#00000060", cursor: "pointer"}} onClick={this.onClickRecord}/>}
+                        <BootstrapTooltip title="요약 내용 공유" placement="top">
+                          {this.props.state.record
+                          ? <InsertCommentIcon fontSize="large" style={{color: root.PrimaryColor, cursor: "pointer"}} onClick={this.onClickRecord}/>
+                          : <InsertCommentIcon fontSize="large" style={{color: "#00000060", cursor: "pointer"}} onClick={this.onClickRecord}/>}
+                        </BootstrapTooltip>
                         <Typography style={{width: "100%"}} className={clsx(classes.textLimit, {[classes.textLimitAccent]: this.props.state.text.length >= 5000})}>{this.props.state.text.length} / 5000</Typography>
                       </Box>
                   </CardContent>

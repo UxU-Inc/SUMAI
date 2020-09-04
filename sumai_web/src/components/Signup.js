@@ -497,7 +497,6 @@ class Signup extends Component{
         }
     }
 
-    
     onEnterSlide = (e) => {
         e.style.position='relative'
         this.setState({
@@ -507,6 +506,10 @@ class Signup extends Component{
     }
     onExitingSlide = (e) => {
         this.state.beforeSlide.style.position='absolute'
+    }
+
+    onClickBack = () => {
+        if(this.state.slideOpen === 1) this.setState({ slideOpen: 0 })
     }
 
     render(){ 
@@ -521,9 +524,11 @@ class Signup extends Component{
                             <CardHeader className={classes.cardTitleText} 
                                         title={
                                                 <Box display="flex" alignItems="center">
-                                                    <IconButton style={{marginRight: "10px"}}>
+                                                    {this.state.slideOpen < 2
+                                                    ? <IconButton style={{marginRight: "10px"}} onClick={this.state.slideOpen === 0 ? () => this.props.history.goBack() : this.onClickBack}>
                                                         <ArrowBackIcon style={{color: "#0000008A"}}/>  
                                                     </IconButton>
+                                                    : null}
 
                                                     <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
 
@@ -673,6 +678,15 @@ class Signup extends Component{
                         <Box style={{padding: "40px 40px 0px 40px"}} display="flex" flexDirection="column" >
 
                             <Box display="flex" alignItems="center" justifyContent="center">
+
+                                <Box style={{position: "absolute", left: "20px"}}>
+                                    {this.state.slideOpen < 2
+                                    ? <IconButton onClick={this.state.slideOpen === 0 ? () => this.props.history.goBack() : this.onClickBack}>
+                                        <ArrowBackIcon style={{color: "#0000008A"}}/>  
+                                    </IconButton>
+                                    : null}
+                                </Box>
+
                                 <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
                             </Box>
 
@@ -754,7 +768,7 @@ class Signup extends Component{
                                 </Slide>
 
                                 <Slide direction="left" in={this.state.slideOpen===2} mountOnEnter unmountOnExit>
-                                    <CardContent style={{display: 'flex', flexDirection: 'column', position: 'absolute'}}>
+                                    <CardContent style={{display: 'flex', flexDirection: 'column', position: 'absolute', padding: "10px 0px 0px 0px"}}>
                                         <Box height='auto' mt={2}>
                                             <Typography variant='h6' style={{color: '#0000008A'}}><span style={{color: root.PrimaryColor}}>{this.state.email}</span>로 인증 메일을 보냈습니다. 이메일을 확인해 주세요. <br/><br/>이메일 인증 후 회원가입이 완료됩니다.</Typography>
                                         </Box>
