@@ -338,10 +338,10 @@ class RecordRecommend extends Component{
                             <CardHeader avatar={
                                 el.image === null?
                                     el.name === null?
-                                    <Avatar style={{width: "2.2em", height: "2.2em", fontWeight: 'bold'}}>
+                                    <Avatar style={{width: "2.2em", height: "2.2em", fontWeight: 'bold', textTransform: "none"}}>
                                         {re_name}
                                     </Avatar> :
-                                <Avatar style={{backgroundColor: '#' + CryptoJS.MD5(el.id).toString().substring(1, 7), width: "2.2em", height: "2.2em", fontWeight: 'bold'}}>
+                                <Avatar style={{backgroundColor: '#' + CryptoJS.MD5(el.id).toString().substring(1, 7), width: "2.2em", height: "2.2em", fontWeight: 'bold', textTransform: "none"}}>
                                     {re_name}
                                 </Avatar> :
                                 <Avatar src={image} style={{width: "2.2em", height: "2.2em"}} />

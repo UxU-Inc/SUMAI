@@ -38,7 +38,7 @@ class Main extends React.Component {
         }
         
     }
-    
+
     convertSortFunction = (convert) => {
         this.setState({
             convertSort: convert
@@ -125,9 +125,22 @@ class Main extends React.Component {
         })
     }
 
-    onClickRecord = () => { this.setState({ record: !this.state.record }) }
-    recordTrue = () => { this.setState({ record: true }) }
-    recordFalse = () => { this.setState({ record: false }) }
+    setRecordCookie = (name, value) => {
+        document.cookie = name + '=' + value + ';path=/;';
+    };
+
+    onClickRecord = () => { 
+        this.setRecordCookie("record", !this.state.record)
+        this.setState({ record: !this.state.record }) 
+    }
+    recordTrue = () => { 
+        this.setRecordCookie("record", true)
+        this.setState({ record: true }) 
+    }
+    recordFalse = () => { 
+        this.setRecordCookie("record", false)
+        this.setState({ record: false }) 
+    }
 
     fetchUsers = async () => {
         try {
@@ -186,8 +199,8 @@ class Main extends React.Component {
                             <Header isLoggedIn={this.props.status.isLoggedIn} currentUser={this.props.status.currentUser} 
                                     onLogout={this.handleLogout} props={this.props}/> 
                             <div >
-                                <Body state={this.state} handleChange={this.handleChange} onClick={this.onClick} textRemove={this.textRemove} 
-                                        onClickRecord={this.onClickRecord} recordTrue={this.recordTrue} fetchUsers={this.fetchUsers} errorSet={this.errorSet} />
+                                <Body state={this.state} handleChange={this.handleChange} onClick={this.onClick} textRemove={this.textRemove} onClickRecord={this.onClickRecord} 
+                                        recordTrue={this.recordTrue} recordFalse={this.recordFalse} fetchUsers={this.fetchUsers} errorSet={this.errorSet} />
                             </div>
                         </div> :
                         <div className="MainMob" key={key}> 

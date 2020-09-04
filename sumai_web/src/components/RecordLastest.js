@@ -321,7 +321,7 @@ class RecordLastest extends Component{
                     const image = 'https://sumai-profile.s3.ap-northeast-2.amazonaws.com/image/' + el.image
                     let re_name = ''
                     let time = el.time.slice(0, 10) + " " + el.time.slice(11, 16)
-                    if(/[a-zA-Z]/.test(name.charAt(0))) {
+                    if(/[a-zA-Z0-9]/.test(name.charAt(0))) {
                         re_name = name.charAt(0)
                     } else if(name.length >= 3){
                         if (/[a-zA-Z0-9]/.test(name.substring(name.length-2, name.length))) {
@@ -337,10 +337,10 @@ class RecordLastest extends Component{
                             <CardHeader avatar={
                                 el.image === null?
                                     el.name === null?
-                                    <Avatar style={{width: "2.2em", height: "2.2em", fontWeight: 'bold'}}>
+                                    <Avatar style={{width: "2.2em", height: "2.2em", fontWeight: 'bold', textTransform: "none"}}>
                                         {re_name}
                                     </Avatar> :
-                                <Avatar style={{backgroundColor: '#' + CryptoJS.MD5(el.id).toString().substring(1, 7), width: "2.2em", height: "2.2em", fontWeight: 'bold'}}>
+                                <Avatar style={{backgroundColor: '#' + CryptoJS.MD5(el.id).toString().substring(1, 7), width: "2.2em", height: "2.2em", fontWeight: 'bold', textTransform: "none"}}>
                                     {re_name}
                                 </Avatar> :
                                 <Avatar src={image} style={{width: "2.2em", height: "2.2em"}} />
