@@ -17,6 +17,7 @@ const router = express.Router();
 
 const cryptoRandomString = require('crypto-random-string')
 const ActionLog = require('../function/ActionLog')
+const getRandomValues = require('get-random-values')
 
 router.post("/sendEmail", function(req, res){
   let email = req.body.email;
@@ -85,10 +86,22 @@ router.post("/temporary/send", function(req, res){
 
 router.post("/sendEmailCertification", function(req, res){
   const email=req.body.email
+  const name = req.body.name
+  const password = req.body.password // 이것도 위험한듯?
   const cert = cryptoRandomString({length: 10, type: 'url-safe'})
+
+  if(!/^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[`~!@#$%^&+*()\-_+=.,<>/?'";:[\]{}\\|]).*$/.test(password)) {
+    return res.json({ code: 2, message: '비밀번호가 양식에 맞지 않습니다.'});
+  }else if(!/^[a-zA-Z가-힣0-9]{2,10}$/.test(name)) {
+    return res.json({ code: 2, message: '이름이 형식에 맞지 않습니다.'})
+  }else if(!/^[0-9a-z]([-_.]?[0-9a-z])*@[0-9a-z]([-_.]?[0-9a-z])*\.[a-z]{2,}$/i.test(email)) {
+    return res.json({ code: 2, message: '이메일이 형식에 맞지 않습니다.'})
+  }
 
   req.session.emailCert = {
     email: email,
+    name: name,
+    password: password, // 좀 위험한듯
     cert: cert,
     certState: false
   }
@@ -103,11 +116,11 @@ router.post("/sendEmailCertification", function(req, res){
       transporter.sendMail(mailOptions, function(error, info){
         if (error) {
           console.log(error);
-          res.status(500).send()
+          res.send({code: 1, message: '이메일 전송에 실패했습니다.'})
         }
         else {
           console.log('Email sent: ' + info.response);
-          res.status(200).send()
+          res.json({code: 0})
         }
       });
     }
@@ -117,6 +130,7 @@ router.post("/sendEmailCertification", function(req, res){
 router.post("/EmailCertification", function(req, res){
   const id = req.body.id
   const cert = req.body.cert
+  console.log('테스트')
   if (id===undefined || cert===undefined) {
     return res.json({message: '이메일 인증에 실패했습니다.', code: 2})
   }
@@ -125,17 +139,44 @@ router.post("/EmailCertification", function(req, res){
       return res.json({message: '이메일 인증에 실패했습니다.', code: 3})
     }
     const email = session.emailCert.email
+    const name = session.emailCert.name
+    const password = session.emailCert.password // 위험한듯
     const emailCert = session.emailCert.cert
     const certState = session.emailCert.certState
-    if(certState) return res.json({message: '이미 이메일 인증이 완료되었습니다.', code: 5, email: email})
+    if(certState && emailCert===cert) return res.json({message: '이미 이메일 인증이 완료되었습니다.', code: 5, email: email})
     if (email === undefined || emailCert === undefined) return res.json({message: '이메일 인증에 실패했습니다.', code: 4})
-    if(emailCert === req.body.cert) {
+    if(emailCert === cert) {
       session.emailCert = {
         email: email,
+        cert: cert,
         certState: true
       }
       return sessionStore.set(id, session, () => {
-        return res.json({message: '이메일 인증이 완료되었습니다.', code: 0, email: email})
+        db.query("SELECT * FROM summary.account_info WHERE email = '"+ email + "'", (err, data) => {
+          if (err) {
+              console.log(err);
+              return res.send(err);
+          } else if(data.length !== 0){
+              return res.status(400).json({
+                  message: "해당 이메일이 존재합니다.",
+                  code: 5
+              });
+          }
+          const id = getRandomValues(new Uint8Array(10)).join('').slice(-10)+String(Date.now()).slice(-10)
+          hashing.encrypt(password).then(password => {
+              db.query("INSERT INTO summary.account_info (type, id, email, name, password, salt) VALUES ('SUMAI', "+ id + ", LOWER('"+ email +"'), '"+ name +"', '"+ password.hashed +"', '"+ password.salt +"')", (err, exists) => {
+                  if(!err) {
+                      // 회원가입 로그
+                      ActionLog(req, `[S]signup. id: ${id}`)
+                      db.query("INSERT INTO summary.account_change (modifiedDate, changeData, email, name, password, salt) VALUES (now(), 'signup', '"+ email +"', '"+ name +"', '"+ password.hashed +"', '"+ password.salt +"')")
+                        return res.json({message: '이메일 인증이 완료되었습니다.', code: 0, email: email})
+                  } else {
+                      console.log(err);
+                      return res.json({code: 6});
+                  }
+              });
+          })
+        })
       })
     }else{
       return res.json({message: '이메일 인증에 실패했습니다.', code: 1, email: email})
@@ -171,7 +212,7 @@ router.post("/temporary/login/:state", function(req, res, next){
             console.log('해킹당한듯?')
           }
           if(req.params.state === 'check'){
-            return res.json({message: '인증 성공', code: 0})
+            return res.json({message: '인증 성공', code: 0, email: email})
           }else if(req.params.state === 'change') {
             next()
           }

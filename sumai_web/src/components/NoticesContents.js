@@ -202,8 +202,8 @@ function useQueryData(queryRows) {
 
   const process = (emptyArray) => {
     if(emptyArray.length!==0) {
-      emptyArray.forEach(async(emptyPoint) => {
-        await axios.post('/api/notices/notices', {emptyPoint}).then((res) => {
+      emptyArray.forEach((emptyPoint, index) => {
+        axios.post('/api/notices/notices', {emptyPoint}).then((res) => {
           let t=res.data.map(data => ({ ...data, date: data.date.split('T')[0]}))
           for(let i=emptyPoint[0], j=0; i<emptyPoint[0]+emptyPoint[1]; i++, j++) {
             rows[i]=t[j]
@@ -218,7 +218,8 @@ function useQueryData(queryRows) {
   }
 
   useEffect(() => {
-    if(rows.length!==0){
+    const load=loading
+    if(rows.length!==0 && !load){
       setLoading(true)
       let emptyArray=[]
       let emptyPoint=[]
@@ -231,14 +232,13 @@ function useQueryData(queryRows) {
           emptyPoint=[]
         }
       }
+      console.log(rows, start, rows[start], emptyPoint)
       if(emptyPoint.length===1){
         emptyArray=emptyArray.concat([emptyPoint.concat([start-emptyPoint[0]])])
         emptyPoint=[]
       }
       if(emptyArray.length!==0)console.log('request', emptyArray)
-      setTimeout(() => {
-        process(emptyArray)
-      }, 200);
+      process(emptyArray)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[queryRows, count])
@@ -305,6 +305,7 @@ function NoticesTable(props) {
 
   useEffect(() => {
     if(!loading) {
+      window.addEventListener("scroll", handleScroll)
       setPage(changePage)
       setRowsPerPage(changeRowsPerPage)
       document.getElementById('topLoadingBar').style.visibility='hidden'
@@ -314,21 +315,22 @@ function NoticesTable(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading])
   
+  const handleScroll = (event) => {
+    const {innerHeight} = window;
+    const {scrollHeight} = document.body;
+    // IE에서는 document.documentElement 를 사용.
+    const scrollTop = document.documentElement.scrollTop
+    if (scrollHeight - innerHeight - scrollTop < 2 && rowsPerPage<count) {
+      window.removeEventListener("scroll", handleScroll);
+      handleChangeRowsPerPage(event)
+    }
+  };
+
   useEffect(() => {
     if(!matches) {
       if(document.body.scrollHeight < window.innerHeight) {
         handleChangeRowsPerPage()
-      }else{
       }
-      const handleScroll = (event) => {
-        const {innerHeight} = window;
-        const {scrollHeight} = document.body;
-        // IE에서는 document.documentElement 를 사용.
-        const scrollTop = document.documentElement.scrollTop
-        if (scrollHeight - innerHeight - scrollTop < 10 && rowsPerPage<count) {
-          handleChangeRowsPerPage(event)
-        }
-      };
       window.addEventListener("scroll", handleScroll)
   
       return () => window.removeEventListener("scroll", handleScroll);

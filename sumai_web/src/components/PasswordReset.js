@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, useTheme } from '@material-ui/core/styles';
 import withWidth from '@material-ui/core/withWidth';
 import Box from '@material-ui/core/Box';
 import { Card, CardActions, Button, Slide } from '@material-ui/core';
@@ -14,6 +14,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import axios from 'axios'
 import { useHistory } from 'react-router-dom';
 import MuiAlert from '@material-ui/lab/Alert';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 const useStyles = theme => ({
     root: {
@@ -29,6 +30,12 @@ const useStyles = theme => ({
         },
         display: 'flex',
     },
+    card: {
+        width:'100%',
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
+    },
     imgLogo: {
         width: 80,
         height: 28.2,
@@ -42,6 +49,7 @@ const useStyles = theme => ({
     },
     buttonLayout: {
         padding: theme.spacing(0),
+        padding: '30px 0px 0px 0px',
     },
     blueButton: {
         variant: 'contained',
@@ -54,10 +62,36 @@ const useStyles = theme => ({
         height: '50px',
         fontSize: '20px',
         fontWeight: 'bold',
-        borderRadius: '0px',
     },
 }) 
 
+
+const Header = (props) => {
+    const {matches, classes} = props
+
+    return(
+        (matches && <CardHeader className={classes.cardTitleText} 
+            title={
+                <Box display="flex" alignItems="center">
+                    <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
+                    <Typography style={{color: "#0000008A", fontSize: "28px", marginLeft: "10px"}}>비밀번호 변경</Typography>
+                </Box>
+            }
+        />) || (
+            <Box>
+                <Box display="flex" alignItems="center" justifyContent="center">
+                    <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
+                </Box>
+
+                <Box display="flex" justifyContent="center" style={{paddingTop: "10px", paddingBottom: '15px'}}>
+                    <Typography style={{color: "#0000008A", fontSize: "28px"}}>
+                        비밀번호 변경
+                    </Typography>
+                </Box>
+            </Box>
+        )
+    )
+}
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -73,6 +107,9 @@ function PasswordResetComponent(props) {
     const [beforeSlide, setBeforeSlide] = useState()
     const [afterSlide, setAfterSlide] = useState()
     const {classes} = props
+
+    const theme = useTheme()
+    const matches = useMediaQuery(theme.breakpoints.up('md'));
 
 
     // useEffect(() => {
@@ -145,18 +182,11 @@ function PasswordResetComponent(props) {
         setErrorCode(0)
     }
     return (
-        <Box className={classes.root}>
-            <Box display="flex" justifyContent="center">
-                <Card elevation={3} style={{maxWidth: '450px', width:'100%', minWidth:'300px', position: 'relative'}}>
-                    <CardHeader className={classes.cardTitleText} 
-                        title={
-                            <Box display="flex" alignItems="center">
-                                <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
-                                <Typography style={{color: "#0000008A", fontSize: "28px", marginLeft: "10px"}}>비밀번호 찾기</Typography>
-                            </Box>
-                        }   
-                    />
-                    <Box style={{padding: "16px 10%", minHeight:'350px'}}>
+        <Box className={(matches?classes.root:'')}>
+            <Box display="flex" justifyContent="center" style={(!matches?{minHeight: '100vh'}:{})}>
+                <Card elevation={3} className={classes.card} style={(matches?{maxWidth:'450px', minWidth:'300px'}:{padding: '40px 40px 80px 40px', borderRadius: '0px', boxShadow: 'none'})}>
+                    <Header matches={matches} classes={classes}/>
+                    <Box style={(matches?{padding: "16px 10%", minHeight:'350px'}:{flex: '1'})}>
                         <Slide  style={{position: 'relative', }} direction="left" in={slideNumber===0} mountOnEnter unmountOnExit onEnter={onEnterSlide} onExiting={onExitingSlide}>
                             <CardContent style={{padding: 0}}>
                                 <TextField autoFocus variant="outlined" value={email} onChange={onChangeValue} error={emailError}
@@ -167,14 +197,14 @@ function PasswordResetComponent(props) {
                         <Slide  style={{position: 'absolute', }} direction="left" in={slideNumber===1} mountOnEnter unmountOnExit onEnter={onEnterSlide} onExiting={onExitingSlide}>
                             <CardContent style={{padding: 0}}>
                                 <Typography style={{fontFamily: 'NotoSansKR-Regular', color: '#424242', fontSize: '18px'}}>
-                                    <span style={{color:root.PrimaryColor}}>{email}</span>로 이메일을 전송하였습니다. <br/>해당 메일을 통해 인증 해주세요.
+                                    <span style={{color:root.PrimaryColor}}>{email}</span>로 이메일을 전송하였습니다. 해당 메일을 통해 인증 해주세요.
                                 </Typography>
                             </CardContent>
                         </Slide>
                     </Box>
 
                     <CardActions className={classes.buttonLayout}>
-                    <Button className={classes.blueButton} onClick={onClickNextButton}>{slideNumber===0? '다음': '완료'}</Button>
+                        <Button className={classes.blueButton} style={{borderRadius: (matches?'0px':'4px'),}} onClick={onClickNextButton}>{slideNumber===0? '다음': '완료'}</Button>
                     </CardActions>
                 </Card>
             </Box>

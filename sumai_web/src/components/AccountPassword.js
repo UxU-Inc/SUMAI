@@ -117,17 +117,6 @@ class AccountPassword extends React.Component {
                     passwordChangeError: false,
                 })
             }
-        } else if (type === "passwordCheck") {
-            // 비밀번호 확인
-            if((this.state.passwordChangeError || this.state.passwordChange !== value) && value !== "") {
-                this.setState({
-                    passwordCheckError: true,
-                })
-            } else {
-                this.setState({
-                    passwordCheckError: false,
-                })
-            }
         } 
     }
 
@@ -144,10 +133,20 @@ class AccountPassword extends React.Component {
         } else if(this.state.passwordChange === "" || this.state.passwordChangeError) {
             this.textFieldRef[1].current.focus()
             return
-        } else if(this.state.passwordCheck === "" || this.state.passwordCheckError) {
+        } else if(this.state.passwordChange !== this.state.passwordCheck) {
+            this.setState({
+                passwordCheck: '',
+                passwordCheckError: true,
+            })
             this.textFieldRef[2].current.focus()
             return
-        }
+        } else if(this.state.passwordChange === this.state.passwordCheck) {
+            this.setState({
+                passwordCheckError: false,
+            })
+        } 
+
+
 
         if(this.state.code === 1) {
             return
@@ -226,7 +225,7 @@ class AccountPassword extends React.Component {
                             <TextField variant="outlined" value={this.state.password} onChange={this.handleChange.bind(this, "passwordChange")} error={this.state.passwordChangeError}
                                     fullWidth label="변경할 비밀번호 입력" type="password" style={{margin: "30px 0px 7.5px 0px"}} inputRef={this.textFieldRef[1]}
                                     helperText={this.state.passwordChangeError? "영어, 숫자, 특수문자 포함, 8~15자리": false} onKeyPress={this.onKeyPress}/>
-                            <TextField variant="outlined" value={this.state.passwordcheck} onChange={this.handleChange.bind(this, "passwordCheck")} error={this.state.passwordCheckError}
+                            <TextField variant="outlined" value={this.state.passwordCheck} onChange={this.handleChange.bind(this, "passwordCheck")} error={this.state.passwordCheckError}
                                     fullWidth label="비밀번호 확인" type="password" style={{margin: "7.5px 0px 15px 0px"}} inputRef={this.textFieldRef[2]}
                                     helperText={this.state.passwordCheckError? "비밀번호가 다릅니다.": false} onKeyPress={this.onKeyPress}/>
 
