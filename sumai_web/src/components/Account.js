@@ -106,13 +106,15 @@ class Account extends Component{
     }
 
     onClickLink = (url) => (e) => {
-      this.props.history.push({
-        pathname: url,
-        state: { 
-          birthday: this.state.birthday,
-          gender: this.state.gender,
-        }
-      })
+      if(typeof this.props.status.currentId !== "undefined") {
+        this.props.history.push({
+          pathname: url,
+          state: { 
+            birthday: this.state.birthday,
+            gender: this.state.gender,
+          }
+        })
+      }
     }
 
     handleopen = () => {

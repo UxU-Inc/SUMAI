@@ -117,19 +117,23 @@ class RecordRecommend extends Component{
         references.ref = []
         fetch('https://api.ipify.org?format=json')
         .then(res => res.json())
-        .then(json => this.setState({ip: json.ip}))
+        .then(json => this.unmount? null:this.setState({ip: json.ip}))
     }
     componentDidMount() {
         this.accountInit();
         window.addEventListener('resize', this.handleResize, {once: true})
         window.addEventListener("scroll", this.handleScroll)
+        this.unmount = false;
     }
     accountInit = () => {
         new Promise(async (resolve, reject) => {
             const Interval = setInterval(() => {
-                if(typeof this.props.currentId !== "undefined") {
-                    const id = this.props.currentId
+                if(typeof this.props.status.currentId !== "undefined") {
+                    const id = this.props.status.currentId
                     this.recommend(id);
+                    resolve();
+                    clearInterval(Interval)
+                } else if(this.unmount) {
                     resolve();
                     clearInterval(Interval)
                 }
@@ -139,6 +143,9 @@ class RecordRecommend extends Component{
     recommend = (id) => {
         this.props.recommendRequest(id).then(
             () => {
+                if(this.unmount) {
+                    return
+                }
                 if(this.props.recommend.status === "SUCCESS") {
                     this.setState({
                         data: this.state.data.concat(this.props.recommend.data),
@@ -238,6 +245,7 @@ class RecordRecommend extends Component{
         }
     }
     componentWillUnmount() {
+        this.unmount = true;
         window.removeEventListener('resize', this.handleResize)
         window.removeEventListener("scroll", this.handleScroll)
     }
@@ -252,14 +260,16 @@ class RecordRecommend extends Component{
         const tempState = this.state.isClick.slice()
         tempState[key] = !this.state.isClick[key]
         const sign = clicked === 1? this.state.isClick[key]? 1:-1:this.state.isClick[key]? -1:1
-        this.like(this.props.currentId, sign, idx)
+        this.like(this.props.status.currentId, sign, idx)
         this.setState({
             isClick: tempState,
         })
     }    
-    onClickConvertSort = (convert) => {
+    onClickConvertSort = () => {
         if(this.props.recommend.status !== "WAITING"){
-            this.props.convertSortFunction(convert); 
+            setTimeout(function() {
+                this.props.convertSortFunction(false)
+            }.bind(this), 0);
         }
     }
     getOrCreateRef = (key) => {
@@ -312,7 +322,7 @@ class RecordRecommend extends Component{
                         요약 기록
                     </Typography>
                     <ButtonGroup variant="text" size="large" style={{marginRight: "5px", marginBottom: "10px"}}>
-                        <Button onClick={this.onClickConvertSort.bind(this, false)}>최신순</Button>
+                        <Button onClick={this.onClickConvertSort}>최신순</Button>
                         <Button color="primary">추천순</Button>
                     </ButtonGroup>
                 </Grid>
@@ -347,9 +357,9 @@ class RecordRecommend extends Component{
                                 <Avatar src={image} style={{width: "2.2em", height: "2.2em"}} />
                             } action={
                                 <Grid container direction="row" justify="center" alignItems="center">
-                                    {(this.props.currentId !== '' && el.id === this.props.currentId) || (el.id === '' && el.ip_addr === this.state.ip)?<DeleteIcon onClick={this.recordDelete.bind(this, key, el.idx)} fontSize="large" className={classes.deleteStyle} />: null}
+                                    {(this.props.status.currentId !== '' && el.id === this.props.status.currentId) || (el.id === '' && el.ip_addr === this.state.ip)?<DeleteIcon onClick={this.recordDelete.bind(this, key, el.idx)} fontSize="large" className={classes.deleteStyle} />: null}
                                     <Typography style={{fontSize: "20px", paddingTop: "18px"}}>{(el.like) + (el.clicked === 1? this.state.isClick[key]? -1:0:this.state.isClick[key]? 1:0)}</Typography>
-                                    <IconButton onClick={this.props.isLoggedIn? this.onClickChangeColor.bind(this, key, el.clicked, el.idx): this.onClickNotLogin} style={{marginTop: "4px", marginRight: "4px", marginLeft: "-8px", marginBottom: "-8px"}}>
+                                    <IconButton onClick={this.props.status.isLoggedIn? this.onClickChangeColor.bind(this, key, el.clicked, el.idx): this.onClickNotLogin} style={{marginTop: "4px", marginRight: "4px", marginLeft: "-8px", marginBottom: "-8px"}}>
                                         <ThumbUpAltIcon fontSize="large" color={el.clicked === 1? this.state.isClick[key]? "inherit":"primary":this.state.isClick[key]? "primary":"inherit"}/>
                                     </IconButton>
                                 </Grid>
@@ -396,6 +406,7 @@ class RecordRecommend extends Component{
 
 const mapStateToProps = (state) => {
     return {
+        status: state.authentication.status,
         recommend: state.mainRecord.recommend,
         like: state.mainRecord.like,
     };

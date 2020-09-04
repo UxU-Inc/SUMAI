@@ -175,6 +175,12 @@ class Main extends React.Component {
         })
     }
 
+    onClickLink = (url) => {
+        setTimeout(function() {
+            this.props.history.push(url)
+        }.bind(this), 0);
+    }
+
     render() {
         console.log(this.props.status)
         return ( 
@@ -184,7 +190,7 @@ class Main extends React.Component {
                         isWidthUp('md', this.props.width)? 
                         <div key={key}> 
                             <Header isLoggedIn={this.props.status.isLoggedIn} currentUser={this.props.status.currentUser} 
-                                    onLogout={this.handleLogout} props={this.props}/> 
+                                    onLogout={this.handleLogout} onClickLink={this.onClickLink}/> 
                             <div >
                                 <Body state={this.state} handleChange={this.handleChange} onClick={this.onClick} textRemove={this.textRemove} 
                                         onClickRecord={this.onClickRecord} recordTrue={this.recordTrue} fetchUsers={this.fetchUsers} errorSet={this.errorSet} />
@@ -192,7 +198,7 @@ class Main extends React.Component {
                         </div> :
                         <div className="MainMob" key={key}> 
                             <HeaderMob isLoggedIn={this.props.status.isLoggedIn} currentUser={this.props.status.currentUser} 
-                                    onLogout={this.handleLogout} props={this.props}/> 
+                                    onLogout={this.handleLogout} onClickLink={this.onClickLink}/> 
                             <div >
                                 <BodyMob state={this.state} handleChange={this.handleChange} textRemove={this.textRemove} 
                                         recordFalse={this.recordFalse} fetchUsers={this.fetchUsers} errorSet={this.errorSet} />
@@ -202,8 +208,8 @@ class Main extends React.Component {
                     )
                 })}
                 <div style={isWidthUp('md', this.props.width)? null: {display:"none"}}>
-                    {this.state.convertSort? <RecordRecommend convertSortFunction={this.convertSortFunction} isLoggedIn={this.props.status.isLoggedIn} currentId={this.props.status.currentId}/>:
-                    <RecordLastest convertSortFunction={this.convertSortFunction} isLoggedIn={this.props.status.isLoggedIn} currentId={this.props.status.currentId}/>}
+                    {this.state.convertSort? <RecordRecommend convertSortFunction={this.convertSortFunction} />:
+                    <RecordLastest convertSortFunction={this.convertSortFunction} />}
                 </div> 
             </div>
         )

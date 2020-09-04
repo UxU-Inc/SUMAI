@@ -117,19 +117,23 @@ class RecordLastest extends Component{
         references.ref = []
         fetch('https://api.ipify.org?format=json')
         .then(res => res.json())
-        .then(json => this.setState({ip: json.ip}))
+        .then(json => this.unmount? null:this.setState({ip: json.ip}))
     }
     componentDidMount() {
         this.accountInit();
         window.addEventListener('resize', this.handleResize, {once: true})
         window.addEventListener("scroll", this.handleScroll)
+        this.unmount = false;
     }
     accountInit = () => {
         new Promise(async (resolve, reject) => {
             const Interval = setInterval(() => {
-                if(typeof this.props.currentId !== "undefined") {
-                    const id = this.props.currentId
+                if(typeof this.props.status.currentId !== "undefined") {
+                    const id = this.props.status.currentId
                     this.lastest(id, -1);
+                    resolve();
+                    clearInterval(Interval)
+                } else if(this.unmount) {
                     resolve();
                     clearInterval(Interval)
                 }
@@ -139,6 +143,9 @@ class RecordLastest extends Component{
     lastest = (id, idx) => {
         this.props.lastestRequest(id, idx).then(
             () => {
+                if(this.unmount) {
+                    return
+                }
                 if(this.props.lastest.status === "SUCCESS") {
                     this.setState({
                         data: this.state.data.concat(this.props.lastest.data),
@@ -207,7 +214,7 @@ class RecordLastest extends Component{
                     dataCount: this.state.dataCount + 10,
                     loadingScroll: true,
                 })
-                this.lastest(this.props.currentId, this.state.data[this.state.data.length-1].idx-1);
+                this.lastest(this.props.status.currentId, this.state.data[this.state.data.length-1].idx-1);
             }
         } else {
             if(this.state.loadingScroll){
@@ -237,6 +244,7 @@ class RecordLastest extends Component{
         }
     }
     componentWillUnmount() {
+        this.unmount = true;
         window.removeEventListener('resize', this.handleResize)
         window.removeEventListener("scroll", this.handleScroll)
     }
@@ -251,14 +259,16 @@ class RecordLastest extends Component{
         const tempState = this.state.isClick.slice()
         tempState[key] = !this.state.isClick[key]
         const sign = clicked === 1? this.state.isClick[key]? 1:-1:this.state.isClick[key]? -1:1
-        this.like(this.props.currentId, sign, idx)
+        this.like(this.props.status.currentId, sign, idx)
         this.setState({
             isClick: tempState,
         })
     }    
-    onClickConvertSort = (convert) => {
+    onClickConvertSort = () => {
         if(this.props.lastest.status !== "WAITING"){
-            this.props.convertSortFunction(convert); 
+            setTimeout(function() {
+                this.props.convertSortFunction(true)
+            }.bind(this), 0);
         }
     }
     getOrCreateRef = (key) => {
@@ -312,7 +322,7 @@ class RecordLastest extends Component{
                     </Typography>
                     <ButtonGroup variant="text" size="large" style={{marginRight: "5px", marginBottom: "10px"}}>
                         <Button color="primary">최신순</Button>
-                        <Button onClick={this.onClickConvertSort.bind(this, true)}>추천순</Button>
+                        <Button onClick={this.onClickConvertSort}>추천순</Button>
                     </ButtonGroup>
                 </Grid>
                 
@@ -346,9 +356,9 @@ class RecordLastest extends Component{
                                 <Avatar src={image} style={{width: "2.2em", height: "2.2em"}} />
                             } action={
                                 <Grid container direction="row" justify="center" alignItems="center">
-                                    {(this.props.currentId !== '' && el.id === this.props.currentId) || (el.id === '' && el.ip_addr === this.state.ip)?<DeleteIcon onClick={this.recordDelete.bind(this, key, el.idx)} fontSize="large" className={classes.deleteStyle} />: null}
+                                    {(this.props.status.currentId !== '' && el.id === this.props.status.currentId) || (el.id === '' && el.ip_addr === this.state.ip)?<DeleteIcon onClick={this.recordDelete.bind(this, key, el.idx)} fontSize="large" className={classes.deleteStyle} />: null}
                                     <Typography style={{fontSize: "20px", paddingTop: "18px"}}>{(el.like) + (el.clicked === 1? this.state.isClick[key]? -1:0:this.state.isClick[key]? 1:0)}</Typography>
-                                    <IconButton onClick={this.props.isLoggedIn? this.onClickChangeColor.bind(this, key, el.clicked, el.idx): this.onClickNotLogin}  style={{margin: "4px 4px -8px -8px"}}>
+                                    <IconButton onClick={this.props.status.isLoggedIn? this.onClickChangeColor.bind(this, key, el.clicked, el.idx): this.onClickNotLogin}  style={{margin: "4px 4px -8px -8px"}}>
                                         <ThumbUpAltIcon fontSize="large" color={el.clicked === 1? this.state.isClick[key]? "inherit":"primary":this.state.isClick[key]? "primary":"inherit"}/>
                                     </IconButton>
                                 </Grid>
@@ -395,6 +405,7 @@ class RecordLastest extends Component{
 
 const mapStateToProps = (state) => {
     return {
+        status: state.authentication.status,
         lastest: state.mainRecord.lastest,
         like: state.mainRecord.like,
     };
