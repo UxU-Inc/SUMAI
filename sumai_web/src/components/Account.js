@@ -143,7 +143,7 @@ class Account extends Component{
     }
 
     avatarName = (name) => {
-      if(/[a-zA-Z]/.test(name.charAt(0))) {
+      if(/[a-zA-Z0-9]/.test(name.charAt(0))) {
           return name.charAt(0)
       } else if(name.length >= 3){
           if (/[a-zA-Z0-9]/.test(name.substring(name.length-2, name.length))) {
@@ -200,7 +200,7 @@ class Account extends Component{
                                         <Box>
                                           {this.state.imagesrc !== ''? 
                                             <Avatar alt="profileImage" src={this.state.imagesrc} style={{width: "60px", height: "60px"}} /> : 
-                                            <Avatar alt="profileImage" style={{width: "60px", height: "60px", backgroundColor: this.state.avatarcolor}}>
+                                            <Avatar alt="profileImage" style={{width: "60px", height: "60px", backgroundColor: this.state.avatarcolor, textTransform: "none"}}>
                                               {this.state.avatarname}
                                             </Avatar>
                                           }
