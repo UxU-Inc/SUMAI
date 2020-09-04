@@ -345,7 +345,7 @@ class Login extends Component{
                         </Button>
 
                         <Box textAlign="right">
-                            <Link to="/login/signup" style={{textDecoration: 'none'}}><Button className={classes.accountCreateButton}>비밀번호 찾기</Button></Link>
+                            <Link to="/login/password/reset" style={{textDecoration: 'none'}}><Button className={classes.accountCreateButton}>비밀번호 찾기</Button></Link>
                             <Link to="/login/signup" style={{textDecoration: 'none'}}><Button className={classes.accountCreateButton}>계정 만들기</Button></Link>
                         </Box>
 
