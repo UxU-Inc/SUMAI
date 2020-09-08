@@ -70,11 +70,11 @@ const recvAct = () => {
 
 function ClientInfoComponent() {
   // const [statusInfo, statusInfoLoading] = useStatusInfo()
-  const state = useSelector(state => state)
+  // const state = useSelector(state => state)
   const clientInfo = useSelector(state => state.clientInfo)
-  const loginInfo = useSelector(state => state.authentication.login)
+  // const loginInfo = useSelector(state => state.authentication.login)
   const statusInfo = useSelector(state => state.authentication.status)
-  const signupInfo = useSelector(state => state.authentication.signup)
+  // const signupInfo = useSelector(state => state.authentication.signup)
   const clientInfoLoading = useSelector(state => state.clientInfo.loading)
   const location = useLocation()
   const dispatch = React.useCallback(useDispatch(), [])

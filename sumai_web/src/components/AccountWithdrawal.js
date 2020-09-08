@@ -64,6 +64,7 @@ function PasswordChangeMassage(props) {
         if(code === 4) enqueueSnackbar('로그인 상태가 아닙니다.', {variant: "error"})
         if(code === 5) enqueueSnackbar('SUMAI 해당 계정의 모든 데이터 삭제에 동의해주시면 회원탈퇴가 가능합니다.', {variant: "error"})
         setCode(0)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [code])
 
     return (<React.Fragment></React.Fragment>)

@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, { Component, useEffect } from 'react'; 
+import React, { Component } from 'react'; 
 import { withStyles } from '@material-ui/core/styles';
 import './Header.css';
 import AppBar from '@material-ui/core/AppBar';
@@ -25,7 +25,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import AccountIcon from '@material-ui/icons/AccountCircle';
-import NewsIcon from '@material-ui/icons/ChromeReaderMode';
 import * as root from '../rootValue';
 
 import Dialog from '@material-ui/core/Dialog';
@@ -34,7 +33,7 @@ import MuiDialogActions from '@material-ui/core/DialogActions';
 import CloseIcon from '@material-ui/icons/Close';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 
-import html2canvas from 'html2canvas';
+// import html2canvas from 'html2canvas';
 // import emailjs from 'emailjs-com';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
@@ -122,7 +121,7 @@ const DialogActions = withStyles((theme) => ({
 
 function FeedbackDialog(props) {
   const {open, setOpen, classes} = props
-  const [screen, setScreen] = React.useState(null)
+  // const [screen, setScreen] = React.useState(null)
   const [message, setMessage] = React.useState('')
   
   const [snackbarOpen, setSnackbarOpen] = React.useState(false)
@@ -132,15 +131,15 @@ function FeedbackDialog(props) {
 
   const dispatch = useDispatch()
 
-  const screenShot = () => {
-    document.getElementById('feedback').hidden = true
-    html2canvas(document.body, {removeContainer: false, }).then(function(canvas) {
-      // return(canvas)
-    // setScreen(document.getElementById('capture').appendChild(canvas))
-    document.getElementById('feedback').hidden = false
-    setScreen(canvas)
-    })
-  }
+  // const screenShot = () => {
+  //   document.getElementById('feedback').hidden = true
+  //   html2canvas(document.body, {removeContainer: false, }).then(function(canvas) {
+  //     // return(canvas)
+  //   // setScreen(document.getElementById('capture').appendChild(canvas))
+  //   document.getElementById('feedback').hidden = false
+  //   setScreen(canvas)
+  //   })
+  // }
   
   const showCanvas = () => {
     console.log('미구현')
@@ -172,16 +171,16 @@ function FeedbackDialog(props) {
     handleClose()
   }
 
-  useEffect(() => {
-    if(screen!==null){
-      let t=document.getElementById('screenshotPreview')
-      t.src=screen.toDataURL()
-      t.height=300
-      // let context = screen.getContext("2d")
-      // context.fillStyle = "#FF0000";
-      // context.fillRect(0,0,150,75)
-    }
-  },[screen])
+  // useEffect(() => {
+  //   if(screen!==null){
+  //     let t=document.getElementById('screenshotPreview')
+  //     t.src=screen.toDataURL()
+  //     t.height=300
+  //     // let context = screen.getContext("2d")
+  //     // context.fillStyle = "#FF0000";
+  //     // context.fillRect(0,0,150,75)
+  //   }
+  // },[screen])
 
   const handleClose = () => {
     setOpen(false);
