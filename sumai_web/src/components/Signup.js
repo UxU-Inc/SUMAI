@@ -505,7 +505,9 @@ class Signup extends Component{
         })
     }
     onExitingSlide = (e) => {
-        this.state.beforeSlide.style.position='absolute'
+        const beforeslide = this.state.beforeSlide
+        beforeslide.style.position='absolute'
+        // this.state.beforeSlide.style.position='absolute'
     }
 
     onClickBack = () => {
