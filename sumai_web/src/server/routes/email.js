@@ -12,6 +12,8 @@ const sessionStore = new MySQLStore(dbconfig);
 const nodemailer = require('nodemailer');
 const gmailOAuth2Data   = require('../security/gmailOAuth2');
 const transporter = nodemailer.createTransport(gmailOAuth2Data);
+const path = require('path')
+const Email = require('email-templates');
 
 const router = express.Router();
 
@@ -25,15 +27,10 @@ router.post("/sendEmail", function(req, res){
   let src = req.body.src;
 
   let mailOptions = {
-    to: 'uxu.co.kr@gmail.com' ,                     // 수신 메일 주소
+    to: 'uxu.co.kr@gmail.com' ,// 수신 메일 주소
     subject: `의견 보내기 ${''}`,   // 제목
     text: message,  // 내용
-    // html: 'Embedded image: <img src="cid:feedbackImage"/>',
-    // attachments: [{
-    //   filename: 'feedback.png',
-    //   path: src,
-    //   cid: 'feedbackImage'
-    // }]
+    
   };
 
   transporter.sendMail(mailOptions, function(error, info){
@@ -58,18 +55,34 @@ router.post("/temporary/send", function(req, res){
     cert: cert,
     expires: parseInt(Date.now()/1000+1800)
   }
-  console.log(cert)
-  console.log(`http://localhost/email/login/login?id=${req.sessionID}&cert=${cert}`)
-  ActionLog(req, `[S]send email password. email: ${email}`)
   return req.session.save(()=> {
+    ActionLog(req, `[S]send email password. email: ${email}`)
+    const emails = new Email({
+      transport: transporter,
+      views: { root: __dirname },
+      // send: true
+    })
+    emails.send({
+      template: 'emails/password',
+      message: {
+        from: 'uxu.co.kr@gmail.com',
+        to: 'uxu.co.kr@gmail.com'
+      },
+      locals: {
+        email: email,
+        certLink: `http://localhost/email/login/login?id=${req.sessionID}&cert=${cert}`,
+      }
+    }).then(console.log("성공"))
     res.send(200)
-    
   })
-  // const message = `${cert}`
   // let mailOptions = {
-  //   to: 'uxu.co.kr@gmail.com' , // 수신 메일 주소
-  //   subject: `비밀번호 변경 확인 이메일입니다.`,   // 제목
-  //   text: `http://localhost/email/login/login?id=${req.sessionID}&cert=${cert}`,  // 내용
+  //   template: 'mars',
+  //   message: {
+  //     to: 'uxu.co.kr@gmail.com' , // 수신 메일 주소
+  //   },
+  //   locals: {
+  //     name: 'hi'
+  //   }
   // };
 
   // transporter.sendMail(mailOptions, function(error, info){
@@ -107,22 +120,25 @@ router.post("/sendEmailCertification", function(req, res){
   }
   req.session.save(
     () => {
-      const message = `http://localhost/email/certification?id=${req.sessionID}&cert=${cert}` // 주소 함수를 이용해서 받아야 할 듯
-      let mailOptions = {
-        to: 'uxu.co.kr@gmail.com' , // 수신 메일 주소
-        subject: `이메일 인증`,   // 제목
-        text: message,  // 내용
-      };
-      transporter.sendMail(mailOptions, function(error, info){
-        if (error) {
-          console.log(error);
-          res.send({code: 1, message: '이메일 전송에 실패했습니다.'})
+      const link = `http://localhost/email/certification?id=${req.sessionID}&cert=${cert}` // 주소 함수를 이용해서 받아야 할 듯
+      
+      const emails = new Email({
+        transport: transporter,
+        views: { root: __dirname },
+        send: true
+      })
+      emails.send({
+        template: 'emails/signup',
+        message: {
+          from: 'uxu.co.kr@gmail.com',
+          to: 'uxu.co.kr@gmail.com'
+        },
+        locals: {
+          name: req.body.name,
+          email: req.body.email,
+          certLink: link,
         }
-        else {
-          console.log('Email sent: ' + info.response);
-          res.json({code: 0})
-        }
-      });
+      }).then(console.log("성공"))
     }
   )
 })
@@ -188,7 +204,7 @@ router.post("/temporary/login/:state", function(req, res, next){
   const id = req.body.id
   const cert = req.body.cert
   ActionLog(req, `[T]change password for email.`)
-  if (id===undefined || cert===undefined) {0
+  if (id===undefined || cert===undefined) {
     return res.json({message: '경로가 잘못되었습니다.', code: 2})
   }
   sessionStore.get(id, (err, session)=> {

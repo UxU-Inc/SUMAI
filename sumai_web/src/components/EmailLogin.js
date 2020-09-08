@@ -9,7 +9,6 @@ import CardContent from '@material-ui/core/CardContent';
 import TextField from '@material-ui/core/TextField';
 import * as root from '../rootValue';
 import axios from 'axios';
-import { useSnackbar } from 'notistack';
 import { useHistory, useLocation } from 'react-router-dom';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
@@ -45,7 +44,7 @@ const useStyles = theme => ({
         paddingLeft: theme.spacing(2),
     },
     buttonLayout: {
-        padding: theme.spacing(0),
+        // padding: theme.spacing(0),
         padding: '30px 0px 0px 0px',
     },
     blueButton: {
@@ -126,6 +125,7 @@ function EmailLoginComponent(props) {
         }).catch(()=> {
             history.push('/')
         })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const handleChange = (e, type) => {
@@ -182,39 +182,44 @@ function EmailLoginComponent(props) {
         beforeSlide.style.position='absolute'
     }
 
-    return(
-        <Box className={(matches?classes.root:'')}>
-            <Box display="flex" justifyContent="center" style={(!matches?{minHeight: '100vh'}:{})}>
-                <Card elevation={3} className={classes.card} style={(matches?{maxWidth:'450px', minWidth:'300px'}:{padding: '40px 40px 80px 40px', borderRadius: '0px', boxShadow: 'none'})}>
-                    <Header matches={matches} classes={classes}/>
-                    <Box style={(matches?{padding: "16px 10%", minHeight:'350px'}:{flex: '1'})}>
-                        <Slide style={{position: 'relative', }} direction="left" in={slideNumber===0} mountOnEnter unmountOnExit onEnter={onEnterSlide} onExiting={onExitingSlide}>
-                            <CardContent style={{padding: 0}}>
-                                    <TextField variant="outlined" value={email} 
-                                            fullWidth label="이메일" style={{margin: "15px 0px 7.5px 0px"}} autoComplete='new-password'/>
-                                    <TextField variant="outlined" value={passwordChange} onChange={(e) => handleChange(e, "passwordChange")} error={passwordChangeError} autoComplete='new-password'
-                                            fullWidth label="변경할 비밀번호 입력" type="password" style={{margin: "30px 0px 7.5px 0px"}} inputRef={inputPasswordChange} autoFocus
-                                            helperText={passwordChangeError? "영어, 숫자, 특수문자 포함, 8~15자리": false} onKeyPress={onKeyPress}/>
-                                    <TextField variant="outlined" value={passwordCheck} onChange={(e) => handleChange(e, "passwordCheck")} error={passwordCheckError}
-                                            fullWidth label="비밀번호 확인" type="password" style={{margin: "7.5px 0px 15px 0px"}} inputRef={inputPasswordCheck}
-                                            helperText={passwordCheckError? "비밀번호가 다릅니다.": false} onKeyPress={onKeyPress}/>
-                            </CardContent>
-                        </Slide>
-                        <Slide style={{position: 'absolute', }} direction="left" in={slideNumber===1} mountOnEnter unmountOnExit onEnter={onEnterSlide} onExiting={onExitingSlide}>
-                            <CardContent style={{padding: 0}}>
-                                <Typography style={{fontFamily: 'NotoSansKR-Regular', color: '#424242', fontSize: '18px'}}>
-                                    비밀번호 변경이 완료되었습니다. <br/>변경된 비밀번호로 로그인 해주세요.
-                                </Typography>
-                            </CardContent>
-                        </Slide>
-                    </Box>
-
-                    <CardActions className={classes.buttonLayout}>
-                    <Button className={classes.blueButton} style={{borderRadius: (matches?'0px':'4px'),}} onClick={onClickNextButton}>{slideNumber===0? '다음': '완료'}</Button>
-                    </CardActions>
-                </Card>
+    if(email !== '') {
+        return(
+            <Box className={(matches?classes.root:'')}>
+                <Box display="flex" justifyContent="center" style={(!matches?{minHeight: '100vh'}:{})}>
+                    <Card elevation={3} className={classes.card} style={(matches?{maxWidth:'450px', minWidth:'300px'}:{padding: '40px 40px 80px 40px', borderRadius: '0px', boxShadow: 'none'})}>
+                        <Header matches={matches} classes={classes}/>
+                        <Box style={(matches?{padding: "16px 10%", minHeight:'350px'}:{flex: '1'})}>
+                            <Slide style={{position: 'relative', }} direction="left" in={slideNumber===0} mountOnEnter unmountOnExit onEnter={onEnterSlide} onExiting={onExitingSlide}>
+                                <CardContent style={{padding: 0}}>
+                                        <TextField variant="outlined" value={email} 
+                                                fullWidth label="이메일" style={{margin: "15px 0px 7.5px 0px"}} autoComplete='new-password'/>
+                                        <TextField variant="outlined" value={passwordChange} onChange={(e) => handleChange(e, "passwordChange")} error={passwordChangeError} autoComplete='new-password'
+                                                fullWidth label="변경할 비밀번호 입력" type="password" style={{margin: "30px 0px 7.5px 0px"}} inputRef={inputPasswordChange} autoFocus
+                                                helperText={passwordChangeError? "영어, 숫자, 특수문자 포함, 8~15자리": false} onKeyPress={onKeyPress}/>
+                                        <TextField variant="outlined" value={passwordCheck} onChange={(e) => handleChange(e, "passwordCheck")} error={passwordCheckError}
+                                                fullWidth label="비밀번호 확인" type="password" style={{margin: "7.5px 0px 15px 0px"}} inputRef={inputPasswordCheck}
+                                                helperText={passwordCheckError? "비밀번호가 다릅니다.": false} onKeyPress={onKeyPress}/>
+                                </CardContent>
+                            </Slide>
+                            <Slide style={{position: 'absolute', }} direction="left" in={slideNumber===1} mountOnEnter unmountOnExit onEnter={onEnterSlide} onExiting={onExitingSlide}>
+                                <CardContent style={{padding: 0}}>
+                                    <Typography style={{fontFamily: 'NotoSansKR-Regular', color: '#424242', fontSize: '18px'}}>
+                                        비밀번호 변경이 완료되었습니다. <br/>변경된 비밀번호로 로그인 해주세요.
+                                    </Typography>
+                                </CardContent>
+                            </Slide>
+                        </Box>
+    
+                        <CardActions className={classes.buttonLayout}>
+                        <Button className={classes.blueButton} style={{borderRadius: (matches?'0px':'4px'),}} onClick={onClickNextButton}>{slideNumber===0? '다음': '완료'}</Button>
+                        </CardActions>
+                    </Card>
+                </Box>
             </Box>
-        </Box>
-    )
+        )
+    } else {
+        return (<p/>)
+    }
+    
 }
 export default withStyles(useStyles)(EmailLoginComponent);

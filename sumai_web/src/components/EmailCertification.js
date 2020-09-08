@@ -75,6 +75,7 @@ function EmailCertificationComponent(props) {
         })
         // setCode(0)
         // setEmail('ksm@test.com')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     
 

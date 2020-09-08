@@ -6,7 +6,6 @@ import imgLogo from '../images/sumai_logo.png';
 import TermsContents from "../components/TermsContents"; 
 import PolicyFooter from "../components/PolicyFooter"; 
 import Button from '@material-ui/core/Button';
-import {createBrowserHistory} from 'history';
 import Divider from '@material-ui/core/Divider';
 import Box from '@material-ui/core/Box';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
@@ -66,10 +65,8 @@ class Terms extends Component{
     render(){ 
         const { classes } = this.props;
 
-        const browserHistory = createBrowserHistory();
         const link = (url) => (e) => {
-          window.location.href=url
-          browserHistory.push(url)
+          this.props.history.push(url);
         };
 
 

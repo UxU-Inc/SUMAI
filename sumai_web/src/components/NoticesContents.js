@@ -199,28 +199,25 @@ function useQueryData(queryRows) {
   const [rows, setRows] = useQueryCount()
   const count = rows.length
   const [loading, setLoading] = React.useState(false)
+  const [insideLoading, setInsideLoading] = React.useState(false)
 
-  const process = (emptyArray) => {
-    if(emptyArray.length!==0) {
-      emptyArray.forEach((emptyPoint, index) => {
-        axios.post('/api/notices/notices', {emptyPoint}).then((res) => {
-          let t=res.data.map(data => ({ ...data, date: data.date.split('T')[0]}))
-          for(let i=emptyPoint[0], j=0; i<emptyPoint[0]+emptyPoint[1]; i++, j++) {
-            rows[i]=t[j]
-          }
-          setRows([...rows])
-          setLoading(false)
-        })
+  const process = React.useCallback((emptyArray) => {
+    emptyArray.forEach((emptyPoint, index) => {
+      axios.post('/api/notices/notices', {emptyPoint}).then((res) => {
+        let t=res.data.map(data => ({ ...data, date: data.date.split('T')[0]}))
+        for(let i=emptyPoint[0], j=0; i<emptyPoint[0]+emptyPoint[1]; i++, j++) {
+          rows[i]=t[j]
+        }
+        setRows([...rows])
+        setLoading(false)
+        setInsideLoading(false)
       })
-    } else {
-      setLoading(false)
-    }
-  }
+    })
+  }, [setRows, rows])
 
   useEffect(() => {
-    const load=loading
-    if(rows.length!==0 && !load){
-      setLoading(true)
+    if(rows.length!==0 && !insideLoading){
+      setInsideLoading(true)
       let emptyArray=[]
       let emptyPoint=[]
       let start
@@ -232,18 +229,23 @@ function useQueryData(queryRows) {
           emptyPoint=[]
         }
       }
-      console.log(rows, start, rows[start], emptyPoint)
       if(emptyPoint.length===1){
         emptyArray=emptyArray.concat([emptyPoint.concat([start-emptyPoint[0]])])
         emptyPoint=[]
       }
-      if(emptyArray.length!==0)console.log('request', emptyArray)
-      process(emptyArray)
+      if(emptyArray.length!==0) {
+        console.log('request', emptyArray)
+        setTimeout(() => {
+          process(emptyArray)
+        }, 500);
+      } else {
+        setLoading(false)
+        setInsideLoading(false)
+      }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[queryRows, count])
+  },[queryRows, count, rows, insideLoading, process])
 
-  return [loading, rows, count]
+  return [loading, setLoading, rows, count]
 }
 
 function NoticesTable(props) {
@@ -253,43 +255,49 @@ function NoticesTable(props) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(0);
   const [queryRows, setQueryRows] = React.useState([0, 5])
-  const [loading, rows, count] = useQueryData(queryRows)
+  const [loading, setLoading, rows, count] = useQueryData(queryRows)
   const [changePage, setChangePage] = React.useState(0)
   const [changeRowsPerPage, setChangeRowsPerPage] = React.useState(5)
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, count - page * rowsPerPage);
 
   const dispatch = useDispatch()
 
-  const handleChangePage = async (newPage) => {
+  const handleChangePage = (newPage) => {
     let end=Math.max(0, Math.ceil(count / rowsPerPage) - 1)
     if(newPage>end){
+      setLoading(true)
       setQueryRows([end*rowsPerPage, (end+1)*rowsPerPage])
       setChangePage(end)
     } else if(newPage<0){
+      setLoading(true)
       setQueryRows([0, rowsPerPage])
       setChangePage(0)
     } else {
+      setLoading(true)
       setQueryRows([newPage*rowsPerPage, (newPage+1)*rowsPerPage])
       setChangePage(newPage)
     }
   };
-  const handleChangeRowsPerPage = (event) => {
-    if(event!==undefined) {
+  const handleChangeRowsPerPage = React.useCallback((event) => {
+    if(event!==undefined && !loading) {
       const eventType=event.type
       const eventTargetValue=event.target.value
       if(eventType==='scroll') {
+        setLoading(true)
         setQueryRows([0, rowsPerPage+5])
         setChangeRowsPerPage(rowsPerPage+5)
       }else if(eventType==='change') {
+        setLoading(true)
         setQueryRows([0, parseInt(eventTargetValue, 10)])
         setChangePage(0)
         setChangeRowsPerPage(parseInt(eventTargetValue, 10))
       }
     } else {
+      setLoading(true)
       setQueryRows([0, rowsPerPage+5])
       setChangeRowsPerPage(rowsPerPage+5)
     }
-  };
+  }, [rowsPerPage, loading, setLoading]);
   const handleChangeSelectId = (newSelect) => {
     if (newSelect!==selectId) {
       setSelectId(newSelect)
@@ -303,19 +311,7 @@ function NoticesTable(props) {
     setRowsPerPage(10)
   }, [])
 
-  useEffect(() => {
-    if(!loading) {
-      window.addEventListener("scroll", handleScroll)
-      setPage(changePage)
-      setRowsPerPage(changeRowsPerPage)
-      document.getElementById('topLoadingBar').style.visibility='hidden'
-    }else{
-      document.getElementById('topLoadingBar').style.visibility='visible'
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading])
-  
-  const handleScroll = (event) => {
+  const handleScroll = React.useCallback((event) => {
     const {innerHeight} = window;
     const {scrollHeight} = document.body;
     // IE에서는 document.documentElement 를 사용.
@@ -324,59 +320,55 @@ function NoticesTable(props) {
       window.removeEventListener("scroll", handleScroll);
       handleChangeRowsPerPage(event)
     }
-  };
+  }, [count, handleChangeRowsPerPage, rowsPerPage]);
+
+  const MobLoading = React.useCallback(() => {
+    if(document.body.scrollHeight < window.innerHeight) { // 비동기 문제 load 관련 수정
+      handleChangeRowsPerPage()
+    } 
+  }, [handleChangeRowsPerPage])
 
   useEffect(() => {
-    if(!matches) {
-      if(document.body.scrollHeight < window.innerHeight) {
-        handleChangeRowsPerPage()
-      }
-      window.addEventListener("scroll", handleScroll)
-  
-      return () => window.removeEventListener("scroll", handleScroll);
+
+    if(!loading) {
+      setPage(changePage)
+      setRowsPerPage(changeRowsPerPage)
+      document.getElementById('topLoadingBar').style.visibility='hidden'
+    }else{
+      document.getElementById('topLoadingBar').style.visibility='visible'
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rows, count, matches])
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [loading, changeRowsPerPage, changePage, handleScroll])
+  
+  useEffect(() => {
+    if(!matches) {
+      setPage(0)
+      window.addEventListener("scroll", handleScroll)
+      MobLoading()
+    } else {
+      setRowsPerPage(5)
+      window.removeEventListener("scroll", handleScroll)
+      document.documentElement.scrollTop = 0;
+    }
+    
+  }, [rowsPerPage, matches, MobLoading, handleScroll])
 
   
   return(
     <TableContainer >
-      <Table aria-label="collapsible table"
-      style={{
-        width: '100%',
-        borderTop: matches?'1px solid black':''
-      }}>
+      <Table aria-label="collapsible table" style={{width: '100%', borderTop: (matches?'1px solid black':'')}}>
         <TableHead style={{display: matches?'table-header-group':'none'}}>
           <TableRow>
-            <TableCell align="center"
-            style={{
-              width: '90%',
-            }}>내용</TableCell>
-            <TableCell align="center"
-            style={{
-              minWidth: '100px'
-            }}>등록일</TableCell>
+            <TableCell align="center" style={{width: '90%',}}>내용</TableCell>
+            <TableCell align="center">등록일</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows && (rowsPerPage > 0
-            ? rows.slice(page*rowsPerPage, (page+1)*rowsPerPage)
-            : rows
-          ).map((row, index) => {
+          {rows && (rowsPerPage > 0? rows.slice(page*rowsPerPage, (page+1)*rowsPerPage): rows).map((row, index) => {
             return (
               <React.Fragment key={index}>
-                  <TableRow className={classes.table}
-                  onClick={
-                    () => handleChangeSelectId(row.index)
-                  }
-                  style={{
-                    backgroundColor: selectId===row.index ? 'WhiteSmoke': '',
-                  }}
-                  >
-                    <TableCell component="th" scope="row" 
-                    style={{fontSize: '16px', width: '90%',}}>
-                      {row.title}
-                    </TableCell>
+                  <TableRow className={classes.table} onClick={() => handleChangeSelectId(row.index)} style={{backgroundColor: selectId===row.index ? 'WhiteSmoke': '',}}>
+                    <TableCell component="th" scope="row" style={{fontSize: '16px', width: '90%',}}>{row.title}</TableCell>
                     <TableCell style={{align: "center", minWidth: '100px'}}>{row.date}</TableCell>
                   </TableRow>
                 <TableRow >
@@ -390,7 +382,7 @@ function NoticesTable(props) {
                   </TableCell>
                 </TableRow>
               </React.Fragment>
-            );
+            )
           })}
           {matches && emptyRows > 0 && (
             <TableRow style={{ height: 56 * emptyRows }}>
@@ -402,27 +394,22 @@ function NoticesTable(props) {
           <TableRow>
             {matches && (
               <TableCell colSpan={2}>
-              {page >= 0 && (
-                <TablePagination 
-                  classes={{
-                    selectRoot: classes.tablePagination
-                  }}
-                  rowsPerPageOptions={[5, 10]}
-                  rowsPerPage={rowsPerPage}
-                  component="div"
-                  count={count}
-                  page={page}
-                  onChangePage={handleChangePage}
-                  onChangeRowsPerPage={handleChangeRowsPerPage}
-                  ActionsComponent={TablePaginationActions}
-                  labelRowsPerPage='페이지 당 개수'
+                {page >= 0 && (
+                  <TablePagination 
+                    classes={{selectRoot: classes.tablePagination}}
+                    rowsPerPageOptions={[5, 10]} rowsPerPage={rowsPerPage}
+                    component="div" count={count} page={page}
+                    onChangePage={handleChangePage}
+                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                    ActionsComponent={TablePaginationActions}
+                    labelRowsPerPage='페이지 당 개수'
 
-                  labelDisplayedRows={({ from, to, count }) => ``}
-                  SelectProps={{
-                  inputProps: { 'aria-label': 'rows per page' },
-                  native: true,
-                }}/>
-              )}
+                    labelDisplayedRows={({ from, to, count }) => ``}
+                    SelectProps={{
+                    inputProps: { 'aria-label': 'rows per page' },
+                    native: true,
+                  }}/>
+                )}
               </TableCell>
             )}
           </TableRow>

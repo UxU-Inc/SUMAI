@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { withStyles, useTheme } from '@material-ui/core/styles';
-import withWidth from '@material-ui/core/withWidth';
 import Box from '@material-ui/core/Box';
 import { Card, CardActions, Button, Slide } from '@material-ui/core';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -48,7 +47,7 @@ const useStyles = theme => ({
         paddingLeft: theme.spacing(2),
     },
     buttonLayout: {
-        padding: theme.spacing(0),
+        // padding: theme.spacing(0),
         padding: '30px 0px 0px 0px',
     },
     blueButton: {

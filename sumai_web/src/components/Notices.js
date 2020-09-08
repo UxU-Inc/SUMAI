@@ -6,7 +6,6 @@ import imgLogo from '../images/sumai_logo.png';
 import NoticesContents from "./NoticesContents"; 
 import PolicyFooter from "./PolicyFooter"; 
 import Button from '@material-ui/core/Button';
-import {createBrowserHistory} from 'history';
 import Divider from '@material-ui/core/Divider';
 import Box from '@material-ui/core/Box';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
@@ -69,13 +68,9 @@ class Notices extends Component{
     render(){ 
         const { classes } = this.props;
 
-        const browserHistory = createBrowserHistory();
         const link = (url) => (e) => {
-          window.location.href=url
-          browserHistory.push(url)
+          this.props.history.push(url);
         };
-        /**************************************************** PC *****************************************************/
-        if(isWidthUp('md', this.props.width)) {
           return ( 
               <div className={classes.root}>
                   <AppBar position="static" className={classes.AppBarStyle}>
@@ -88,83 +83,36 @@ class Notices extends Component{
                       </Toolbar>
                   </AppBar> 
 
-                  <div style={{backgroundColor: "#fff", padding: "50px 10%", minWidth: "300px"}}>
-                      
-                  <Box display="flex" justifyContent="center">
-                        <Box flex={1} style={{marginRight: "-1px"}}>
-                          <Button className={classes.button} onClick={link("terms")}>
-                            이용약관
-                          </Button>
-                        </Box>
-                        <Box flex={1} style={{marginRight: "-1px"}} onClick={link("privacy")}>
-                          <Button className={classes.button}>
-                            개인정보처리방침
-                          </Button>
-                        </Box>
-                        <Box flex={1}>
-                          <Button className={classes.buttonSelect} >
-                            공지사항
-                          </Button>
-                        </Box>
-                      </Box>
-
-                      <Divider style={{marginTop: "50px", marginBottom: "50px"}}/>
-
-                      <div >
-                        <NoticesContents/>
-                      </div>
-                  </div>
-                  
-                  <PolicyFooter/>
-
-              </div>
-          ) 
-        }
-
-
-        /*************************************************** 모바일 ***************************************************/
-        else {
-          return ( 
-            <div className={classes.root}>
-                <AppBar position="static" className={classes.AppBarStyle}>
-                    <Toolbar variant="dense">
-
-                        <a href="/" className={classes.link} >
-                            <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
-                        </a>
-
-                    </Toolbar>
-                </AppBar> 
-
-                <div style={{backgroundColor: "#fff", margin: "-1px -1px 0px -1px"}}>
-                    
+                  <div style={(isWidthUp('md', this.props.width)?{backgroundColor: "#fff", padding: "50px 10%", minWidth: "300px"}:{backgroundColor: "#fff", margin: "-1px -1px 0px -1px"})}> 
                     <Box display="flex" justifyContent="center">
                       <Box flex={1} style={{marginRight: "-1px"}}>
                         <Button className={classes.button} onClick={link("terms")}>
                           이용약관
                         </Button>
                       </Box>
-                      <Box flex={1} style={{marginRight: "-1px"}}>
-                        <Button className={classes.button} onClick={link("privacy")}>
+                      <Box flex={1} style={{marginRight: "-1px"}} onClick={link("privacy")}>
+                        <Button className={classes.button}>
                           개인정보처리방침
                         </Button>
                       </Box>
-                      <Box flex={1} >
-                        <Button className={classes.buttonSelect}>
+                      <Box flex={1}>
+                        <Button className={classes.buttonSelect} >
                           공지사항
                         </Button>
                       </Box>
                     </Box>
 
-                    <div>
-                        <NoticesContents/>
-                    </div>
-                </div>
-                
-            </div>
-        )
-      }
+                    {(isWidthUp('md', this.props.width)?<Divider style={{marginTop: "50px", marginBottom: "50px"}}/>:false)}
 
+                      <div >
+                        <NoticesContents/>
+                      </div>
+                  </div>
+                  
+                  {(isWidthUp('md', this.props.width)?<PolicyFooter/>:false)}
+
+              </div>
+          ) 
 
 
     } 
