@@ -111,12 +111,6 @@ function PasswordResetComponent(props) {
     const matches = useMediaQuery(theme.breakpoints.up('md'));
 
 
-    // useEffect(() => {
-    //     let eventSource = new EventSource("http://localhost:3306/api/sendEmail/temporary/wait")
-    //     eventSource.onmessage = e => console.log(JSON.parse(e.data))
-    // }, [])
-
-
     const onKeyPress = (e) => {
         if(e.key === 'Enter') {
             onClickNextButton(e)
@@ -149,7 +143,6 @@ function PasswordResetComponent(props) {
             }).catch((err) => {
                 axios.post('/api/email/temporary/send', {email}).then((res) => {
                     setSlideNumber(slideNumber+1)
-                    console.log(res)
                 }).catch((err) => {
                     if(errorCode===2){
                         setRefresh(true)

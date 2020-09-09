@@ -195,7 +195,6 @@ class Main extends React.Component {
     }
 
     render() {
-        console.log(this.props.status)
         return ( 
             <div>
                 {[''].map( (key) => {

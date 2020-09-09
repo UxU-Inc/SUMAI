@@ -199,6 +199,7 @@ class Signup extends Component{
             })
         } else if (type === "passwordcheck") {
             this.setState({
+                passwordcheckerror: false,
                 passwordcheck: e.target.value.trim(),
             })
         } else if(type === "terms") {
@@ -455,9 +456,7 @@ class Signup extends Component{
                 })
             }else if(this.state.slideOpen===1 && this.validationBirthday() && this.validationGender()){ // 2번째 페이지에서 다음을 누를 경우..
                 axios.post('/api/email/sendEmailCertification', {email: this.state.email, name: this.state.name, password: this.state.password}).then((res) => {
-                    console.log('인증메일 전송했당께')
-                    console.log(res.data)
-                })
+                }) // catch 일 경우.... 
                 this.setState({ slideOpen: 2 })
                 e.target.textContent='완료'
             }else if(this.state.slideOpen===2){
@@ -504,7 +503,15 @@ class Signup extends Component{
             afterSlide: e
         })
     }
+    onEnteredSlide = (e) => {
+        if(this.state.slideOpen===0) {
+            this.textFieldRef[0].current.focus()
+        }else if(this.state.slideOpen===1) {
+            this.textFieldRefBirthday[0].current.focus()
+        }
+    }
     onExitingSlide = (e) => {
+        console.log(this.state.beforeSlide.direction)
         const beforeslide = this.state.beforeSlide
         beforeslide.style.position='absolute'
         // this.state.beforeSlide.style.position='absolute'
@@ -541,9 +548,9 @@ class Signup extends Component{
                                             }   
                             />
                             <Box style={{padding: "16px 10%", minHeight: '450px'}}>
-                                <Slide style={{position: 'relative', }} direction="left" in={this.state.slideOpen===0} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)}>
+                                <Slide style={{position: 'relative', }} direction="left" in={this.state.slideOpen===0} timeout={{exit:0, enter: 500,}} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
                                     <CardContent style={{padding: 0}}>
-                                        <TextField autoFocus variant="outlined" value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.emailerror || this.state.errorCode===1}
+                                        <TextField variant="outlined" value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.emailerror || this.state.errorCode===1}
                                             fullWidth label="이메일" placeholder="이메일을 입력해주세요." style={{margin: "15px 0px 7.5px 0px"}} inputRef={this.textFieldRef[0]}
                                             helperText={this.state.emailerror? "이메일 형식이 올바르지 않습니다.": false} onKeyPress={this.onKeyPress} spellCheck="false"/>
                                         <TextField variant="outlined" value={this.state.name} onChange={this.handleChange.bind(this, "name")} error={this.state.nameerror}
@@ -568,12 +575,12 @@ class Signup extends Component{
                                     </CardContent>
                                 </Slide>
 
-                                <Slide style={{position: 'relative', }} direction="left" in={this.state.slideOpen===1} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)}>
+                                <Slide style={{position: 'relative', }} direction="left" in={this.state.slideOpen===1} timeout={{exit:0, enter: 500,}} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
                                     <CardContent style={{padding: 0}}>
                                         <Box height='388px'>
                                             <Typography style={{color: '#0000008A', fontFamily: 'NotoSansKR-Regular'}}>생년월일 (선택사항)</Typography>
                                             <Box display="flex" mt={2}>
-                                                <TextField autoFocus fullWidth variant="outlined" value={this.state.year || ""} onChange={event => this.handleChangeBirthday(event.target.value, "year")}
+                                                <TextField fullWidth variant="outlined" value={this.state.year || ""} onChange={event => this.handleChangeBirthday(event.target.value, "year")}
                                                             label={"연"} style={{minWidth: "120px"}} spellCheck="false" inputRef={this.textFieldRefBirthday[0]} />
 
                                                 <FormControl variant="outlined" className={classes.formControl} style={{width: "100%"}}>
@@ -613,7 +620,7 @@ class Signup extends Component{
                                     </CardContent>
                                 </Slide>
                                 
-                                <Slide style={{position: 'relative', }} direction="left" in={this.state.slideOpen===2} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)}>
+                                <Slide style={{position: 'relative', }} direction="left" in={this.state.slideOpen===2} timeout={{exit:0, enter: 500,}} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
                                     <CardContent style={{padding: 0}}>
                                         <Box height='auto' mt={2}>
                                             <Typography variant='subtitle1' align="center" style={{color: '#0000008A'}}>
@@ -698,10 +705,10 @@ class Signup extends Component{
                                 </Typography>
                             </Box>
 
-                            <Box height={"500px"} position='relative' >
-                                <Slide direction="left" in={this.state.slideOpen===0} mountOnEnter unmountOnExit>
+                            <Box height={"500px"} position='relative' overflow='hidden' >
+                                <Slide direction="left" in={this.state.slideOpen===0} timeout={{exit:0, enter: 500,}} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
                                     <Box style={{position: 'absolute'}}>
-                                        <TextField autoFocus variant="outlined" value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.emailerror || this.state.errorCode===1}
+                                        <TextField variant="outlined" value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.emailerror || this.state.errorCode===1}
                                             fullWidth label="이메일" placeholder="이메일을 입력해주세요." style={{margin: "30px 0px 7.5px 0px"}} inputRef={this.textFieldRef[0]}
                                             helperText={this.state.emailerror? "이메일 형식이 올바르지 않습니다.": false} onKeyPress={this.onKeyPress} spellCheck="false"/>
                                         <TextField variant="outlined" value={this.state.name} onChange={this.handleChange.bind(this, "name")} error={this.state.nameerror}
@@ -726,11 +733,11 @@ class Signup extends Component{
                                     </Box>
                                 </Slide>
 
-                                <Slide direction="left" in={this.state.slideOpen===1} mountOnEnter unmountOnExit>
+                                <Slide direction="left" in={this.state.slideOpen===1} timeout={{exit:0, enter: 500,}} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
                                     <Box style={{paddingTop: "30px", position: "absolute"}}>
                                         <Typography style={{color: '#0000008A', fontFamily: 'NotoSansKR-Regular', minWidth: "140px"}}>생년월일 (선택사항)</Typography>
                                         <Box display="flex" mt={2}>
-                                            <TextField autoFocus fullWidth variant="outlined" value={this.state.year || ""} onChange={event => this.handleChangeBirthday(event.target.value, "year")}
+                                            <TextField fullWidth variant="outlined" value={this.state.year || ""} onChange={event => this.handleChangeBirthday(event.target.value, "year")}
                                                         label={"연"} style={{width: "100%", minWidth: "70px"}} spellCheck="false" inputRef={this.textFieldRefBirthday[0]} />
 
                                             <FormControl variant="outlined" className={classes.formControl} style={{width: "100%", minWidth: "80px"}}>
@@ -769,7 +776,7 @@ class Signup extends Component{
                                     </Box>
                                 </Slide>
 
-                                <Slide direction="left" in={this.state.slideOpen===2} mountOnEnter unmountOnExit>
+                                <Slide direction="left" in={this.state.slideOpen===2} timeout={{exit:0, enter: 500,}} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
                                     <CardContent style={{display: 'flex', flexDirection: 'column', position: 'absolute', padding: "10px 0px 0px 0px"}}>
                                         <Box height='auto' mt={2}>
                                             <Typography variant='h6' style={{color: '#0000008A'}}><span style={{color: root.PrimaryColor}}>{this.state.email}</span>로 인증 메일을 보냈습니다. 이메일을 확인해 주세요. <br/><br/>이메일 인증 후 회원가입이 완료됩니다.</Typography>
