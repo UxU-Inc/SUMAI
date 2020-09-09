@@ -30,7 +30,7 @@ const useStyles = theme => ({
         minHeight: '600px',
     },
     rootMob: {
-        padding: "40px",
+        padding: "40px 40px 0px 40px",
     },
     cardTitleText: {
         borderBottom: '1px solid #e0e0e0',
@@ -147,7 +147,6 @@ class Login extends Component{
                 loginerror: false,
                 snsloginerror: '',
                 toomanyerror: false,
-                errorNotice: false,
             })
         }
     }
@@ -357,7 +356,7 @@ class Login extends Component{
                         </Box>
 
                         
-                        <Box style={{marginTop: "40px"}}>
+                        <Box style={{marginTop: "20px"}}>
                             <Box boxShadow={2} display="flex" justifyContent="center" style={{marginTop: "10px"}}>
                                 <Button onClick={this.SNSLogin.bind(this, "google")} style={{width: "100%", borderRadius: "0px", padding: "10px"}}>
                                     <img src={googleLogo} alt="G" style={{width: "22.5px"}}/> 
@@ -387,7 +386,7 @@ class Login extends Component{
                     </Box>
 
 
-                    <Box textAlign="right" alignSelf="flex-end" style={{padding: "0px 40px 20px 40px"}}>
+                    <Box textAlign="right" alignSelf="flex-end" style={{padding: "10px 30px 20px 40px"}}>
                         <Link to="/terms" style={{textDecoration: 'none'}}><Button className={classes.termsButton}>이용약관</Button></Link>
                         <Link to="/privacy" style={{textDecoration: 'none'}}><Button className={classes.termsButton}>개인정보처리방침</Button></Link>
                     </Box>

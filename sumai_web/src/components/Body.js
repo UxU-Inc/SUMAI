@@ -214,7 +214,7 @@ class Body extends React.Component {
                   <CardContent >
                       <Box display="flex">
                         <TextareaAutosize className={classes.textInput} maxLength="5000" style={{fontSize: this.props.state.fontSizeTextArea+'px'}}
-                          autoFocus={true} value={this.props.state.text} spellcheck="false" onChange={this.handleChange} />
+                          autoFocus={true} value={this.props.state.text} spellCheck="false" onChange={this.handleChange} />
                         <Box pl={0.4} mt={1} mr={-0.25}>
                           <CloseIcon className={clsx("none", {[classes.displayNone]: this.props.state.text.length === 0})} onClick={this.textRemove} style={{color: "#737373"}} />
                         </Box>

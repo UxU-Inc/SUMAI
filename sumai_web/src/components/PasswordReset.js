@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { withStyles, useTheme } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import { Card, CardActions, Button, Slide } from '@material-ui/core';
@@ -48,7 +48,7 @@ const useStyles = theme => ({
     },
     buttonLayout: {
         // padding: theme.spacing(0),
-        padding: '30px 0px 0px 0px',
+        padding: '20px 0px 0px 0px',
     },
     blueButton: {
         variant: 'contained',
@@ -103,6 +103,7 @@ function PasswordResetComponent(props) {
     const [errorCode, setErrorCode] = useState(0)
     const [refresh, setRefresh] = useState(false)
     const [slideNumber, setSlideNumber] = useState(0)
+    const [slideNumbered, setSlideNumbered] = useState()
     const [beforeSlide, setBeforeSlide] = useState()
     const [afterSlide, setAfterSlide] = useState()
     const {classes} = props
@@ -110,6 +111,7 @@ function PasswordResetComponent(props) {
     const theme = useTheme()
     const matches = useMediaQuery(theme.breakpoints.up('md'));
 
+    const focusInput = useRef();
 
     const onKeyPress = (e) => {
         if(e.key === 'Enter') {
@@ -158,6 +160,13 @@ function PasswordResetComponent(props) {
              history.push("/")
         }
     }
+    const onEnteredSlide = (e) => {
+        setSlideNumbered(slideNumber)
+    }
+    React.useEffect(() => {
+        if(slideNumbered === 0)
+            focusInput.current.focus()
+    }, [slideNumbered])
     const onEnterSlide = (e) => {
         e.style.position='relative'
         setBeforeSlide(afterSlide)
@@ -175,18 +184,18 @@ function PasswordResetComponent(props) {
     }
     return (
         <Box className={(matches?classes.root:'')}>
-            <Box display="flex" justifyContent="center" style={(!matches?{minHeight: '100vh'}:{})}>
+            <Box display="flex" justifyContent="center" style={(!matches?{minHeight: ''}:{})}>
                 <Card elevation={3} className={classes.card} style={(matches?{maxWidth:'450px', minWidth:'300px'}:{padding: '40px 40px 80px 40px', borderRadius: '0px', boxShadow: 'none'})}>
                     <Header matches={matches} classes={classes}/>
                     <Box style={(matches?{padding: "16px 10%", minHeight:'350px'}:{flex: '1'})}>
-                        <Slide  style={{position: 'relative', }} direction="left" in={slideNumber===0} mountOnEnter unmountOnExit onEnter={onEnterSlide} onExiting={onExitingSlide}>
+                        <Slide style={{position: 'relative', }} direction="left" in={slideNumber===0} timeout={{exit:0, enter: 500,}} mountOnEnter unmountOnExit onEnter={onEnterSlide} onExiting={onExitingSlide} onEntered={onEnteredSlide}>
                             <CardContent style={{padding: 0}}>
-                                <TextField autoFocus variant="outlined" value={email} onChange={onChangeValue} error={emailError}
+                                <TextField variant="outlined" value={email} onChange={onChangeValue} error={emailError} inputRef={focusInput}
                                     fullWidth label="이메일" placeholder="이메일을 입력해주세요." style={{margin: "15px 0px 7.5px 0px"}}
                                     helperText={emailError? "이메일 형식이 올바르지 않습니다.": false} onKeyPress={onKeyPress} spellCheck="false"/>
                             </CardContent>
                         </Slide>
-                        <Slide  style={{position: 'absolute', }} direction="left" in={slideNumber===1} mountOnEnter unmountOnExit onEnter={onEnterSlide} onExiting={onExitingSlide}>
+                        <Slide style={{position: 'absolute', }} direction="left" in={slideNumber===1} timeout={{exit:0, enter: 500,}} mountOnEnter unmountOnExit onEnter={onEnterSlide} onExiting={onExitingSlide}>
                             <CardContent style={{padding: 0}}>
                                 <Typography style={{fontFamily: 'NotoSansKR-Regular', color: '#424242', fontSize: '18px'}}>
                                     <span style={{color:root.PrimaryColor}}>{email}</span>로 이메일을 전송하였습니다. 해당 메일을 통해 인증 해주세요.
