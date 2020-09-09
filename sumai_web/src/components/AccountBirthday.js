@@ -56,21 +56,23 @@ class AccountNameChange extends React.Component {
             month: '',
             date: '',
             errorMassage: '',
+            isLoading: false,
         }
         this.textFieldRef = [React.createRef(), React.createRef()]
     }
 
     componentDidMount() {
-        this.setState({
-            id: this.props.status.currentId,
-            year: moment(this.props.location.state.birthday).format('YYYY') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('YYYY'),
-            month: moment(this.props.location.state.birthday).format('MM') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('MM'),
-            date: moment(this.props.location.state.birthday).format('D') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('D'),
-        }) 
+        if(this.props.status.isLoggedIn) {
+            this.setState({
+                id: this.props.status.currentId,
+                year: moment(this.props.location.state.birthday).format('YYYY') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('YYYY'),
+                month: moment(this.props.location.state.birthday).format('MM') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('MM'),
+                date: moment(this.props.location.state.birthday).format('D') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('D'),
+            }) 
+        }
     }
-
+    
     componentDidUpdate() {
-        
         if(this.props.status.loaded) {
             if(this.props.status.isLoggedIn === false) {
                 setTimeout(function() { 
@@ -78,17 +80,14 @@ class AccountNameChange extends React.Component {
                 }.bind(this), 0)
             } 
         }
-    }
-
-    componentWillReceiveProps() {
-        setTimeout(function() { 
+        if(this.props.status.isLoggedIn && this.state.id === '' && typeof this.props.status.currentId !== "undefined") {
             this.setState({
                 id: this.props.status.currentId,
                 year: moment(this.props.location.state.birthday).format('YYYY') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('YYYY'),
                 month: moment(this.props.location.state.birthday).format('MM') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('MM'),
                 date: moment(this.props.location.state.birthday).format('D') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('D'),
             }) 
-        }.bind(this), 0)
+        }
     }
 
     handleChange = (value, type) => {
@@ -169,10 +168,14 @@ class AccountNameChange extends React.Component {
             else if(moment().isBefore(moment(birthday), 'date')) {
                 this.setState({ errorMassage: '올바른 생년월일을 입력해 주세요.' })  // 현재 날짜 이후 생년월일 오류
                 return
-            }
-            else {
-                    if(this.state.id !== "") {
-                        this.onBirthdayChange(this.state.id, birthday).then(data => {
+            } else if(moment(this.props.location.state.birthday).format('YYYYMMDD') === birthday) { // 변경이 없을 때
+                this.props.history.goBack()
+            } else {
+                if(this.state.id !== "") {
+                    if(this.state.isLoading) return
+                    this.setState({ isLoading: true })
+                    this.onBirthdayChange(this.state.id, birthday).then(data => {
+                        console.log(data)
                         if (data.success) {
                             this.props.history.goBack()
                         } 
@@ -195,6 +198,8 @@ class AccountNameChange extends React.Component {
                     else if(res.data.code === -1) {
                         this.setState({ errorMassage: '입력한 생일이 계정을 만든 날짜보다 이후입니다.' })
                         return { success: false }
+                    } else {
+                        return { success: false }
                     }
                 } else {
             console.log(res.data)
@@ -205,6 +210,7 @@ class AccountNameChange extends React.Component {
         ).catch(
             (error) => {
                 console.log(error)
+                this.setState({ isLoading: false })
                 return { success: false }
             }
         );
@@ -244,11 +250,12 @@ class AccountNameChange extends React.Component {
 
                             <Box display="flex" mt={3}>
                                 <TextField autoFocus fullWidth variant="outlined" value={this.state.year || ""} onChange={event => this.handleChange(event.target.value, "year")}
-                                            label={"연"} style={{width: "100%", minWidth: "70px"}} spellCheck="false" inputRef={this.textFieldRef[0]} />
+                                            label={"연"} style={{width: "100%", minWidth: "70px"}} spellCheck="false" inputRef={this.textFieldRef[0]} 
+                                            disabled={this.state.isLoading? true : false}/>
 
                                 <FormControl variant="outlined" className={classes.formControl}>
                                     <InputLabel id="demo-simple-select-outlined-label">월</InputLabel>
-                                    <Select labelId="demo-simple-select-outlined-label" id="demo-simple-select-outlined" value={this.state.month} onChange={event => this.handleChange(event.target.value, "month")} label="월" >
+                                    <Select disabled={this.state.isLoading? true : false} labelId="demo-simple-select-outlined-label" id="demo-simple-select-outlined" value={this.state.month} onChange={event => this.handleChange(event.target.value, "month")} label="월" >
                                         <MenuItem value={"01"}>1월</MenuItem> <MenuItem value={"02"}>2월</MenuItem> <MenuItem value={"03"}>3월</MenuItem> 
                                         <MenuItem value={"04"}>4월</MenuItem> <MenuItem value={"05"}>5월</MenuItem> <MenuItem value={"06"}>6월</MenuItem> 
                                         <MenuItem value={"07"}>7월</MenuItem> <MenuItem value={"08"}>8월</MenuItem> <MenuItem value={"09"}>9월</MenuItem> 
@@ -257,7 +264,8 @@ class AccountNameChange extends React.Component {
                                 </FormControl>
 
                                 <TextField fullWidth variant="outlined" value={this.state.date || ""} onChange={event => this.handleChange(event.target.value, "date")} 
-                                            label={"일"} style={{width: "100%", minWidth: "50px"}} spellCheck="false" inputRef={this.textFieldRef[1]}/>
+                                            label={"일"} style={{width: "100%", minWidth: "50px"}} spellCheck="false" inputRef={this.textFieldRef[1]}
+                                            disabled={this.state.isLoading? true : false}/>
                             </Box>
 
                             <Typography variant="body2" style={{fontFamily: "NotoSansKR-Regular", color: "#f44336", marginTop: "3px"}}>
@@ -265,10 +273,10 @@ class AccountNameChange extends React.Component {
                             </Typography>
 
                             <Box display="flex" flexDirection="row-reverse" mt={5}>
-                                <Button onClick={this.onClickSave} style={{background: root.PrimaryColor, color: "#fff"}}>
+                                <Button onClick={this.onClickSave} disabled={this.state.isLoading? true : false} style={{background: root.PrimaryColor, color: "#fff"}}>
                                     저장
                                 </Button>
-                                <Button style={{color: root.PrimaryColor, marginRight: "20px"}} onClick={() => this.props.history.goBack()}>
+                                <Button onClick={() => this.props.history.goBack()} disabled={this.state.isLoading? true : false} style={{color: root.PrimaryColor, marginRight: "20px"}}>
                                     취소
                                 </Button>
                             </Box>

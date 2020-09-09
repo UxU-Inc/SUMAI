@@ -195,6 +195,9 @@ class RecordLastest extends Component{
     }
     handleResize = () => {
         setTimeout(function() {
+            if(this.unmount) {
+                return
+            }
             this.setState({
                 windowWidth: window.innerWidth
             })
