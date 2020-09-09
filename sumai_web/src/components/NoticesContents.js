@@ -234,7 +234,6 @@ function useQueryData(queryRows) {
         emptyPoint=[]
       }
       if(emptyArray.length!==0) {
-        console.log('request', emptyArray)
         setTimeout(() => {
           process(emptyArray)
         }, 500);

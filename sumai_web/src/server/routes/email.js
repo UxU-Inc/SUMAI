@@ -39,7 +39,6 @@ router.post("/sendEmail", function(req, res){
       res.status(500).send()
     }
     else {
-      console.log('Email sent: ' + info.response);
       res.status(200).send()
     }
   });
@@ -72,29 +71,14 @@ router.post("/temporary/send", function(req, res){
         email: email,
         certLink: `http://localhost/email/login/login?id=${req.sessionID}&cert=${cert}`,
       }
-    }).then(console.log("성공"))
-    res.send(200)
-  })
-  // let mailOptions = {
-  //   template: 'mars',
-  //   message: {
-  //     to: 'uxu.co.kr@gmail.com' , // 수신 메일 주소
-  //   },
-  //   locals: {
-  //     name: 'hi'
-  //   }
-  // };
+    }).then(() => {
+      res.send(200)
 
-  // transporter.sendMail(mailOptions, function(error, info){
-  //   if (error) {
-  //     console.log(error);
-  //     res.status(500).send()
-  //   }
-  //   else {
-  //     console.log('Email sent: ' + info.response);
-  //     res.status(200).send()
-  //   }
-  // });
+    }).catch((err) => {
+      console.log(err)
+      res.send(500)
+    })
+  })
 })
 
 router.post("/sendEmailCertification", function(req, res){
@@ -138,7 +122,13 @@ router.post("/sendEmailCertification", function(req, res){
           email: req.body.email,
           certLink: link,
         }
-      }).then(console.log("성공"))
+      }).then(() => {
+        res.send(200)
+  
+      }).catch((err) => {
+        console.log(err)
+        res.send(500)
+      })
     }
   )
 })
@@ -146,7 +136,6 @@ router.post("/sendEmailCertification", function(req, res){
 router.post("/EmailCertification", function(req, res){
   const id = req.body.id
   const cert = req.body.cert
-  console.log('테스트')
   if (id===undefined || cert===undefined) {
     return res.json({message: '이메일 인증에 실패했습니다.', code: 2})
   }
@@ -220,12 +209,12 @@ router.post("/temporary/login/:state", function(req, res, next){
         res.json({message: '인증이 만료되었습니다.', code: 6})
       })
     } 
-    if (email === undefined || cert === undefined) return res.json({message: '세션 상태가 이상합니다.', code: 4}) // 해킹당한듯
+    if (email === undefined || cert === undefined) return res.json({message: '세션 상태가 이상합니다.', code: 4})
     if(cert === req.body.cert) {
       db.query("SELECT * FROM summary.account_info WHERE email = '"+ email + "'", (err, account) => {
         if(!err) {
           if(account.length !== 1) {
-            console.log('해킹당한듯?')
+            res.json({message: '죄송합니다. 서비스를 이용할 수 없습니다.', code: 8})
           }
           if(req.params.state === 'check'){
             return res.json({message: '인증 성공', code: 0, email: email})
@@ -238,7 +227,6 @@ router.post("/temporary/login/:state", function(req, res, next){
         }
       })
     }else{
-      console.log()
       return res.json({message: '잘못된 인증입니다.', code: 1})
     }
   })
