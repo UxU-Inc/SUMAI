@@ -59,20 +59,23 @@ class AccountNameChange extends React.Component {
             genderCurrent: '',
             genderCustom: '',
             genderError: 0,
+            isLoading: false,
         }
         this.textFieldRef = [React.createRef()]
     }
 
     componentDidMount() {
-        this.setState({ id: this.props.status.currentId }) 
-        if(this.props.location.state.gender === "여성" || this.props.location.state.gender === "남성" || this.props.location.state.gender === "공개 안함") {
-            this.setState({ genderCurrent: this.props.location.state.gender }) 
-        } else if(this.props.location.state.gender !== "" && this.props.location.state.gender !== null && this.props.location.state.gender !== undefined) {
-            console.log(this.props.location.state.gender)
-            this.setState({ 
-                genderCurrent: "사용자 지정",
-                genderCustom: this.props.location.state.gender,
-            }) 
+        if(this.props.status.isLoggedIn) {
+            this.setState({ id: this.props.status.currentId }) 
+            if(this.props.location.state.gender === "여성" || this.props.location.state.gender === "남성" || this.props.location.state.gender === "공개 안함") {
+                this.setState({ genderCurrent: this.props.location.state.gender }) 
+            } else if(this.props.location.state.gender !== "" && this.props.location.state.gender !== null && this.props.location.state.gender !== undefined) {
+                console.log(this.props.location.state.gender)
+                this.setState({ 
+                    genderCurrent: "사용자 지정",
+                    genderCustom: this.props.location.state.gender,
+                }) 
+            }
         }
     }
 
@@ -84,21 +87,18 @@ class AccountNameChange extends React.Component {
                 }.bind(this), 0)            
             } 
         }
-    }
-
-    componentWillReceiveProps() {
-        setTimeout(function() { 
-        this.setState({ id: this.props.status.currentId }) 
-        if(this.props.location.state.gender === "여성" || this.props.location.state.gender === "남성" || this.props.location.state.gender === "공개 안함") {
-            this.setState({ genderCurrent: this.props.location.state.gender }) 
-        } else if(this.props.location.state.gender !== "" && this.props.location.state.gender !== null && this.props.location.state.gender !== undefined) {
-            console.log(this.props.location.state.gender)
-            this.setState({ 
-                genderCurrent: "사용자 지정",
-                genderCustom: this.props.location.state.gender,
-            }) 
+        if(this.props.status.isLoggedIn && this.state.id === '' && typeof this.props.status.currentId !== "undefined") {
+            this.setState({ id: this.props.status.currentId }) 
+            if(this.props.location.state.gender === "여성" || this.props.location.state.gender === "남성" || this.props.location.state.gender === "공개 안함") {
+                this.setState({ genderCurrent: this.props.location.state.gender }) 
+            } else if(this.props.location.state.gender !== "" && this.props.location.state.gender !== null && this.props.location.state.gender !== undefined) {
+                console.log(this.props.location.state.gender)
+                this.setState({ 
+                    genderCurrent: "사용자 지정",
+                    genderCustom: this.props.location.state.gender,
+                }) 
+            }
         }
-        }.bind(this), 0)
     }
 
     handleClose = () => {
@@ -132,6 +132,12 @@ class AccountNameChange extends React.Component {
         } 
         
         if(this.state.genderCurrent !== "" && this.state.genderCurrent !== "사용자 지정") {
+            if(this.props.location.state.gender === this.state.genderCurrent) { // 변경이 없을 때
+                this.props.history.goBack()
+                return
+            }
+            if(this.state.isLoading) return
+            this.setState({ isLoading: true })
             this.onGenderChange(this.state.id, this.state.genderCurrent).then(data => {
                 if (data.success) {
                     this.props.history.goBack()
@@ -141,6 +147,12 @@ class AccountNameChange extends React.Component {
         }
 
         if(this.state.genderCurrent === "사용자 지정" && this.state.genderCustom !== "") {
+            if(this.props.location.state.gender === this.state.genderCustom) { // 변경이 없을 때
+                this.props.history.goBack()
+                return
+            }
+            if(this.state.isLoading) return
+            this.setState({ isLoading: true })
             this.onGenderChange(this.state.id, this.state.genderCustom).then(data => {
                 if (data.success) {
                     this.props.history.goBack()
@@ -166,6 +178,7 @@ class AccountNameChange extends React.Component {
             }
         ).catch(
             (error) => {
+                this.setState({ isLoading: false })
                 return { success: false }
             }
         );
@@ -174,7 +187,6 @@ class AccountNameChange extends React.Component {
 
     render() {
         const { classes } = this.props;
-        console.log(this.props.location.state.gender)
 
         return (
             <div >
@@ -216,15 +228,15 @@ class AccountNameChange extends React.Component {
                                     <TextField fullWidth variant="outlined" value={this.state.genderCustom || ''} label="성별 입력" style={{width: "100%"}} onChange={this.handleChangeGenderCustom}
                                         className={clsx("none", {[classes.displayNone]: this.state.genderCurrent !== "사용자 지정"})}
                                         error={this.state.genderError === -2} inputRef={this.textFieldRef[0]}
-                                        helperText={this.state.genderError === -2 ? "사용자 지정 성별을 입력해주세요." : false} />
+                                        helperText={this.state.genderError === -2 ? "사용자 지정 성별을 입력해주세요." : false} disabled={this.state.isLoading? true : false} />
                                 </Box>
                             </FormControl>
                                 
                             <Box display="flex" flexDirection="row-reverse" mt={5}>
-                                <Button onClick={this.onClickSave} style={{background: root.PrimaryColor, color: "#fff"}}>
+                                <Button onClick={this.onClickSave} disabled={this.state.isLoading? true : false} style={{background: root.PrimaryColor, color: "#fff"}}>
                                     저장
                                 </Button>
-                                <Button style={{color: root.PrimaryColor, marginRight: "20px"}} onClick={() => this.props.history.goBack()}>
+                                <Button onClick={() => this.props.history.goBack()} disabled={this.state.isLoading? true : false} style={{color: root.PrimaryColor, marginRight: "20px"}}>
                                     취소
                                 </Button>
                             </Box>

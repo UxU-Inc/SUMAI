@@ -135,6 +135,7 @@ class Login extends Component{
         if(type === "email") {
             this.setState({
                 email: e.target.value.trim(),
+                errorNotice: false,
                 loginerror: false,
                 snsloginerror: '',
                 toomanyerror: false,
@@ -142,9 +143,11 @@ class Login extends Component{
         } else if (type === "password") {
             this.setState({
                 password: e.target.value.trim(),
+                errorNotice: false,
                 loginerror: false,
                 snsloginerror: '',
                 toomanyerror: false,
+                errorNotice: false,
             })
         }
     }
@@ -200,6 +203,7 @@ class Login extends Component{
     SNSLogin = (SNS) => {
         if(this.props.loginStatus !== 'WAITING') {
             this.setState({
+                errorNotice: false,
                 loginerror: false,
                 snsloginerror: '',
                 toomanyerror: false,

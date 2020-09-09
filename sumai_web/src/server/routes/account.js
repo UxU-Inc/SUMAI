@@ -4,11 +4,9 @@ const AWS = require('aws-sdk');
 const crypto = require('crypto');
 const multer = require("multer");
 const multerS3 = require('multer-s3');
-var fs = require('fs');
 const dbconfig   = require('../security/database');
 const hashing = require('../security/hashing');
 const s3config  = require('../security/s3config');
-const  getRandomValues = require('get-random-values')
 
 const db = mysql.createPool(dbconfig)
 const router = express.Router();
@@ -25,7 +23,7 @@ const upload = multer({
         cb(null, "image/jpg")
       },
       key: (req, file, cb) => {
-        cb(null, "image/" + crypto.createHash('sha1').update(req.params.email+Date.now()).digest("base64") + ".jpg")
+        cb(null, "image/" + crypto.createHash('sha1').update(req.params.id+Date.now()).digest("base64") + ".jpg")
       },
       acl: 'public-read',
     }),
@@ -47,47 +45,6 @@ router.post('/checkSignupEmail', (req, res) => {
             return res.json({success:true})
         }
     })
-})
-router.post('/signup', (req, res) => {
-    // 기존에 존재하는 email 이 있는지 DB 에서 확인
-    console.log(typeof req.session.emailCert==='undefined')
-    if(typeof req.session.emailCert==='undefined') { // 인증상태가 아닐 경우 (session에 emailCert가 없을 경우)
-        return res.status(500).json({
-            code: 3
-        })
-    }
-    if(req.session.emailCert.email!==req.body.email || !req.session.emailCert.certState) { // 회원가입하는 이메일과 인증하는 이메일이 다른 경우 또는 인증상태가 아닐 경우
-        return res.status(500).json({
-            code: 2
-        });
-    }
-    db.query("SELECT * FROM summary.account_info WHERE email = '"+ req.body.email + "'", (err, data) => {
-        if (err) {
-            console.log(err);
-            return res.send(err);
-        } else if(data.length !== 0){
-            return res.status(400).json({
-                error: "해당 이메일이 존재합니다.",
-                code: 1
-            });
-        }
-        // CREATE ACCOUNT
-        // hash 를 이용해 비밀번호 보안
-        const id = getRandomValues(new Uint8Array(10)).join('').slice(-10)+String(Date.now()).slice(-10)
-        hashing.encrypt(req.body.password).then(password => {
-            db.query("INSERT INTO summary.account_info (type, id, email, name, password, salt) VALUES ('SUMAI', "+ id + ", LOWER('"+ req.body.email +"'), '"+ req.body.name +"', '"+ password.hashed +"', '"+ password.salt +"')", (err, exists) => {
-                if(!err) {
-                    // 회원가입 로그
-                    ActionLog(req, `[S]signup. id: ${id}`)
-                    db.query("INSERT INTO summary.account_change (modifiedDate, changeData, email, name, password, salt) VALUES (now(), 'signup', '"+ req.body.email +"', '"+ req.body.name +"', '"+ password.hashed +"', '"+ password.salt +"')")
-                    return res.json({ success: true });
-                } else {
-                    console.log(err);
-                    return res.send(err);
-                }
-            });
-        })   
-    });
 })
 
 router.post('/login', (req, res) => {
@@ -222,7 +179,7 @@ router.post('/birthdayChange', (req, res) => {
         if (err) {
             console.log(err);
             return res.send(err);
-        } else if (bool[0].bool === 1) {
+        } else if (bool.length === 0 || bool[0].bool === 1) {
             db.query("UPDATE summary.account_info SET birth = '"+ req.body.birthday + "' WHERE id = '"+ req.body.id + "'", (err, account) => {
                 console.log(account)
                 if (err) {
@@ -342,7 +299,7 @@ router.post('/imageUpload/:id', upload.single("img"), (req, res, next) => {
         }
     });
     console.log(req.file)
-    db.query("UPDATE summary.account_info SET image = '"+ req.file.location.substring(60, req.file.location.length) + "'  WHERE email = '"+ req.params.email + "'", (err, account) => {
+    db.query("UPDATE summary.account_info SET image = '"+ req.file.location.substring(60, req.file.location.length) + "'  WHERE id = '"+ req.params.id + "'", (err, account) => {
         if (err) {
             console.log(err);
             return res.send(err);
@@ -371,8 +328,8 @@ router.get('/accountLoad/:id', (req, res, next) => {
         } else {
             db.query("SELECT modifiedDate FROM summary.account_change WHERE id = '"+ req.params.id + "' AND changeData = 'password' OR changeData = 'findPassword' ORDER BY modifiedDate DESC LIMIT 1", (err2, passwordChangeTime) => {
                 if(!err2) {
-                    if(passwordChangeTime[0] !== undefined) return res.json({ image: 'https://sumai-profile.s3.ap-northeast-2.amazonaws.com/image/'+account[0].image, passwordChangeTime: passwordChangeTime[0].modifiedDate, type: account[0].id, birthday: account[0].birth, gender: account[0].gender })
-                    else return res.json({ image: 'https://sumai-profile.s3.ap-northeast-2.amazonaws.com/image/'+account[0].image, passwordChangeTime: account[0].joinDate, type: account[0].id, birthday: account[0].birth, gender: account[0].gender })
+                    if(passwordChangeTime[0] !== undefined) return res.json({ image: 'https://sumai-profile.s3.ap-northeast-2.amazonaws.com/image/'+account[0].image, passwordChangeTime: passwordChangeTime[0].modifiedDate, type: account[0].type, id: account[0].id, birthday: account[0].birth, gender: account[0].gender })
+                    else return res.json({ image: 'https://sumai-profile.s3.ap-northeast-2.amazonaws.com/image/'+account[0].image, passwordChangeTime: account[0].joinDate, type: account[0].type, id: account[0].id, birthday: account[0].birth, gender: account[0].gender })
                 }
             })
         }

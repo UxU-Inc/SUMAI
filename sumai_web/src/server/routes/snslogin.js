@@ -77,7 +77,7 @@ router.get('/googlecallback', (req, res) => {
         console.log('passport.authenticate(google)실행');
         console.log(user);
         if(!user) {
-            return res.send("<script>setTimeout(window.close, 400);</script>")
+            return res.send("<script>var win = window.open('','_self');win.close();</script>")
         }
         const imageName = crypto.createHash('sha1').update(user.id+Date.now()).digest("base64") + ".jpg"
         db.query("SELECT * FROM summary.account_info WHERE id = '"+ user.id + "'", (err, account) => {
@@ -115,7 +115,7 @@ router.get('/googlecallback', (req, res) => {
                                 };
                                 return req.session.save(() => {
                                     console.log("login")
-                                    res.send("<script>setTimeout(window.close, 400);</script>")
+                                    res.send("<script>var win = window.open('','_self');win.close();</script>")
                                 })
                             } else {
                                 console.log(err);
@@ -129,36 +129,8 @@ router.get('/googlecallback', (req, res) => {
                         };
                         return req.session.save(() => {
                             console.log("failure")
-                            res.send("<script>setTimeout(window.close, 400);</script>")
+                            res.send("<script>var win = window.open('','_self');win.close();</script>")
                         })
-                        // if(account[0].id !== null) {
-                        //     req.session.loginInfo = {
-                        //         type: account[0].type,
-                        //         id: -1,
-                        //     };
-                        //     return req.session.save(() => {
-                        //         console.log("failure")
-                        //         res.send("<script>setTimeout(window.close, 400);</script>")
-                        //     })
-                        // }
-                        // const verifiedUpdate = account[0].verified === 0? ", verified = "+ user.emails[0].verified: ""
-                        // const imageUpdate = account[0].image === null? ", image = '"+ imageName +"'": ""
-                        // db.query("UPDATE summary.account_info SET type = 'GOOGLE', id = '"+ user.id +"', connectDate = NOW()"+ verifiedUpdate + imageUpdate +" WHERE email = '"+ account[0].email + "'", (err, data) => {
-                        //     if (err) {
-                        //         console.log(err);
-                        //         res.send(err);
-                        //     }
-                        // })
-                        // req.session.loginInfo = {
-                        //     type: "google",
-                        //     id: user.id,
-                        //     email: account[0].email,
-                        //     name: account[0].name
-                        // };
-                        // return req.session.save(() => {
-                        //     console.log("login")
-                        //     res.send("<script>setTimeout(window.close, 400);</script>")
-                        // })
                     }
                 })
             } else {
@@ -170,7 +142,7 @@ router.get('/googlecallback', (req, res) => {
                 };
                 return req.session.save(() => {
                     console.log("login")
-                    res.send("<script>setTimeout(window.close, 400);</script>")
+                    res.send("<script>var win = window.open('','_self');win.close();</script>")
                 })
             }
         });
@@ -186,7 +158,7 @@ router.get('/kakaocallback', (req, res) => {
         console.log('passport.authenticate(kakao)실행');
         console.log(user);
         if(!user) {
-            return res.send("<script>setTimeout(window.close, 400);</script>")
+            return res.send("<script>var win = window.open('','_self');win.close();</script>")
         }
         db.query("SELECT * FROM summary.account_info WHERE id = '"+ user.id + "'", (err, account) => {
             const email = typeof user._json.kakao_account.email === "undefined"? null : "'"+user._json.kakao_account.email+"'"
@@ -230,7 +202,7 @@ router.get('/kakaocallback', (req, res) => {
                                     };
                                     return req.session.save(() => {
                                         console.log("login")
-                                        res.send("<script>setTimeout(window.close, 400);</script>")
+                                        res.send("<script>var win = window.open('','_self');win.close();</script>")
                                     })
                                 } else {
                                     console.log(err);
@@ -244,39 +216,8 @@ router.get('/kakaocallback', (req, res) => {
                             };
                             return req.session.save(() => {
                                 console.log("failure")
-                                res.send("<script>setTimeout(window.close, 400);</script>")
+                                res.send("<script>var win = window.open('','_self');win.close();</script>")
                             })
-                            // if(account[0].id !== null) {
-                            //     req.session.loginInfo = {
-                            //         type: account[0].type,
-                            //         id: -1,
-                            //     };
-                            //     return req.session.save(() => {
-                            //         console.log("failure")
-                            //         res.send("<script>setTimeout(window.close, 400);</script>")
-                            //     })
-                            // }
-                            // const verifiedUpdate = account[0].verified === 0? ", verified = "+ verified: ""
-                            // const genderUpdate = account[0].gender === null? ", gender = "+ gender: ""
-                            // const birthUpdate = account[0].birth === null? ", birth = "+ birthday: ""
-                            // const ageRangeUpdate = account[0].ageRange === null? ", ageRange = "+ age_range: ""
-                            // const imageUpdate = account[0].image === null? ", image = "+ imageName: ""
-                            // db.query("UPDATE summary.account_info SET type = 'KAKAO', id = '"+ user.id +"', connectDate = NOW()"+ verifiedUpdate + genderUpdate + birthUpdate + ageRangeUpdate + imageUpdate +" WHERE email = '"+ account[0].email + "'", (err, data) => {
-                            //     if (err) {
-                            //         console.log(err);
-                            //         res.send(err);
-                            //     }
-                            // })
-                            // req.session.loginInfo = {
-                            //     type: "kakao",
-                            //     id: user.id,
-                            //     email: account[0].email,
-                            //     name: account[0].name
-                            // };
-                            // return req.session.save(() => {
-                            //     console.log("login")
-                            //     res.send("<script>setTimeout(window.close, 400);</script>")
-                            // })
                         }
                     })
                 } else {
@@ -305,7 +246,7 @@ router.get('/kakaocallback', (req, res) => {
                             };
                             return req.session.save(() => {
                                 console.log("login")
-                                res.send("<script>setTimeout(window.close, 400);</script>")
+                                res.send("<script>var win = window.open('','_self');win.close();</script>")
                             })
                         } else {
                             console.log(err);
@@ -322,7 +263,7 @@ router.get('/kakaocallback', (req, res) => {
                 };
                 return req.session.save(() => {
                     console.log("login")
-                    res.send("<script>setTimeout(window.close, 400);</script>")
+                    res.send("<script>var win = window.open('','_self');win.close();</script>")
                 })
             }
         });
@@ -338,7 +279,7 @@ router.get('/navercallback', (req, res) => {
         console.log('passport.authenticate(naver)실행');
         console.log(user);
         if(!user) {
-            return res.send("<script>setTimeout(window.close, 400);</script>")
+            return res.send("<script>var win = window.open('','_self');win.close();</script>")
         }
         db.query("SELECT * FROM summary.account_info WHERE id = '"+ user.id + "'", (err, account) => {
             const age = typeof user._json.age === "undefined"? null : "'"+user._json.age.replace(/[^0-9]/g,"")+"'"
@@ -380,7 +321,7 @@ router.get('/navercallback', (req, res) => {
                                 };
                                 return req.session.save(() => {
                                     console.log("login")
-                                    res.send("<script>setTimeout(window.close, 400);</script>")
+                                    res.send("<script>var win = window.open('','_self');win.close();</script>")
                                 })
                             } else {
                                 console.log(err);
@@ -394,37 +335,8 @@ router.get('/navercallback', (req, res) => {
                         };
                         return req.session.save(() => {
                             console.log("failure")
-                            res.send("<script>setTimeout(window.close, 400);</script>")
+                            res.send("<script>var win = window.open('','_self');win.close();</script>")
                         })
-                        // if(account[0].id !== null) {
-                        //     req.session.loginInfo = {
-                        //         type: account[0].type,
-                        //         id: -1,
-                        //     };
-                        //     return req.session.save(() => {
-                        //         console.log("failure")
-                        //         res.send("<script>setTimeout(window.close, 400);</script>")
-                        //     })
-                        // }
-                        // const birthUpdate = account[0].birth === null? ", birth = "+ birthday: ""
-                        // const ageUpdate = account[0].ageRange === null? ", ageRange = "+ age: ""
-                        // const imageUpdate = account[0].image === null? ", image = "+ imageName: ""
-                        // db.query("UPDATE summary.account_info SET type = 'NAVER', id = '"+ user.id +"', connectDate = NOW()"+ birthUpdate + ageUpdate + imageUpdate +" WHERE email = '"+ account[0].email + "'", (err, data) => {
-                        //     if (err) {
-                        //         console.log(err);
-                        //         res.send(err);
-                        //     }
-                        // })
-                        // req.session.loginInfo = {
-                        //     type: "naver",
-                        //     id: user.id,
-                        //     email: account[0].email,
-                        //     name: account[0].name
-                        // };
-                        // return req.session.save(() => {
-                        //     console.log("login")
-                        //     res.send("<script>setTimeout(window.close, 400);</script>")
-                        // })
                     }
                 })
             } else {
@@ -436,7 +348,7 @@ router.get('/navercallback', (req, res) => {
                 };
                 return req.session.save(() => {
                     console.log("login")
-                    res.send("<script>setTimeout(window.close, 400);</script>")
+                    res.send("<script>var win = window.open('','_self');win.close();</script>")
                 })
             }
         });
@@ -452,7 +364,7 @@ router.get('/facebookcallback', (req, res) => {
         console.log('passport.authenticate(facebook)실행');
         console.log(user);
         if(!user) {
-            return res.send("<script>setTimeout(window.close, 400);</script>")
+            return res.send("<script>var win = window.open('','_self');win.close();</script>")
         }
         const email = typeof user.emails === "undefined"? null : "'"+user.emails[0].value+"'"
         const email_ = typeof user.emails === "undefined"? null : user.emails[0].value
@@ -492,7 +404,7 @@ router.get('/facebookcallback', (req, res) => {
                                     };
                                     return req.session.save(() => {
                                         console.log("login")
-                                        res.send("<script>setTimeout(window.close, 400);</script>")
+                                        res.send("<script>var win = window.open('','_self');win.close();</script>")
                                     })
                                 } else {
                                     console.log(err);
@@ -506,36 +418,8 @@ router.get('/facebookcallback', (req, res) => {
                             };
                             return req.session.save(() => {
                                 console.log("failure")
-                                res.send("<script>setTimeout(window.close, 400);</script>")
+                                res.send("<script>var win = window.open('','_self');win.close();</script>")
                             })
-                            // if(account[0].id !== null) {
-                            //     req.session.loginInfo = {
-                            //         type: account[0].type,
-                            //         id: -1,
-                            //     };
-                            //     return req.session.save(() => {
-                            //         console.log("failure")
-                            //         res.send("<script>setTimeout(window.close, 400);</script>")
-                            //     })
-                            // }
-                            // const genderUpdate = account[0].gender === null? ", gender = "+ gender: ""
-                            // const imageUpdate = account[0].image === null? ", image = '"+ imageName+"'": ""
-                            // db.query("UPDATE summary.account_info SET type = 'FACEBOOK', id = '"+ user.id +"', connectDate = NOW()"+ genderUpdate + imageUpdate + " WHERE email = '"+ account[0].email + "'", (err, data) => {
-                            //     if (err) {
-                            //         console.log(err);
-                            //         res.send(err);
-                            //     }
-                            // })
-                            // req.session.loginInfo = {
-                            //     type: "facebook",
-                            //     id: user.id,
-                            //     email: account[0].email,
-                            //     name: account[0].name
-                            // };
-                            // return req.session.save(() => {
-                            //     console.log("login")
-                            //     res.send("<script>setTimeout(window.close, 400);</script>")
-                            // })
                         }
                     })
                 } else {
@@ -562,7 +446,7 @@ router.get('/facebookcallback', (req, res) => {
                             };
                             return req.session.save(() => {
                                 console.log("login")
-                                res.send("<script>setTimeout(window.close, 400);</script>")
+                                res.send("<script>var win = window.open('','_self');win.close();</script>")
                             })
                         } else {
                             console.log(err);
@@ -579,7 +463,7 @@ router.get('/facebookcallback', (req, res) => {
                 };
                 return req.session.save(() => {
                     console.log("login")
-                    res.send("<script>setTimeout(window.close, 400);</script>")
+                    res.send("<script>var win = window.open('','_self');win.close();</script>")
                 })
             }
         });
