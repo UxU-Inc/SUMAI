@@ -150,7 +150,7 @@ class Body extends React.Component {
     }
 
     componentDidMount() {
-      this.props.recordFalse()
+      this.props.recordFalseMob()
       window.addEventListener('scroll', this.scrollFab)
     }
     
