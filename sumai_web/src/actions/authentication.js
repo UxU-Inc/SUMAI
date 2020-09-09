@@ -3,19 +3,19 @@ import axios from 'axios';
 import * as types from './ActionTypes';
  
 /* SIGNUP */
-export function signupRequest(email, name, password) {
-    return (dispatch) => {
-        // Inform signup API is starting
-        dispatch(signup());
+// export function signupRequest(email, name, password) {
+//     return (dispatch) => {
+//         // Inform signup API is starting
+//         dispatch(signup());
  
-        return axios.post('/api/account/signup', { email, name, password })
-        .then((response) => {
-            dispatch(signupSuccess());
-        }).catch((error) => {
-            dispatch(signupFailure(error.response.data.code || -1));
-        });
-    };
-}
+//         return axios.post('/api/account/signup', { email, name, password })
+//         .then((response) => {
+//             dispatch(signupSuccess());
+//         }).catch((error) => {
+//             dispatch(signupFailure(error.response.data.code || -1));
+//         });
+//     };
+// }
  
 export function signup() {
     return {

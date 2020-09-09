@@ -64,8 +64,7 @@ function PasswordChangeMassage(props) {
         if(code === 4) enqueueSnackbar('로그인 상태가 아닙니다.', {variant: "error"})
         if(code === 5) enqueueSnackbar('SUMAI 해당 계정의 모든 데이터 삭제에 동의해주시면 회원탈퇴가 가능합니다.', {variant: "error"})
         setCode(0)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [code])
+    }, [code, enqueueSnackbar, setCode])
 
     return (<React.Fragment></React.Fragment>)
 }
@@ -81,6 +80,7 @@ class AccountPassword extends React.Component {
             withdrawalChecked: false,
             dialogOpen: false,
             code: 0,
+            isLoading: false,
         }
         this.textFieldRef = [React.createRef()]
     }
@@ -131,15 +131,20 @@ class AccountPassword extends React.Component {
             return
         }
 
+        if(this.state.isLoading) return
+        this.setState({ isLoading: true })
         this.onPasswordCheck(this.props.status.currentEmail, this.state.password).then(data => {
+            console.log("wr")
             if (data.success) {
                 this.setState({
                     dialogOpen: true,
+                    isLoading: false,
                 })  
             } else {
                 this.setState({
                     code: data.code,
                     passwordError: true,
+                    isLoading: false,
                 })
             }
         })
@@ -156,6 +161,7 @@ class AccountPassword extends React.Component {
             }
         ).catch(
             (error) => {
+                this.setState({ isLoading: false })
                 return { success: false, code: error.response.data.code }
             }
         );
@@ -177,6 +183,8 @@ class AccountPassword extends React.Component {
             return
         }
 
+        if(this.state.isLoading) return
+        this.setState({ isLoading: true })
         this.onWithdrawal(this.props.status.currentId, this.state.password).then(data => {
             if (data.success) {
                 this.setState({
@@ -220,6 +228,7 @@ class AccountPassword extends React.Component {
             }
         ).catch(
             (error) => {
+                this.setState({ isLoading: false })
                 return { success: false, code: error.response.data.code }
             }
         );
@@ -258,13 +267,14 @@ class AccountPassword extends React.Component {
 
                             <TextField autoFocus fullWidth variant="outlined" value={this.state.password} onChange={this.handleChange} label="비밀번호 입력" 
                                         style={{margin: "30px 0px 7.5px 0px"}} placeholder="비밀번호를 입력해주세요." type="password" error={this.state.passwordError} inputRef={this.textFieldRef[0]}
-                                        helperText={this.state.passwordError ? "잘못된 비밀번호입니다. 다시 시도하거나 비밀번호 찾기를 클릭하여 재설정하세요." : false} />
+                                        helperText={this.state.passwordError ? "잘못된 비밀번호입니다. 다시 시도하거나 비밀번호 찾기를 클릭하여 재설정하세요." : false}
+                                        disabled={this.state.isLoading? true : false} />
 
                             <Box display="flex" flexDirection="row-reverse" style={{marginTop: "10px"}}>
-                                <Button onClick={this.onClickPasswordCheck} style={{background: root.PrimaryColor, color: "#fff"}}>
+                                <Button onClick={this.onClickPasswordCheck} disabled={this.state.isLoading? true : false} style={{background: root.PrimaryColor, color: "#fff"}}>
                                     회원탈퇴
                                 </Button>
-                                <Button style={{color: root.PrimaryColor}} onClick={() => this.props.history.goBack()}>
+                                <Button style={{color: root.PrimaryColor}} disabled={this.state.isLoading? true : false} onClick={() => this.props.history.goBack()}>
                                     취소
                                 </Button>
                             </Box>
@@ -287,13 +297,13 @@ class AccountPassword extends React.Component {
                             회원탈퇴 시 모든 정보가 삭제되며, 삭제된 정보는 복구할 수 없습니다.<br/>
                             정말 회원탈퇴를 진행하시겠습니까?
                         </DialogContentText>
-                        <FormControlLabel label="SUMAI 계정 모든 데이터 삭제에 동의합니다." className={classes.withdrawalCheckBox} control={<Checkbox checked={this.state.withdrawalChecked} onChange={this.handleChangeWithdrawal} size="medium" value="withdrawalChecked" color="primary"/>}   />
+                        <FormControlLabel label="SUMAI 계정 모든 데이터 삭제에 동의합니다." className={classes.withdrawalCheckBox} control={<Checkbox checked={this.state.withdrawalChecked} onChange={this.handleChangeWithdrawal} disabled={this.state.isLoading? true : false} size="medium" value="withdrawalChecked" color="primary"/>}   />
                     </DialogContent>
 
 
                     <DialogActions>
-                        <Button onClick={this.handleClose} color="primary">취소</Button>
-                        <Button onClick={this.onClickWithdrawal} color="primary">회원탈퇴</Button>
+                        <Button onClick={this.handleClose} disabled={this.state.isLoading? true : false} color="primary">취소</Button>
+                        <Button onClick={this.onClickWithdrawal} disabled={this.state.isLoading? true : false} color="primary">회원탈퇴</Button>
                     </DialogActions>
                 </Dialog>
 

@@ -58,22 +58,30 @@ class Account extends Component{
         gender: '',
         avatarname: '',
         avatarcolor: '',
+        isLoading: true,
       }
     }
 
     componentDidMount() {
+      if(this.props.status.loaded) {
+        if(this.props.status.isLoggedIn === false) {
+          setTimeout(function() { 
+            this.props.history.push("/") 
+          }.bind(this), 0)
+        } 
+      }
       this.accountInit()
     }
 
     componentDidUpdate() {
       if(this.props.status.loaded) {
-          if(this.props.status.isLoggedIn === false) {
-            setTimeout(function() { 
-              this.props.history.push("/") 
-            }.bind(this), 0)
-          } 
+        if(this.props.status.isLoggedIn === false) {
+          setTimeout(function() { 
+            this.props.history.push("/") 
+          }.bind(this), 0)
+        } 
       }
-  }
+    }
 
     accountInit = () => {
       new Promise(async (resolve, reject) => {
@@ -95,6 +103,7 @@ class Account extends Component{
                       id : id,
                       avatarname: this.avatarName(this.props.status.currentUser),
                       avatarcolor: '#' + CryptoJS.MD5(id).toString().substring(1, 7),
+                      isLoading: false,
                     })
                     })
                     resolve();
@@ -106,7 +115,7 @@ class Account extends Component{
     }
 
     onClickLink = (url) => (e) => {
-      if(typeof this.props.status.currentId !== "undefined") {
+      if(typeof this.props.status.currentId !== "undefined" && !this.state.isLoading) {
         this.props.history.push({
           pathname: url,
           state: { 
@@ -160,7 +169,7 @@ class Account extends Component{
         const { classes } = this.props;
 
         console.log(this.props.status)
-        console.log(this.state.imagesrc)
+        console.log(this.state)
 
         /**************************************************** PC *****************************************************/
         if(isWidthUp('md', this.props.width)) {
@@ -223,7 +232,8 @@ class Account extends Component{
                                   </Box>
 
                                   <Divider style={{margin: "0.1px 0px 0.1px 3%", height: "0.5px"}}/>
-
+                                  
+                                  {this.state.accountType === "SUMAI"?
                                   <Box display="flex" alignItems="center" style={{width: "100%", borderRadius: "0px"}}>
                                     <Button onClick={this.onClickLink("/accounts/password")} style={{width: "100%", padding: "15px 24px 16px", borderRadius: "0px", textTransform: "none"}}>
                                         <Typography variant="caption" style={{width: "156px", textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#0000008A"}}>
@@ -239,9 +249,10 @@ class Account extends Component{
                                         </Box>
                                         <ArrowForwardIosIcon fontSize="small" style={{marginLeft: "auto", color: "#0000008A"}}/>
                                     </Button>
-                                  </Box>
+                                  </Box> : null}
 
-                                  <Divider style={{margin: "0.1px 0px 0.1px 3%", height: "0.5px"}}/>
+                                  {this.state.accountType === "SUMAI"?
+                                  <Divider style={{margin: "0.1px 0px 0.1px 3%", height: "0.5px"}}/> : null}
 
                                   <Box display="flex" alignItems="center" style={{borderRadius: "0px", padding: "15px 24px 16px", textTransform: "none"}}>
                                         <Typography variant="caption" style={{width: "156px", textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#0000008A"}}>
@@ -380,6 +391,7 @@ class Account extends Component{
 
                                   <Divider style={{margin: "0.1px 0px 0.1px 3%", height: "0.5px"}}/>
 
+                                  {this.state.accountType === "SUMAI"?
                                   <Box display="flex" style={{width: "100%", borderRadius: "0px", textTransform: "none"}}>
                                       <Button onClick={this.onClickLink("/accounts/password")} style={{padding: "15px 24px 16px", width: "100%"}}>
                                         <Box style={{width: "100%", paddingRight: "10px", textTransform: "none"}} >
@@ -395,9 +407,10 @@ class Account extends Component{
                                         </Box>
                                         <ArrowForwardIosIcon fontSize="small" style={{marginLeft: "auto", color: "#0000008A"}}/>
                                       </Button>
-                                  </Box>
+                                  </Box> : null}
 
-                                  <Divider style={{margin: "0.1px 0px 0.1px 3%", height: "0.5px"}}/>
+                                  {this.state.accountType === "SUMAI"?
+                                  <Divider style={{margin: "0.1px 0px 0.1px 3%", height: "0.5px"}}/> : null}
 
                                   <Box display="flex" style={{width: "100%", borderRadius: "0px"}}>
                                       <Box style={{width: "100%", padding: "15px 24px 16px", textTransform: "none"}} >

@@ -46,6 +46,7 @@ class AccountNameChange extends React.Component {
             nameCurrent: this.props.status.currentUser,
             nameChange: this.props.status.currentUser,
             nameError: false,
+            isLoading: false,
         }
         this.textFieldRef = [React.createRef()]
     }
@@ -58,15 +59,12 @@ class AccountNameChange extends React.Component {
                 }.bind(this), 0)
             } 
         }
-    }
-
-    componentWillReceiveProps() {
-        setTimeout(function() { 
+        if(this.props.status.isLoggedIn && this.state.nameCurrent === '' && typeof this.props.status.currentUser !== "undefined") {
             this.setState({
                 nameCurrent: this.props.status.currentUser,
                 nameChange: this.props.status.currentUser,
             }) 
-        }.bind(this), 0)
+        }
     }
 
     handleChangeName = (e) => {
@@ -91,16 +89,14 @@ class AccountNameChange extends React.Component {
     }
 
     onClickSave = () => {
-        this.setState({
-            nameCurrent: this.props.status.currentUser
-        })
-
         if(this.state.nameChange === "" || this.state.nameError || this.state.nameCurrent === this.state.nameChange) {
             this.textFieldRef[0].current.focus()
             return
         }
 
         if(this.state.id !== "" && !this.state.nameError) {
+            if(this.state.isLoading) return
+            this.setState({ isLoading: true })
             this.onNameChange(this.state.id, this.state.email, this.state.nameChange).then(data => {
                 if (data.success) {
                     this.props.history.goBack()
@@ -118,7 +114,9 @@ class AccountNameChange extends React.Component {
                     return { success: false }
                 }
             }
-        );
+        ).catch(() => {
+            this.setState({ isLoading: false })
+        })
     }
 
 
@@ -155,13 +153,14 @@ class AccountNameChange extends React.Component {
 
                             <TextField autoFocus fullWidth variant="outlined" value={this.state.nameChange || ""} onChange={this.handleChangeName} label={"이름"} 
                                         style={{width: "100%", margin: "30px 0px 7.5px 0px"}} spellCheck="false" error={this.state.nameError} inputRef={this.textFieldRef[0]}
-                                        helperText={this.state.nameError ? "한글 또는 영어 2~10자리를 입력해주세요." : false} />
+                                        helperText={this.state.nameError ? "한글 또는 영어 2~10자리를 입력해주세요." : false} 
+                                        disabled={this.state.isLoading? true : false} />
 
                             <Box display="flex" flexDirection="row-reverse" mt={5}>
-                                <Button onClick={this.onClickSave} style={{background: root.PrimaryColor, color: "#fff"}}>
+                                <Button onClick={this.onClickSave} disabled={this.state.isLoading? true : false} style={{background: root.PrimaryColor, color: "#fff"}}>
                                     저장
                                 </Button>
-                                <Button style={{color: root.PrimaryColor, marginRight: "20px"}} onClick={() => this.props.history.goBack()}>
+                                <Button onClick={() => this.props.history.goBack()} disabled={this.state.isLoading? true : false} style={{color: root.PrimaryColor, marginRight: "20px"}}>
                                     취소
                                 </Button>
                             </Box>

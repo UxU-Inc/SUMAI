@@ -6,7 +6,7 @@ import Login from "../components/Login";
 import { Alert, AlertTitle } from '@material-ui/lab';
 
 import { connect } from 'react-redux';
-import { signupRequest, loginRequest, snsloginRequest } from '../actions/authentication';
+import { loginRequest, snsloginRequest } from '../actions/authentication';
 
 import axios from 'axios'
 
@@ -19,18 +19,6 @@ class LoginMain extends Component{
         })
     }
 
-    handleSignup = (email, name, password) => {
-        return this.props.signupRequest(email, name, password).then(
-            () => {
-                if(this.props.signup.status === "SUCCESS") {
-                    this.props.history.push('/login');
-                    return { success: true }
-                } else {
-                    return { success: false, error: this.props.signup.error }
-                }
-            }
-        );
-    }
     handleLogin = (email, password) => {
         return this.props.loginRequest(email, password).then(
             () => {
@@ -92,7 +80,7 @@ class LoginMain extends Component{
                     </Alert>: null}
                 <div style={{backgroundColor: "#fff"}}>
                     {this.props.match.path === "/login/signup"? 
-                        <Signup onCheckSignupEmail={this.handleChckSignupEmail} onSignup={this.handleSignup} onLogin={this.handleLogin}/>:
+                        <Signup onCheckSignupEmail={this.handleChckSignupEmail} onLogin={this.handleLogin}/>:
                         <Login onLogin={this.handleLogin} onSNSLogin={this.handleSNSLogin} loginStatus={this.props.login.status}/>
                     }
                 </div>
@@ -112,9 +100,6 @@ const mapDispatchToProps = (dispatch) => {
     return {
         loginRequest: (email, password) => {
             return dispatch(loginRequest(email, password));
-        },
-        signupRequest: (email, name, password) => {
-            return dispatch(signupRequest(email, name, password));
         },
         snsloginRequest: (type) => {
             return dispatch(snsloginRequest(type));

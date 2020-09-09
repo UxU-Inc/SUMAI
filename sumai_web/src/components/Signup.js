@@ -467,13 +467,6 @@ class Signup extends Component{
                         this.setState({ errorCode: 2})
                     }
                 })
-                // this.props.onSignup(this.state.email, this.state.name, this.state.password).then(data => {
-                //     if (data.success) {
-                        
-                //     } else {
-                //         this.setState({ errorCode: data.error })
-                //     }
-                // })
             }
         }
     }
