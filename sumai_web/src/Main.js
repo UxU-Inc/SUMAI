@@ -141,6 +141,10 @@ class Main extends React.Component {
         this.setRecordCookie("record", false)
         this.setState({ record: false }) 
     }
+    
+    recordFalseMob = () => { 
+        this.setState({ record: false }) 
+    }
 
     fetchUsers = async () => {
         try {
@@ -214,7 +218,7 @@ class Main extends React.Component {
                                     onLogout={this.handleLogout} onClickLink={this.onClickLink}/> 
                             <div >
                                 <BodyMob state={this.state} handleChange={this.handleChange} textRemove={this.textRemove} 
-                                        recordFalse={this.recordFalse} fetchUsers={this.fetchUsers} errorSet={this.errorSet} />
+                                        recordFalseMob={this.recordFalseMob} fetchUsers={this.fetchUsers} errorSet={this.errorSet} />
                             </div>
                             
                         </div> 
