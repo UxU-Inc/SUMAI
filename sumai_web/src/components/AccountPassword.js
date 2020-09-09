@@ -50,8 +50,9 @@ function PasswordChangeMassage(props) {
         if(code === 2) enqueueSnackbar('해당 계정이 존재하지 않습니다.', {variant: "error"})
         if(code === 3) enqueueSnackbar('현재 비밀번호가 틀립니다.', {variant: "error"})
         if(code === 4) enqueueSnackbar('로그인 상태가 아닙니다.', {variant: "error"})
+        if(code === 5) enqueueSnackbar('현재 비밀번호랑 동일합니다. 다른 비밀번호로 설정해주세요.', {variant: "error"})
         if(code !== 1) setCode(0)
-    }, [code])
+    }, [code, enqueueSnackbar, setCode])
 
     return (<React.Fragment></React.Fragment>)
 }
@@ -69,6 +70,7 @@ class AccountPassword extends React.Component {
             passwordCheck: "",
             passwordCheckError: false,
             code: 0,
+            isLoading: false,
         }
         this.textFieldRef = [React.createRef(), React.createRef(), React.createRef()]
     }
@@ -93,6 +95,7 @@ class AccountPassword extends React.Component {
         if(type === "passwordCurrent") {
             this.setState({
                 passwordCurrent: e.target.value.trim(),
+                passwordCurrentError: false,
             })
         } else if (type === "passwordChange") {
             this.setState({
@@ -101,6 +104,7 @@ class AccountPassword extends React.Component {
         } else if (type === "passwordCheck") {
             this.setState({
                 passwordCheck: e.target.value.trim(),
+                passwordCheckError: false,
             })
         }
         this.validation(type, e.target.value.trim())
@@ -142,19 +146,18 @@ class AccountPassword extends React.Component {
             })
             this.textFieldRef[2].current.focus()
             return
-        } else if(this.state.passwordChange === this.state.passwordCheck) {
+        } else if(this.state.passwordCurrent === this.state.passwordChange) {
             this.setState({
-                passwordCheckError: false,
+                passwordChangeError: true,
+                code: 5,
             })
-        } 
-
-
-
-        if(this.state.code === 1) {
+            this.textFieldRef[1].current.focus()
             return
         }
 
         if(!this.state.passwordCurrentError && !this.state.passwordChangeError && !this.state.passwordCheckError) {
+            if(this.state.isLoading) return
+            this.setState({ isLoading: true })
             this.onPasswordChange(this.props.status.currentId, this.state.passwordCurrent, this.state.passwordChange).then(data => {
                 if (data.success) {
                     this.setState({
@@ -164,9 +167,16 @@ class AccountPassword extends React.Component {
                         this.props.history.goBack()
                     }.bind(this), 2000)
                 } else {
-                    this.setState({
-                        code: data.code
-                    })
+                    if(data.code === 3) {
+                        this.setState({
+                            passwordCurrentError: true,
+                            code: data.code
+                        })
+                    } else {
+                        this.setState({
+                            code: data.code
+                        })
+                    }
                 }
             })
         }
@@ -184,6 +194,7 @@ class AccountPassword extends React.Component {
             }
         ).catch(
             (error) => {
+                this.setState({ isLoading: false })
                 return { success: false, code: error.response.data.code }
             }
         );
@@ -222,20 +233,23 @@ class AccountPassword extends React.Component {
 
                             <TextField autoFocus fullWidth variant="outlined" value={this.state.password} onChange={this.handleChange.bind(this, "passwordCurrent")} label="현재 비밀번호 입력" 
                                         style={{margin: "30px 0px 7.5px 0px"}} type="password" error={this.state.passwordCurrentError} inputRef={this.textFieldRef[0]}
-                                        helperText={this.state.passwordCurrentError ? "잘못된 비밀번호입니다. 다시 시도하거나 비밀번호 찾기를 클릭하여 재설정하세요." : false} onKeyPress={this.onKeyPress}/>
+                                        helperText={this.state.passwordCurrentError ? "잘못된 비밀번호입니다. 다시 시도하거나 비밀번호 찾기를 클릭하여 재설정하세요." : false} onKeyPress={this.onKeyPress}
+                                        disabled={this.state.code === 1? true:false}/>
 
                             <TextField variant="outlined" value={this.state.password} onChange={this.handleChange.bind(this, "passwordChange")} error={this.state.passwordChangeError}
                                     fullWidth label="변경할 비밀번호 입력" type="password" style={{margin: "30px 0px 7.5px 0px"}} inputRef={this.textFieldRef[1]}
-                                    helperText={this.state.passwordChangeError? "영어, 숫자, 특수문자 포함, 8~15자리": false} onKeyPress={this.onKeyPress}/>
+                                    helperText={this.state.passwordChangeError? "영어, 숫자, 특수문자 포함, 8~15자리": false} onKeyPress={this.onKeyPress}
+                                    disabled={this.state.code === 1? true:false}/>
                             <TextField variant="outlined" value={this.state.passwordCheck} onChange={this.handleChange.bind(this, "passwordCheck")} error={this.state.passwordCheckError}
                                     fullWidth label="비밀번호 확인" type="password" style={{margin: "7.5px 0px 15px 0px"}} inputRef={this.textFieldRef[2]}
-                                    helperText={this.state.passwordCheckError? "비밀번호가 다릅니다.": false} onKeyPress={this.onKeyPress}/>
+                                    helperText={this.state.passwordCheckError? "비밀번호가 다릅니다.": false} onKeyPress={this.onKeyPress}
+                                    disabled={this.state.code === 1? true:false}/>
 
                             <Box display="flex" flexDirection="row-reverse" mt={5}>
-                                <Button onClick={this.onClickSave} style={{background: root.PrimaryColor, color: "#fff"}}>
+                                <Button onClick={this.onClickSave} disabled={this.state.code === 1? true:false} style={{background: root.PrimaryColor, color: "#fff"}}>
                                     저장
                                 </Button>
-                                <Button style={{color: root.PrimaryColor, marginRight: "20px"}} onClick={() => this.props.history.goBack()}>
+                                <Button onClick={() => this.props.history.goBack()} disabled={this.state.code === 1? true:false} style={{color: root.PrimaryColor, marginRight: "20px"}} >
                                     취소
                                 </Button>
                             </Box>

@@ -8,7 +8,6 @@ const api = require('./routes/index');
 const cookieParser = require('cookie-parser')
 
 const app = express();
-// const cors = require('cors');
 const PORT = process.env.PORT || 3306;
 
 const sessionStore = new MySQLStore(dbconfig);
@@ -33,12 +32,6 @@ const loginlimiter = rateLimit({
 
 app.use("/api/account/login", loginlimiter);
 
-// const corsOptions = {
-//     origin: 'http://localhost:3000',
-//     credentials: true, 
-//   };
-// app.use(cors(corsOptions));
-// app.use(cors());
 app.use(express.json());
 app.use(session({
     secret: 'keyboard cat',

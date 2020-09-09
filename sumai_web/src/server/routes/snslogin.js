@@ -77,7 +77,7 @@ router.get('/googlecallback', (req, res) => {
         console.log('passport.authenticate(google)실행');
         console.log(user);
         if(!user) {
-            return res.send("<script>setTimeout(window.close, 400);</script>")
+            return res.send("<script>var win = window.open('','_self');win.close();</script>")
         }
         const imageName = crypto.createHash('sha1').update(user.id+Date.now()).digest("base64") + ".jpg"
         db.query("SELECT * FROM summary.account_info WHERE id = '"+ user.id + "'", (err, account) => {
@@ -115,7 +115,7 @@ router.get('/googlecallback', (req, res) => {
                                 };
                                 return req.session.save(() => {
                                     console.log("login")
-                                    res.send("<script>setTimeout(window.close, 400);</script>")
+                                    res.send("<script>var win = window.open('','_self');win.close();</script>")
                                 })
                             } else {
                                 console.log(err);
@@ -129,7 +129,7 @@ router.get('/googlecallback', (req, res) => {
                         };
                         return req.session.save(() => {
                             console.log("failure")
-                            res.send("<script>setTimeout(window.close, 400);</script>")
+                            res.send("<script>var win = window.open('','_self');win.close();</script>")
                         })
                         // if(account[0].id !== null) {
                         //     req.session.loginInfo = {
@@ -138,7 +138,7 @@ router.get('/googlecallback', (req, res) => {
                         //     };
                         //     return req.session.save(() => {
                         //         console.log("failure")
-                        //         res.send("<script>setTimeout(window.close, 400);</script>")
+                        //         res.send("<script>var win = window.open('','_self');win.close();</script>")
                         //     })
                         // }
                         // const verifiedUpdate = account[0].verified === 0? ", verified = "+ user.emails[0].verified: ""
@@ -157,7 +157,7 @@ router.get('/googlecallback', (req, res) => {
                         // };
                         // return req.session.save(() => {
                         //     console.log("login")
-                        //     res.send("<script>setTimeout(window.close, 400);</script>")
+                        //     res.send("<script>var win = window.open('','_self');win.close();</script>")
                         // })
                     }
                 })
@@ -170,7 +170,7 @@ router.get('/googlecallback', (req, res) => {
                 };
                 return req.session.save(() => {
                     console.log("login")
-                    res.send("<script>setTimeout(window.close, 400);</script>")
+                    res.send("<script>var win = window.open('','_self');win.close();</script>")
                 })
             }
         });
@@ -186,7 +186,7 @@ router.get('/kakaocallback', (req, res) => {
         console.log('passport.authenticate(kakao)실행');
         console.log(user);
         if(!user) {
-            return res.send("<script>setTimeout(window.close, 400);</script>")
+            return res.send("<script>var win = window.open('','_self');win.close();</script>")
         }
         db.query("SELECT * FROM summary.account_info WHERE id = '"+ user.id + "'", (err, account) => {
             const email = typeof user._json.kakao_account.email === "undefined"? null : "'"+user._json.kakao_account.email+"'"
@@ -230,7 +230,7 @@ router.get('/kakaocallback', (req, res) => {
                                     };
                                     return req.session.save(() => {
                                         console.log("login")
-                                        res.send("<script>setTimeout(window.close, 400);</script>")
+                                        res.send("<script>var win = window.open('','_self');win.close();</script>")
                                     })
                                 } else {
                                     console.log(err);
@@ -244,7 +244,7 @@ router.get('/kakaocallback', (req, res) => {
                             };
                             return req.session.save(() => {
                                 console.log("failure")
-                                res.send("<script>setTimeout(window.close, 400);</script>")
+                                res.send("<script>var win = window.open('','_self');win.close();</script>")
                             })
                             // if(account[0].id !== null) {
                             //     req.session.loginInfo = {
@@ -253,7 +253,7 @@ router.get('/kakaocallback', (req, res) => {
                             //     };
                             //     return req.session.save(() => {
                             //         console.log("failure")
-                            //         res.send("<script>setTimeout(window.close, 400);</script>")
+                            //         res.send("<script>var win = window.open('','_self');win.close();</script>")
                             //     })
                             // }
                             // const verifiedUpdate = account[0].verified === 0? ", verified = "+ verified: ""
@@ -275,7 +275,7 @@ router.get('/kakaocallback', (req, res) => {
                             // };
                             // return req.session.save(() => {
                             //     console.log("login")
-                            //     res.send("<script>setTimeout(window.close, 400);</script>")
+                            //     res.send("<script>var win = window.open('','_self');win.close();</script>")
                             // })
                         }
                     })
@@ -305,7 +305,7 @@ router.get('/kakaocallback', (req, res) => {
                             };
                             return req.session.save(() => {
                                 console.log("login")
-                                res.send("<script>setTimeout(window.close, 400);</script>")
+                                res.send("<script>var win = window.open('','_self');win.close();</script>")
                             })
                         } else {
                             console.log(err);
@@ -322,7 +322,7 @@ router.get('/kakaocallback', (req, res) => {
                 };
                 return req.session.save(() => {
                     console.log("login")
-                    res.send("<script>setTimeout(window.close, 400);</script>")
+                    res.send("<script>var win = window.open('','_self');win.close();</script>")
                 })
             }
         });
@@ -338,7 +338,7 @@ router.get('/navercallback', (req, res) => {
         console.log('passport.authenticate(naver)실행');
         console.log(user);
         if(!user) {
-            return res.send("<script>setTimeout(window.close, 400);</script>")
+            return res.send("<script>var win = window.open('','_self');win.close();</script>")
         }
         db.query("SELECT * FROM summary.account_info WHERE id = '"+ user.id + "'", (err, account) => {
             const age = typeof user._json.age === "undefined"? null : "'"+user._json.age.replace(/[^0-9]/g,"")+"'"
@@ -380,7 +380,7 @@ router.get('/navercallback', (req, res) => {
                                 };
                                 return req.session.save(() => {
                                     console.log("login")
-                                    res.send("<script>setTimeout(window.close, 400);</script>")
+                                    res.send("<script>var win = window.open('','_self');win.close();</script>")
                                 })
                             } else {
                                 console.log(err);
@@ -394,7 +394,7 @@ router.get('/navercallback', (req, res) => {
                         };
                         return req.session.save(() => {
                             console.log("failure")
-                            res.send("<script>setTimeout(window.close, 400);</script>")
+                            res.send("<script>var win = window.open('','_self');win.close();</script>")
                         })
                         // if(account[0].id !== null) {
                         //     req.session.loginInfo = {
@@ -403,7 +403,7 @@ router.get('/navercallback', (req, res) => {
                         //     };
                         //     return req.session.save(() => {
                         //         console.log("failure")
-                        //         res.send("<script>setTimeout(window.close, 400);</script>")
+                        //         res.send("<script>var win = window.open('','_self');win.close();</script>")
                         //     })
                         // }
                         // const birthUpdate = account[0].birth === null? ", birth = "+ birthday: ""
@@ -423,7 +423,7 @@ router.get('/navercallback', (req, res) => {
                         // };
                         // return req.session.save(() => {
                         //     console.log("login")
-                        //     res.send("<script>setTimeout(window.close, 400);</script>")
+                        //     res.send("<script>var win = window.open('','_self');win.close();</script>")
                         // })
                     }
                 })
@@ -436,7 +436,7 @@ router.get('/navercallback', (req, res) => {
                 };
                 return req.session.save(() => {
                     console.log("login")
-                    res.send("<script>setTimeout(window.close, 400);</script>")
+                    res.send("<script>var win = window.open('','_self');win.close();</script>")
                 })
             }
         });
@@ -452,7 +452,7 @@ router.get('/facebookcallback', (req, res) => {
         console.log('passport.authenticate(facebook)실행');
         console.log(user);
         if(!user) {
-            return res.send("<script>setTimeout(window.close, 400);</script>")
+            return res.send("<script>var win = window.open('','_self');win.close();</script>")
         }
         const email = typeof user.emails === "undefined"? null : "'"+user.emails[0].value+"'"
         const email_ = typeof user.emails === "undefined"? null : user.emails[0].value
@@ -492,7 +492,7 @@ router.get('/facebookcallback', (req, res) => {
                                     };
                                     return req.session.save(() => {
                                         console.log("login")
-                                        res.send("<script>setTimeout(window.close, 400);</script>")
+                                        res.send("<script>var win = window.open('','_self');win.close();</script>")
                                     })
                                 } else {
                                     console.log(err);
@@ -506,7 +506,7 @@ router.get('/facebookcallback', (req, res) => {
                             };
                             return req.session.save(() => {
                                 console.log("failure")
-                                res.send("<script>setTimeout(window.close, 400);</script>")
+                                res.send("<script>var win = window.open('','_self');win.close();</script>")
                             })
                             // if(account[0].id !== null) {
                             //     req.session.loginInfo = {
@@ -515,7 +515,7 @@ router.get('/facebookcallback', (req, res) => {
                             //     };
                             //     return req.session.save(() => {
                             //         console.log("failure")
-                            //         res.send("<script>setTimeout(window.close, 400);</script>")
+                            //         res.send("<script>var win = window.open('','_self');win.close();</script>")
                             //     })
                             // }
                             // const genderUpdate = account[0].gender === null? ", gender = "+ gender: ""
@@ -534,7 +534,7 @@ router.get('/facebookcallback', (req, res) => {
                             // };
                             // return req.session.save(() => {
                             //     console.log("login")
-                            //     res.send("<script>setTimeout(window.close, 400);</script>")
+                            //     res.send("<script>var win = window.open('','_self');win.close();</script>")
                             // })
                         }
                     })
@@ -562,7 +562,7 @@ router.get('/facebookcallback', (req, res) => {
                             };
                             return req.session.save(() => {
                                 console.log("login")
-                                res.send("<script>setTimeout(window.close, 400);</script>")
+                                res.send("<script>var win = window.open('','_self');win.close();</script>")
                             })
                         } else {
                             console.log(err);
@@ -579,7 +579,7 @@ router.get('/facebookcallback', (req, res) => {
                 };
                 return req.session.save(() => {
                     console.log("login")
-                    res.send("<script>setTimeout(window.close, 400);</script>")
+                    res.send("<script>var win = window.open('','_self');win.close();</script>")
                 })
             }
         });

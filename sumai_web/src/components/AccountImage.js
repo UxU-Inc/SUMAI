@@ -22,12 +22,14 @@ export default function AccountImage(props) {
   const [imgFile, setImgFile] = React.useState(null);	//파일	
   const [notImg, setNotImg] = React.useState(false);	
   const [imgContents, setImgContents] = React.useState('클릭 또는 이미지를 드래그');	//파일	
-  const [isDelete, setIsDelete] = React.useState(false);	//파일	
-  const [isLoading, setIsLoading] = React.useState(false);	//파일
+  const [isDelete, setIsDelete] = React.useState(false);	
+  const [isImageLoading, setIsImageLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const onDrop = useCallback(acceptedFiles => {
+    if (isLoading) return
     if (acceptedFiles[0]) {
-      setIsLoading(true)
+      setIsImageLoading(true)
       if(acceptedFiles[0].type.indexOf("image/") === -1) {
         setNotImg(true)
         setImgBase64("");
@@ -44,20 +46,20 @@ export default function AccountImage(props) {
             console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
             
             imageCompression.getDataUrlFromFile(compressedFile).then((data) => {
-              setIsLoading(false)
+              setIsImageLoading(false)
               setNotImg(false)
               setImgBase64(data)
               setImgFile(compressedFile); // write your own logic
             })
           }).catch(() => {
-            setIsLoading(false)
+            setIsImageLoading(false)
             setImgBase64("");
             setImgFile(null);
             setImgContents("오류가 발생했습니다.")
           })
       }
     }
-  }, [])
+  }, [isLoading])
   const {getRootProps, getInputProps} = useDropzone({onDrop})
 
   const handleClose = () => {
@@ -67,7 +69,10 @@ export default function AccountImage(props) {
   const handleChange = () => {
     if(imgFile === null) {
       props.onClose('');
+    } else if(isLoading) {
+      return
     } else {
+      setIsLoading(true)
       let data = new FormData();
       data.append('img', imgFile, imgFile.name);
       axios.post('/api/account/imageUpload/'+props.id, data, { headers: {
@@ -79,6 +84,7 @@ export default function AccountImage(props) {
         setImgBase64("");
         setImgFile(null);
         setImgContents("오류가 발생했습니다.")
+        setIsLoading(false)
       })
     }
   };
@@ -88,8 +94,11 @@ export default function AccountImage(props) {
   };
 
   const handleDelete = () => {
+    setIsLoading(true)
     axios.get('/api/account/imageDelete/'+props.id).then(() => {
       props.onClose('delete');
+    }).catch(() => {
+      setIsLoading(false)
     })
   };
 
@@ -105,7 +114,7 @@ export default function AccountImage(props) {
       >
         <DialogTitle>
           {"프로필 사진 선택"}
-          {!isDelete && props.imagesrc !== "" && props.imagesrc === imgBase64? <Button onClick={handleDeleteOpen} style={{color: "#ba000d", position: 'absolute', right: theme.spacing(1),}}>
+          {!isDelete && props.imagesrc !== "" && props.imagesrc === imgBase64? <Button onClick={handleDeleteOpen} disabled={isLoading? true: false} style={{color: "#ba000d", position: 'absolute', right: theme.spacing(1),}}>
             삭제
           </Button> : null}
         </DialogTitle>
@@ -114,7 +123,7 @@ export default function AccountImage(props) {
             <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" style={{height: "380px", width: "380px"}}>
               {imgBase64 === "" || notImg? 
                 <PhotoIcon style={{ fontSize: 100 }}/> : 
-                isLoading? <CircularProgress /> : <img src={imgBase64} alt="profileImage" />}
+                isImageLoading? <CircularProgress /> : <img src={imgBase64} alt="profileImage" />}
               <Typography style={{textAlign: "center"}}>{imgContents}</Typography>
             </Box>
             <input
@@ -122,6 +131,7 @@ export default function AccountImage(props) {
               accept="image/*"
               style={{ display: 'none' }}
               type="file"
+              disabled={isLoading? true: false}
             />
           </Box>
         </DialogContent> :
@@ -134,18 +144,18 @@ export default function AccountImage(props) {
           </Box>
         </DialogContent>}
         {!isDelete? <DialogActions>
-          <Button onClick={handleChange} color="primary">
+          <Button onClick={handleChange} color="primary" disabled={isLoading? true: false}>
             변경
           </Button>
-          <Button autoFocus onClick={handleClose} color="primary">
+          <Button autoFocus onClick={handleClose} color="primary" disabled={isLoading? true: false}>
             취소
           </Button>
         </DialogActions> :
         <DialogActions>
-          <Button onClick={handleDelete} style={{color: "#ba000d"}}>
+          <Button onClick={handleDelete} disabled={isLoading? true: false} style={{color: "#ba000d"}}>
             삭제
           </Button>
-          <Button autoFocus onClick={handleDeleteClose} color="primary">
+          <Button autoFocus onClick={handleDeleteClose} disabled={isLoading? true: false} color="primary">
             취소
           </Button>
         </DialogActions>}
