@@ -504,7 +504,6 @@ class Signup extends Component{
         }
     }
     onExitingSlide = (e) => {
-        console.log(this.state.beforeSlide.direction)
         const beforeslide = this.state.beforeSlide
         beforeslide.style.position='absolute'
         // this.state.beforeSlide.style.position='absolute'

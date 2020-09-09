@@ -244,7 +244,7 @@ class Account extends Component{
                                             ••••••••
                                           </Typography>
                                           <Typography variant="subtitle2" style={{width: "376.4px", textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#202020"}}>
-                                            최종 변경일: {moment(this.state.birthday).format('YYYY년 M월 D일') === "Invalid date" ? "" : moment(this.state.passwordChangeTime).format('YYYY. M. D.')}
+                                            최종 변경일: {moment(this.state.passwordChangeTime).format('YYYY. M. D.') === "Invalid date" ? "" : moment(this.state.passwordChangeTime).format('YYYY. M. D.')}
                                           </Typography>
                                         </Box>
                                         <ArrowForwardIosIcon fontSize="small" style={{marginLeft: "auto", color: "#0000008A"}}/>
@@ -402,7 +402,7 @@ class Account extends Component{
                                             ••••••••
                                           </Typography>
                                           <Typography variant="subtitle2" style={{textAlign: "left", fontFamily: "NotoSansKR-Light", color: "#000008A"}}>
-                                            최종 변경일: {moment(this.state.birthday).format('YYYY년 M월 D일') === "Invalid date" ? "" : moment(this.state.passwordChangeTime).format('YYYY. M. D.')}
+                                            최종 변경일: {moment(this.state.passwordChangeTime).format('YYYY. M. D.') === "Invalid date" ? "" : moment(this.state.passwordChangeTime).format('YYYY. M. D.')}
                                           </Typography>
                                         </Box>
                                         <ArrowForwardIosIcon fontSize="small" style={{marginLeft: "auto", color: "#0000008A"}}/>

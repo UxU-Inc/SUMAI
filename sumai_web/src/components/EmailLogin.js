@@ -104,6 +104,7 @@ function EmailLoginComponent(props) {
     const [passwordChangeError, setPasswordChangeError] = useState(false)
     const [passwordCheckError, setPasswordCheckError] = useState(false)
     const [slideNumber, setSlideNumber] = useState(0)
+    const [slideNumbered, setSlideNumbered] = useState()
     const [beforeSlide, setBeforeSlide] = useState()
     const [afterSlide, setAfterSlide] = useState() // 나중에 slide function화
     const id=location.search?.slice(1)?.split('id=')[1]?.split('&')[0]
@@ -173,6 +174,13 @@ function EmailLoginComponent(props) {
             history.push('/')
         }
     }
+    const onEnteredSlide = (e) => {
+        setSlideNumbered(slideNumber)
+    }
+    React.useEffect(() => {
+        if(slideNumbered === 0)
+            inputPasswordChange.current.focus()
+    }, [slideNumbered, inputPasswordChange])
     const onEnterSlide = (e) => {
         e.style.position='relative'
         setBeforeSlide(afterSlide)
@@ -189,12 +197,12 @@ function EmailLoginComponent(props) {
                     <Card elevation={3} className={classes.card} style={(matches?{maxWidth:'450px', minWidth:'300px'}:{padding: '40px 40px 80px 40px', borderRadius: '0px', boxShadow: 'none'})}>
                         <Header matches={matches} classes={classes}/>
                         <Box style={(matches?{padding: "16px 10%", minHeight:'350px'}:{flex: '1'})}>
-                            <Slide style={{position: 'relative', }} direction="left" in={slideNumber===0} mountOnEnter unmountOnExit onEnter={onEnterSlide} onExiting={onExitingSlide}>
+                            <Slide style={{position: 'relative', }} direction="left" in={slideNumber===0} mountOnEnter unmountOnExit onEnter={onEnterSlide} onExiting={onExitingSlide}  onEntered={onEnteredSlide}>
                                 <CardContent style={{padding: 0}}>
                                         <TextField variant="outlined" value={email} 
                                                 fullWidth label="이메일" style={{margin: "15px 0px 7.5px 0px"}} autoComplete='new-password'/>
-                                        <TextField variant="outlined" value={passwordChange} onChange={(e) => handleChange(e, "passwordChange")} error={passwordChangeError} autoComplete='new-password'
-                                                fullWidth label="변경할 비밀번호 입력" type="password" style={{margin: "30px 0px 7.5px 0px"}} inputRef={inputPasswordChange} autoFocus
+                                        <TextField variant="outlined" value={passwordChange} onChange={(e) => handleChange(e, "passwordChange")} error={passwordChangeError}
+                                                fullWidth label="변경할 비밀번호 입력" type="password" style={{margin: "30px 0px 7.5px 0px"}} inputRef={inputPasswordChange}
                                                 helperText={passwordChangeError? "영어, 숫자, 특수문자 포함, 8~15자리": false} onKeyPress={onKeyPress}/>
                                         <TextField variant="outlined" value={passwordCheck} onChange={(e) => handleChange(e, "passwordCheck")} error={passwordCheckError}
                                                 fullWidth label="비밀번호 확인" type="password" style={{margin: "7.5px 0px 15px 0px"}} inputRef={inputPasswordCheck}
