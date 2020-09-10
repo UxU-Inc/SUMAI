@@ -67,8 +67,12 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "WhiteSmoke",
     },
   },
+  tablePaginationRoot: {
+    overflow: 'hidden'
+  },
   tablePagination: {
-    margin: 0
+    margin: 0,
+    padding: 0
   },
   noticesBoxPC: {
     display: 'flex',
@@ -250,6 +254,7 @@ function useQueryData(queryRows) {
 function NoticesTable(props) {
   const {matches} = props
   const classes = useStyles();
+
   const [selectId, setSelectId] = React.useState(-1)
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(0);
@@ -315,7 +320,7 @@ function NoticesTable(props) {
     const {scrollHeight} = document.body;
     // IE에서는 document.documentElement 를 사용.
     const scrollTop = document.documentElement.scrollTop
-    if (scrollHeight - innerHeight - scrollTop < 2 && rowsPerPage<count) {
+    if (scrollHeight - innerHeight - scrollTop < 10 && rowsPerPage<count) {
       window.removeEventListener("scroll", handleScroll);
       handleChangeRowsPerPage(event)
     }
@@ -389,21 +394,21 @@ function NoticesTable(props) {
             </TableRow>
           )}
         </TableBody>
-        <TableFooter>
+        <TableFooter style={{overflow: 'hidden'}}>
           <TableRow>
             {matches && (
               <TableCell colSpan={2}>
                 {page >= 0 && (
                   <TablePagination 
-                    classes={{selectRoot: classes.tablePagination}}
-                    rowsPerPageOptions={[5, 10]} rowsPerPage={rowsPerPage}
+                    classes={{root: classes.tablePaginationRoot, selectRoot: classes.tablePagination, toolbar: classes.tablePagination}}
+                    rowsPerPageOptions={[5,10]} rowsPerPage={rowsPerPage}
+                    labelRowsPerPage={'페이지 당 개수'}
                     component="div" count={count} page={page}
                     onChangePage={handleChangePage}
                     onChangeRowsPerPage={handleChangeRowsPerPage}
                     ActionsComponent={TablePaginationActions}
-                    labelRowsPerPage='페이지 당 개수'
 
-                    labelDisplayedRows={({ from, to, count }) => ``}
+                    labelDisplayedRows={() => ``}
                     SelectProps={{
                     inputProps: { 'aria-label': 'rows per page' },
                     native: true,

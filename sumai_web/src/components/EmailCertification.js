@@ -65,16 +65,12 @@ function EmailCertificationComponent(props) {
     useEffect(() => {
         const id=location.search?.slice(1)?.split('id=')[1]?.split('&')[0]
         const cert=location.search?.slice(1)?.split('cert=')[1]?.split('&')[0]
-        // console.log(location.search)
         // getID()
         axios.post('/api/email/EmailCertification', {id: id, cert: cert}).then((res) => {
-            console.log(res)
             setEmail(res.data.email)
             setComments(res.data.message)
             setCode(res.data.code)
         })
-        // setCode(0)
-        // setEmail('ksm@test.com')
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     

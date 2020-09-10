@@ -175,7 +175,6 @@ class AccountNameChange extends React.Component {
                     if(this.state.isLoading) return
                     this.setState({ isLoading: true })
                     this.onBirthdayChange(this.state.id, birthday).then(data => {
-                        console.log(data)
                         if (data.success) {
                             this.props.history.goBack()
                         } 
@@ -192,7 +191,6 @@ class AccountNameChange extends React.Component {
 
     onBirthdayChange = (id, birthday) => {
         return axios.post('/api/account/birthdayChange', { id, birthday }).then((res) => {
-            console.log(res.data)
                 if(this.props.status.isLoggedIn === true) {
                     if(res.data.code === 1) return { success: true };
                     else if(res.data.code === -1) {
@@ -202,14 +200,12 @@ class AccountNameChange extends React.Component {
                         return { success: false }
                     }
                 } else {
-            console.log(res.data)
 
                     return { success: false }
                 }
             }
         ).catch(
             (error) => {
-                console.log(error)
                 this.setState({ isLoading: false })
                 return { success: false }
             }

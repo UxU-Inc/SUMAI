@@ -12,7 +12,9 @@ import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 
 const useStyles = theme => ({
     root: {
-        flexGrow: 1,
+      display: 'flex',
+      flexDirection: "column",
+      overflowX: 'hidden',
     },
     AppBarStyle: {
         paddingTop: 10,
@@ -24,6 +26,12 @@ const useStyles = theme => ({
         width: 80,
         height: 28.2,
         alt: 'SUMAI',
+    },
+    content: {
+      display: 'flex',
+      flexDirection: 'column',
+      flexGrow:'1',
+      backgroundColor: "#fff",
     },
     link: {
         display: 'flex',
@@ -72,8 +80,8 @@ class Notices extends Component{
           this.props.history.push(url);
         };
           return ( 
-              <div className={classes.root}>
-                  <AppBar position="static" className={classes.AppBarStyle}>
+              <div className={classes.root} style={isWidthUp('md', this.props.width)?{minHeight: '100vh',}:{}}>
+                  <AppBar style={{boxShadow: '0px 0px'}} position="static" className={classes.AppBarStyle}>
                       <Toolbar variant="dense">
 
                           <a href="/" className={classes.link} >
@@ -83,7 +91,7 @@ class Notices extends Component{
                       </Toolbar>
                   </AppBar> 
 
-                  <div style={(isWidthUp('md', this.props.width)?{backgroundColor: "#fff", padding: "50px 10%", minWidth: "300px"}:{backgroundColor: "#fff", margin: "-1px -1px 0px -1px"})}> 
+                  <div className={classes.content} style={(isWidthUp('md', this.props.width)?{padding: "50px 10%", minWidth: "300px"}:{backgroundColor: "#fff", margin: "-1px -1px 0px -1px"})}> 
                     <Box display="flex" justifyContent="center">
                       <Box flex={1} style={{marginRight: "-1px"}}>
                         <Button className={classes.button} onClick={link("terms")}>

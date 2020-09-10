@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { Component } from 'react'; 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, } from '@material-ui/core/styles';
 import './Header.css';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -54,8 +54,6 @@ const useStyles = theme => ({
     color: '#0000008A',
   },
   AppBarStyle: {
-    paddingTop: 10,
-    paddingBottom: 10,
     background: '#ffffff',
     borderBottom: '1px solid #e0e0e0',
   },
@@ -63,6 +61,18 @@ const useStyles = theme => ({
     width: 80,
     height: 28.2,
     alt: 'SUMAI',
+  },
+  imgLogoMob: {
+    width: 64,
+    height: 22.56,
+    alt: 'SUMAI',
+  },
+  loginButton: {
+    background: root.PrimaryColor,
+    color: "#fff",
+  },
+  summaryTypo: {
+    color: "#0000008A",
   },
   link: {
     display: 'flex',
@@ -142,7 +152,7 @@ function FeedbackDialog(props) {
   // }
   
   const showCanvas = () => {
-    console.log('미구현')
+    // console.log('미구현')
   }
   
   const handleCloseSnackbar = () => {
@@ -153,10 +163,8 @@ function FeedbackDialog(props) {
     setMessage(event.target.value)
   }
   function sendEmail(e) {
-    console.log(sendEmailButton, 123)
     setSendEmailButton(false)
     e.preventDefault();
-    console.log(message)
     
     axios.post('/api/Email/sendEmail', {message: message}).then((res) => { // email을 추가하려면 {massage: message, email: 변수}
       setSendEmailStatus(res.status)
@@ -325,7 +333,6 @@ class Header extends Component{
           onClick={handleToggle}
           style={{color: "#0000008A", cursor:'pointer'}}
         >
-          {console.log(props)}
           {props.currentUser}님
           <IconButton style={{padding: "0px"}}>
             <ExpandMoreIcon />
@@ -366,9 +373,10 @@ class Header extends Component{
   
   
   render() { 
+    
     const { classes } = this.props;
     const loginButton = (
-      <Button onClick={this.onClickLink("/login")} style={{ background: root.PrimaryColor, color: "#fff", padding: "7.5px 15px" }}>
+      <Button className={classes.loginButton} onClick={this.onClickLink("/login")} style={this.props.matches?{padding: "7.5px 15px" }:{padding: "5px", minWidth: '80px'}}>
         <AccountIcon style={{marginRight: "5px",}}/>
         로그인
       </Button>
@@ -382,8 +390,8 @@ class Header extends Component{
     )
     return ( 
       <div className={classes.root}>
-        <AppBar position="static" className={classes.AppBarStyle}>
-          <Toolbar variant="dense">
+        <AppBar position="static" className={classes.AppBarStyle} style={this.props.matches?{padding: "10px 0px" }:{minWidth: '56px'}}>
+          <Toolbar variant="dense" style={this.props.matches?{}:{padding: "0px 10px 0px 20px", flex: 1}}>
             {['left'].map((anchor) => (
               <React.Fragment key={anchor}>
                 <IconButton onClick={this.toggleDrawer(anchor, true)} edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
@@ -398,12 +406,13 @@ class Header extends Component{
                     role="presentation"
                     onClick={this.toggleDrawer(anchor, false)}
                     onKeyDown={this.toggleDrawer(anchor, false)}
+                    style={this.props.matches?{}:{width:  '250px'}}
                   >
                   <ListItem >
                     <a href="/" style={{marginTop: 5, marginLeft: 5}} className={classes.link} >
                       <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
 
-                      <Typography style={{color: "#0000008A", fontSize: "28px", marginLeft: "10px"}}>
+                      <Typography className={classes.summaryTypo} style={{fontSize: "28px", marginLeft: "10px"}}>
                         요약
                       </Typography>
                     </a>
@@ -421,9 +430,6 @@ class Header extends Component{
 
                       <Divider />
 
-                      <ListItem button onClick={this.onClickLink("customer")} >
-                        <ListItemText disableTypography primary="고객센터" className={classes.listText} />
-                      </ListItem>
                       <ListItem button onClick={() => this.dialogOpen(true)}>
                         <ListItemText disableTypography primary="의견 보내기" className={classes.listText} />
                       </ListItem>
@@ -434,9 +440,9 @@ class Header extends Component{
             ))}
 
             <a href="/" className={classes.link} >
-              <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
+              <img src={imgLogo} alt="SUMAI" className={this.props.matches?classes.imgLogo:classes.imgLogoMob} /> 
           
-              <Typography style={{color: "#0000008A", fontSize: "28px", marginLeft: "10px"}}>
+              <Typography className={classes.summaryTypo} style={this.props.matches?{fontSize: "28px", marginLeft: "10px"}:{fontSize: "24px", marginLeft: "8px"}}>
                   요약
               </Typography>
             </a>

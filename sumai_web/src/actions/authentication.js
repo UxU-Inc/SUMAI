@@ -61,19 +61,16 @@ export function snsloginRequest(type) {
    
         // API REQUEST
         var a= window.open('api/snslogin/'+ type, type + "LOGIN", "width=500,height=700")
-        console.log(a)
         return new Promise(async (resolve, reject) => {
             const Interval = setInterval(() => {
                 if(a.closed) {
                     axios.get('/api/snslogin/confirm')
                     .then((response) => {
-                        console.log(response)
                         // SUCCEED
                         dispatch(loginSuccess(response.data.id, response.data.email, response.data.name))
                         resolve(response.data.email)
                     }).catch((error) => {
                         // FAILED
-                        console.log(error.response.data || -1)
                         dispatch(loginFailure(error.response.data || -1));
                         resolve()
                     });
@@ -112,7 +109,6 @@ export function getStatusRequest() {
         dispatch(getStatus());
         return axios.get('/api/account/getinfo')
         .then((response) => {
-            console.log(response.data)
             dispatch(getStatusSuccess(response.data.info.id, response.data.info.email, response.data.info.name)); //HTTP 통신을 통해 name 받아옴
         }).catch((error) => {
             dispatch(getStatusFailure());

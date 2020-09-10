@@ -168,9 +168,6 @@ class Account extends Component{
     render(){ 
         const { classes } = this.props;
 
-        console.log(this.props.status)
-        console.log(this.state)
-
         /**************************************************** PC *****************************************************/
         if(isWidthUp('md', this.props.width)) {
           if(this.props.match.path === "/accounts") {

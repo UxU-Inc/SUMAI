@@ -13,6 +13,7 @@ import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 const useStyles = theme => ({
     root: {
         flexGrow: 1,
+        overflowX: 'hidden'
     },
     AppBarStyle: {
         paddingTop: 10,

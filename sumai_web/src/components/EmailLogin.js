@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useEffect, useState, useRef, useCallback} from 'react';
 import { withStyles, useTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import imgLogo from '../images/sumai_logo_blue.png';
@@ -90,7 +90,9 @@ const Header = (props) => {
 
 const useFocus = () => {
     const htmlElRef = useRef(null)
-    const setFocus = () => {htmlElRef.current &&  htmlElRef.current.focus()}
+    const setFocus = useCallback(() => {
+        htmlElRef.current &&  htmlElRef.current.focus()
+    }, []) 
 
     return [ htmlElRef, setFocus ] 
 }
@@ -179,8 +181,8 @@ function EmailLoginComponent(props) {
     }
     React.useEffect(() => {
         if(slideNumbered === 0)
-            inputPasswordChange.current.focus()
-    }, [slideNumbered, inputPasswordChange])
+            inputPasswordChangeFocus()
+    }, [slideNumbered, inputPasswordChangeFocus])
     const onEnterSlide = (e) => {
         e.style.position='relative'
         setBeforeSlide(afterSlide)
@@ -197,7 +199,7 @@ function EmailLoginComponent(props) {
                     <Card elevation={3} className={classes.card} style={(matches?{maxWidth:'450px', minWidth:'300px'}:{padding: '40px 40px 80px 40px', borderRadius: '0px', boxShadow: 'none'})}>
                         <Header matches={matches} classes={classes}/>
                         <Box style={(matches?{padding: "16px 10%", minHeight:'350px'}:{flex: '1'})}>
-                            <Slide style={{position: 'relative', }} direction="left" in={slideNumber===0} mountOnEnter unmountOnExit onEnter={onEnterSlide} onExiting={onExitingSlide}  onEntered={onEnteredSlide}>
+                            <Slide style={{position: 'relative', }} direction="left" in={slideNumber===0} timeout={{exit:0, enter: 500,}} mountOnEnter unmountOnExit onEnter={onEnterSlide} onExiting={onExitingSlide}  onEntered={onEnteredSlide}>
                                 <CardContent style={{padding: 0}}>
                                         <TextField variant="outlined" value={email} 
                                                 fullWidth label="이메일" style={{margin: "15px 0px 7.5px 0px"}} autoComplete='new-password'/>
@@ -209,7 +211,7 @@ function EmailLoginComponent(props) {
                                                 helperText={passwordCheckError? "비밀번호가 다릅니다.": false} onKeyPress={onKeyPress}/>
                                 </CardContent>
                             </Slide>
-                            <Slide style={{position: 'absolute', }} direction="left" in={slideNumber===1} mountOnEnter unmountOnExit onEnter={onEnterSlide} onExiting={onExitingSlide}>
+                            <Slide style={{position: 'absolute', }} direction="left" in={slideNumber===1} timeout={{exit:0, enter: 500,}} mountOnEnter unmountOnExit onEnter={onEnterSlide} onExiting={onExitingSlide}>
                                 <CardContent style={{padding: 0}}>
                                     <Typography style={{fontFamily: 'NotoSansKR-Regular', color: '#424242', fontSize: '18px'}}>
                                         비밀번호 변경이 완료되었습니다. <br/>변경된 비밀번호로 로그인 해주세요.

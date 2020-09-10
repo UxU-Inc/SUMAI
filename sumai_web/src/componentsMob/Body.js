@@ -164,7 +164,7 @@ class Body extends React.Component {
         return (
           <Box className={classes.root} >
 
-            <Box boxShadow={3} bgcolor="background.paper" mb={0.75}>
+            <Box style={{boxShadow :'#e0e0e0 0px 3px 3px -2px, #e0e0e0 0px 2px 4px 0px, rgba(0, 0, 0, 0.12) 0px 1px 0px 0px'}} bgcolor="background.paper" mb={0.75}>
               <Typography className={classes.textTitle}>문장 입력</Typography>
                 <Box display="flex" style={{padding: 16, background: "#fff"}}>
                   <Box width="100%" >

@@ -212,7 +212,6 @@ class RecordLastest extends Component{
 
         if (this.state.data[this.state.data.length-1] && scrollHeight - innerHeight - scrollTop < 150 && !this.state.isAllLoad) {
             if(!this.state.loadingScroll){
-                console.log("load 10");
                 this.setState({
                     dataCount: this.state.dataCount + 10,
                     loadingScroll: true,
@@ -300,7 +299,6 @@ class RecordLastest extends Component{
         }
 
         if(this.state.deleteIdx !== '') {
-            console.log("delete")
             const idx = this.state.deleteIdx
             this.setState({
                 deleteCheck: false,
