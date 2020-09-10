@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useCallback } from 'react'
 import { withStyles, useTheme } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import { Card, CardActions, Button, Slide } from '@material-ui/core';
@@ -73,7 +73,7 @@ const Header = (props) => {
             title={
                 <Box display="flex" alignItems="center">
                     <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
-                    <Typography style={{color: "#0000008A", fontSize: "28px", marginLeft: "10px"}}>비밀번호 변경</Typography>
+                    <Typography style={{color: "#0000008A", fontSize: "28px", marginLeft: "10px"}}>비밀번호 찾기</Typography>
                 </Box>
             }
         />) || (
@@ -84,7 +84,7 @@ const Header = (props) => {
 
                 <Box display="flex" justifyContent="center" style={{paddingTop: "10px", paddingBottom: '15px'}}>
                     <Typography style={{color: "#0000008A", fontSize: "28px"}}>
-                        비밀번호 변경
+                        비밀번호 찾기
                     </Typography>
                 </Box>
             </Box>
@@ -103,7 +103,6 @@ function PasswordResetComponent(props) {
     const [errorCode, setErrorCode] = useState(0)
     const [refresh, setRefresh] = useState(false)
     const [slideNumber, setSlideNumber] = useState(0)
-    const [slideNumbered, setSlideNumbered] = useState()
     const [beforeSlide, setBeforeSlide] = useState()
     const [afterSlide, setAfterSlide] = useState()
     const {classes} = props
@@ -160,13 +159,10 @@ function PasswordResetComponent(props) {
              history.push("/")
         }
     }
-    const onEnteredSlide = (e) => {
-        setSlideNumbered(slideNumber)
-    }
-    React.useEffect(() => {
-        if(slideNumbered === 0)
+    const onEnteredSlide = useCallback((e) => {
+        if(slideNumber === 0)
             focusInput.current.focus()
-    }, [slideNumbered])
+    }, [slideNumber])
     const onEnterSlide = (e) => {
         e.style.position='relative'
         setBeforeSlide(afterSlide)
@@ -188,7 +184,7 @@ function PasswordResetComponent(props) {
                 <Card elevation={3} className={classes.card} style={(matches?{maxWidth:'450px', minWidth:'300px'}:{padding: '40px 40px 80px 40px', borderRadius: '0px', boxShadow: 'none'})}>
                     <Header matches={matches} classes={classes}/>
                     <Box style={(matches?{padding: "16px 10%", minHeight:'350px'}:{flex: '1'})}>
-                        <Slide style={{position: 'relative', }} direction="left" in={slideNumber===0} timeout={{exit:0, enter: 500,}} mountOnEnter unmountOnExit onEnter={onEnterSlide} onExiting={onExitingSlide} onEntered={onEnteredSlide}>
+                        <Slide style={{position: 'relative', }} direction="left" in={slideNumber===0} timeout={{exit:0, enter: 0,}} mountOnEnter unmountOnExit onEnter={onEnterSlide} onExiting={onExitingSlide} onEntered={onEnteredSlide}>
                             <CardContent style={{padding: 0}}>
                                 <TextField variant="outlined" value={email} onChange={onChangeValue} error={emailError} inputRef={focusInput}
                                     fullWidth label="이메일" placeholder="이메일을 입력해주세요." style={{margin: "15px 0px 7.5px 0px"}}

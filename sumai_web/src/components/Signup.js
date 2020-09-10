@@ -29,6 +29,8 @@ import axios from "axios"
 import IconButton from '@material-ui/core/IconButton';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
+import DialogContents from './DialogContents'
+
 const useStyles = theme => ({
     root: {
         minHeight: '100vh',
@@ -88,14 +90,6 @@ const useStyles = theme => ({
         display: "flex",
         flexDirection: "column",
         padding: "0px 40px 20px 40px",
-        height: "100%",
-        '&::before' : {
-            height: '24px',
-            boxSizing: 'border-box',
-            display: 'block',
-            content: '""',
-            flexGrow: 1,
-        },
     },
     signupButtonMob: {
         variant: 'contained',
@@ -173,6 +167,8 @@ class Signup extends Component{
             emailSendMessage: false,
             beforeSlide: null,
             afterSlide: null,
+            dialogOpen: false,
+            dialogContentType: undefined,
         }
         this.textFieldRef = [React.createRef(), React.createRef(), React.createRef(), React.createRef()]
         this.textFieldRefBirthday = [React.createRef(), React.createRef()]
@@ -264,6 +260,13 @@ class Signup extends Component{
                 privacyCheckederror: false,
             })
         } 
+    }
+
+    setDialogOpen = (bool, contentType) => {
+        this.setState({
+            dialogOpen: bool,
+            dialogContentType: contentType,
+        })
     }
 
     handleChangeBirthday = (value, type) => {
@@ -473,7 +476,6 @@ class Signup extends Component{
     onClickSendMail = () => {
         if(0 < this.state.emailSendCount) {
             // axios.post('/api/email/sendEmailCertification', {email: this.state.email}).then((res) => {
-            //      console.log('인증메일 전송했당께')
             // })
             this.setState({ 
                 emailSendCount: this.state.emailSendCount - 1,
@@ -540,7 +542,7 @@ class Signup extends Component{
                                             }   
                             />
                             <Box style={{padding: "16px 10%", minHeight: '450px'}}>
-                                <Slide style={{position: 'relative', }} direction="left" in={this.state.slideOpen===0} timeout={{exit:0, enter: 500,}} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
+                                <Slide style={{position: 'relative', }} direction="left" in={this.state.slideOpen===0} timeout={{exit:0, enter: 0,}} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
                                     <CardContent style={{padding: 0}}>
                                         <TextField variant="outlined" value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.emailerror || this.state.errorCode===1}
                                             fullWidth label="이메일" placeholder="이메일을 입력해주세요." style={{margin: "15px 0px 7.5px 0px"}} inputRef={this.textFieldRef[0]}
@@ -558,11 +560,11 @@ class Signup extends Component{
 
                                         <Box display="flex" style={{marginTop: "10px"}}>
                                             <FormControlLabel label="이용약관 동의" className={classes.termsCheckBox} control={<Checkbox checked={this.state.termsChecked} onChange={this.handleChange.bind(this, "terms")} size="medium" value="termsChecked" color="primary"/>}   />
-                                            <Link to="/terms" style={{textDecoration: 'none', marginLeft: "auto"}} ><Button className={classes.termsButton}>이용약관</Button></Link>
+                                            <Button className={classes.termsButton} onClick={this.setDialogOpen.bind(this, true, 'terms')} style={{textDecoration: 'none', marginLeft: "auto", maxHeight: '35px'}}>이용약관</Button>
                                         </Box>
                                         <Box display="flex">
                                             <FormControlLabel label="개인정보처리방침 동의" className={classes.termsCheckBox} control={<Checkbox checked={this.state.privacyChecked} onChange={this.handleChange.bind(this, "privacy")} size="medium" value="privacyChecked" color="primary"/>}   />
-                                            <Link to="/privacy" style={{textDecoration: 'none', marginLeft: "auto"}} ><Button className={classes.termsButton}>개인정보처리방침</Button></Link>
+                                            <Button className={classes.termsButton} onClick={this.setDialogOpen.bind(this, true, 'privacy')} style={{textDecoration: 'none', marginLeft: "auto", maxHeight: '35px'}}>개인정보처리방침</Button>
                                         </Box>
                                     </CardContent>
                                 </Slide>
@@ -666,6 +668,7 @@ class Signup extends Component{
                             개인정보처리방침에 동의해주세요.
                         </Alert>
                     </Snackbar>
+                    <DialogContents DialogContentState={this.state.dialogOpen} setDialogContentState={this.setDialogOpen} contentType={this.state.dialogContentType}/>
                 </div> 
             ) 
         }
@@ -697,8 +700,8 @@ class Signup extends Component{
                                 </Typography>
                             </Box>
 
-                            <Box height={"500px"} position='relative' overflow='hidden' >
-                                <Slide direction="left" in={this.state.slideOpen===0} timeout={{exit:0, enter: 500,}} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
+                            <Box paddingBottom={'25px'} position='relative' overflow='hidden' >
+                                <Slide direction="left" in={this.state.slideOpen===0} timeout={{exit:0, enter: 0,}} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
                                     <Box style={{position: 'absolute'}}>
                                         <TextField variant="outlined" value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.emailerror || this.state.errorCode===1}
                                             fullWidth label="이메일" placeholder="이메일을 입력해주세요." style={{margin: "30px 0px 7.5px 0px"}} inputRef={this.textFieldRef[0]}
@@ -713,11 +716,11 @@ class Signup extends Component{
                                             fullWidth label="비밀번호 확인" placeholder="비밀번호를 한 번 더 입력해주세요." type="password" style={{margin: "7.5px 0px 15px 0px"}} inputRef={this.textFieldRef[3]}
                                             helperText={this.state.passwordcheckerror? "비밀번호가 다릅니다.": false} onKeyPress={this.onKeyPress}/>
 
-                                        <Box display="flex" style={{marginTop: "10px"}}>
+                                        <Box display="flex" alignItems={'center'} style={{marginTop: "10px"}}>
                                             <FormControlLabel label="이용약관 동의" className={classes.termsCheckBox} control={<Checkbox checked={this.state.termsChecked} onChange={this.handleChange.bind(this, "terms")} size="medium" value="termsChecked" color="primary"/>}   />
                                             <Link to="/terms" style={{textDecoration: 'none', marginLeft: "auto"}} ><Button className={classes.termsButton}>이용약관</Button></Link>
                                         </Box>
-                                        <Box display="flex" >
+                                        <Box display="flex" alignItems={'center'} >
                                             <FormControlLabel label="개인정보처리방침 동의" className={classes.termsCheckBox} control={<Checkbox checked={this.state.privacyChecked} onChange={this.handleChange.bind(this, "privacy")} size="medium" value="privacyChecked" color="primary"/>}   />
                                             <Link to="/privacy" style={{textDecoration: 'none', marginLeft: "auto"}} ><Button className={classes.termsButton}>개인정보처리방침</Button></Link>
                                         </Box>
@@ -747,10 +750,10 @@ class Signup extends Component{
                                         </Box>
 
                                         <Typography variant="body2" style={{fontFamily: "NotoSansKR-Regular", color: "#f44336", marginTop: "3px"}}>
-                                            &nbsp;{this.state.errorMassage}&nbsp;
+                                            {this.state.errorMassage}
                                         </Typography>
 
-                                        <FormControl variant="outlined" style={{width: '100%', marginTop: "10px", minWidth: "150px"}}>
+                                        <FormControl variant="outlined" style={{width: '100%', marginTop: "12px", minWidth: "150px"}}>
                                             <InputLabel htmlFor="gender">성별 (선택사항)</InputLabel>
                                             <Select native label="성별 (선택사항)" labelId='gender' onChange={this.handleChangeGender} defaultValue=''>
                                                 <option aria-label="None" value="" disabled hidden />

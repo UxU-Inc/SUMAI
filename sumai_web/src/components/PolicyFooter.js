@@ -5,7 +5,6 @@ import {createBrowserHistory} from 'history';
 
 const useStyles = theme => ({
     root: {
-        flexGrow: 1,
         background: "#e0e0e0",
         padding: theme.spacing(5),
     },

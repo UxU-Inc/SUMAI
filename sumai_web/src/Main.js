@@ -6,7 +6,6 @@ import Header from "./components/Header";
 import Body from "./components/Body"; 
 import RecordLastest from "./components/RecordLastest";
 import RecordRecommend from "./components/RecordRecommend";
-import HeaderMob from "./componentsMob/Header"; 
 import BodyMob from "./componentsMob/Body"; 
 
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
@@ -206,7 +205,7 @@ class Main extends React.Component {
                         isWidthUp('md', this.props.width)? 
                         <div key={key}> 
                             <Header isLoggedIn={this.props.status.isLoggedIn} currentUser={this.props.status.currentUser} 
-                                    onLogout={this.handleLogout} onClickLink={this.onClickLink}/> 
+                                    onLogout={this.handleLogout} onClickLink={this.onClickLink} matches={isWidthUp('md', this.props.width)}/> 
                             <div >
                                 <Body state={this.state} handleChange={this.handleChange} onClick={this.onClick} textRemove={this.textRemove} onClickRecord={this.onClickRecord} 
                                         recordTrue={this.recordTrue} recordFalse={this.recordFalse} fetchUsers={this.fetchUsers} errorSet={this.errorSet} />
@@ -215,8 +214,8 @@ class Main extends React.Component {
                             <RecordLastest convertSortFunction={this.convertSortFunction} />}
                         </div> :
                         <div className="MainMob" key={key}> 
-                            <HeaderMob isLoggedIn={this.props.status.isLoggedIn} currentUser={this.props.status.currentUser} 
-                                    onLogout={this.handleLogout} onClickLink={this.onClickLink}/> 
+                        <Header isLoggedIn={this.props.status.isLoggedIn} currentUser={this.props.status.currentUser}
+                                onLogout={this.handleLogout} onClickLink={this.onClickLink} matches={isWidthUp('md', this.props.width)}/> 
                             <div >
                                 <BodyMob state={this.state} handleChange={this.handleChange} textRemove={this.textRemove} 
                                         recordFalseMob={this.recordFalseMob} fetchUsers={this.fetchUsers} errorSet={this.errorSet} />

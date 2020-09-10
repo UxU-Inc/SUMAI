@@ -70,7 +70,6 @@ class AccountNameChange extends React.Component {
             if(this.props.location.state.gender === "여성" || this.props.location.state.gender === "남성" || this.props.location.state.gender === "공개 안함") {
                 this.setState({ genderCurrent: this.props.location.state.gender }) 
             } else if(this.props.location.state.gender !== "" && this.props.location.state.gender !== null && this.props.location.state.gender !== undefined) {
-                console.log(this.props.location.state.gender)
                 this.setState({ 
                     genderCurrent: "사용자 지정",
                     genderCustom: this.props.location.state.gender,
@@ -92,7 +91,6 @@ class AccountNameChange extends React.Component {
             if(this.props.location.state.gender === "여성" || this.props.location.state.gender === "남성" || this.props.location.state.gender === "공개 안함") {
                 this.setState({ genderCurrent: this.props.location.state.gender }) 
             } else if(this.props.location.state.gender !== "" && this.props.location.state.gender !== null && this.props.location.state.gender !== undefined) {
-                console.log(this.props.location.state.gender)
                 this.setState({ 
                     genderCurrent: "사용자 지정",
                     genderCustom: this.props.location.state.gender,

@@ -42,9 +42,6 @@ export default function AccountImage(props) {
         }
         imageCompression(acceptedFiles[0], options)
           .then(function (compressedFile) {
-            console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
-            console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
-            
             imageCompression.getDataUrlFromFile(compressedFile).then((data) => {
               setIsImageLoading(false)
               setNotImg(false)

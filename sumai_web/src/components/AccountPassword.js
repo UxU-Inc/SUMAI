@@ -45,7 +45,6 @@ function PasswordChangeMassage(props) {
     const { code, setCode } = props
 
     React.useEffect(() => {
-        console.log(code)
         if(code === 1) enqueueSnackbar('비밀번호가 변경되었습니다.', {variant: "success"} )
         if(code === 2) enqueueSnackbar('해당 계정이 존재하지 않습니다.', {variant: "error"})
         if(code === 3) enqueueSnackbar('현재 비밀번호가 틀립니다.', {variant: "error"})
@@ -188,7 +187,6 @@ class AccountPassword extends React.Component {
                 if(this.props.status.isLoggedIn === true) {
                     return { success: true, code: 1 };
                 } else {
-                    console.log(this.props.status.isLoggedIn)
                     return { success: false, code: 4 }
                 }
             }

@@ -11,6 +11,9 @@ import Box from '@material-ui/core/Box';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 
 const useStyles = theme => ({
+  root: {
+      overflowX: 'hidden'
+  },
     AppBarStyle: {
         paddingTop: 10,
         paddingBottom: 10,

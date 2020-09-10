@@ -211,7 +211,6 @@ class RecordRecommend extends Component{
         const scrollTop = (document.documentElement && document.documentElement.scrollTop) || document.body.scrollTop;
 
         if (scrollHeight - innerHeight - scrollTop < 150 && this.state.data.length > this.state.dataCount) {
-            console.log("load 10");
             this.setState({
                 dataCount: this.state.dataCount + 10,
                 loadingScroll: true
@@ -301,7 +300,6 @@ class RecordRecommend extends Component{
         }
 
         if(this.state.deleteIdx !== '') {
-            console.log("delete")
             const idx = this.state.deleteIdx
             this.setState({
                 deleteCheck: false,
