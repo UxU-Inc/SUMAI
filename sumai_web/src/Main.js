@@ -7,6 +7,7 @@ import Body from "./components/Body";
 import RecordLastest from "./components/RecordLastest";
 import RecordRecommend from "./components/RecordRecommend";
 import BodyMob from "./componentsMob/Body"; 
+import Box from '@material-ui/core/Box';
 
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import axios from 'axios';
@@ -153,7 +154,7 @@ class Main extends React.Component {
             loading: true,
           })
           const response = await axios.post(
-            'https://bbbnjogjj6.execute-api.us-east-1.amazonaws.com/production',
+            'https://api.sumai.co.kr/summary',
             {
                 summarize: this.state.text,
                 id: this.props.status.currentId,
@@ -210,6 +211,12 @@ class Main extends React.Component {
                                 <Body state={this.state} handleChange={this.handleChange} onClick={this.onClick} textRemove={this.textRemove} onClickRecord={this.onClickRecord} 
                                         recordTrue={this.recordTrue} recordFalse={this.recordFalse} fetchUsers={this.fetchUsers} errorSet={this.errorSet} />
                             </div>
+                            <Box display="flex" alignItems="center">
+                                <ins class="kakao_ad_area" style={{display: 'none'}} 
+                                data-ad-unit    = "DAN-99dFqz7hNrCGBNUn" 
+                                data-ad-width   = "728" 
+                                data-ad-height  = "90"></ins> 
+                            </Box>
                             {this.state.convertSort? <RecordRecommend convertSortFunction={this.convertSortFunction} />:
                             <RecordLastest convertSortFunction={this.convertSortFunction} />}
                         </div> :

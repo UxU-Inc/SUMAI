@@ -14,7 +14,6 @@ import imgLogo from '../images/sumai_logo_blue.png';
 import Typography from '@material-ui/core/Typography';
 import * as root from '../rootValue';
 import clsx from 'clsx';
-import { Link } from 'react-router-dom';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -120,6 +119,7 @@ const useStyles = theme => ({
         },
     },
     termsCheckBox: {
+        margin: '0px',
         color: "#757575",
         fontFamily: "NotoSansKR-Light",
     },
@@ -260,6 +260,20 @@ class Signup extends Component{
                 privacyCheckederror: false,
             })
         } 
+    }
+
+    onResize = () => {
+        const zoom = Math.min(window.innerWidth / 400, 1);
+        document.documentElement.style.zoom = `${zoom}`;
+    }
+
+    componentDidMount() {
+        this.onResize()
+        window.addEventListener('resize', this.onResize);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.onResize)
     }
 
     setDialogOpen = (bool, contentType) => {
@@ -560,11 +574,11 @@ class Signup extends Component{
 
                                         <Box display="flex" style={{marginTop: "10px"}}>
                                             <FormControlLabel label="이용약관 동의" className={classes.termsCheckBox} control={<Checkbox checked={this.state.termsChecked} onChange={this.handleChange.bind(this, "terms")} size="medium" value="termsChecked" color="primary"/>}   />
-                                            <Button className={classes.termsButton} onClick={this.setDialogOpen.bind(this, true, 'terms')} style={{textDecoration: 'none', marginLeft: "auto", maxHeight: '35px'}}>이용약관</Button>
+                                            <Button className={classes.termsButton} onClick={this.setDialogOpen.bind(this, true, 'terms')} style={{textDecoration: 'none', marginLeft: "auto", maxHeight: '35px', minWidth: '105px'}}>이용약관</Button>
                                         </Box>
                                         <Box display="flex">
                                             <FormControlLabel label="개인정보처리방침 동의" className={classes.termsCheckBox} control={<Checkbox checked={this.state.privacyChecked} onChange={this.handleChange.bind(this, "privacy")} size="medium" value="privacyChecked" color="primary"/>}   />
-                                            <Button className={classes.termsButton} onClick={this.setDialogOpen.bind(this, true, 'privacy')} style={{textDecoration: 'none', marginLeft: "auto", maxHeight: '35px'}}>개인정보처리방침</Button>
+                                            <Button className={classes.termsButton} onClick={this.setDialogOpen.bind(this, true, 'privacy')} style={{textDecoration: 'none', marginLeft: "auto", maxHeight: '35px', minWidth: '105px'}}>개인정보처리방침</Button>
                                         </Box>
                                     </CardContent>
                                 </Slide>
@@ -718,11 +732,11 @@ class Signup extends Component{
 
                                         <Box display="flex" alignItems={'center'} style={{marginTop: "10px"}}>
                                             <FormControlLabel label="이용약관 동의" className={classes.termsCheckBox} control={<Checkbox checked={this.state.termsChecked} onChange={this.handleChange.bind(this, "terms")} size="medium" value="termsChecked" color="primary"/>}   />
-                                            <Link to="/terms" style={{textDecoration: 'none', marginLeft: "auto"}} ><Button className={classes.termsButton}>이용약관</Button></Link>
+                                            <Button className={classes.termsButton} onClick={this.setDialogOpen.bind(this, true, 'terms')} style={{textDecoration: 'none', marginLeft: "auto", maxHeight: '35px', minWidth: '105px'}}>이용약관</Button>
                                         </Box>
                                         <Box display="flex" alignItems={'center'} >
                                             <FormControlLabel label="개인정보처리방침 동의" className={classes.termsCheckBox} control={<Checkbox checked={this.state.privacyChecked} onChange={this.handleChange.bind(this, "privacy")} size="medium" value="privacyChecked" color="primary"/>}   />
-                                            <Link to="/privacy" style={{textDecoration: 'none', marginLeft: "auto"}} ><Button className={classes.termsButton}>개인정보처리방침</Button></Link>
+                                            <Button className={classes.termsButton} onClick={this.setDialogOpen.bind(this, true, 'privacy')} style={{textDecoration: 'none', marginLeft: "auto", maxHeight: '35px', minWidth: '105px'}}>개인정보처리방침</Button>
                                         </Box>
 
                                     </Box>
@@ -818,6 +832,7 @@ class Signup extends Component{
                             개인정보처리방침에 동의해주세요.
                         </Alert>
                     </Snackbar>
+                    <DialogContents DialogContentState={this.state.dialogOpen} setDialogContentState={this.setDialogOpen} contentType={this.state.dialogContentType}/>
                     
                 </div> 
             ) 

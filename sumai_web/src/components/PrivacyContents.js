@@ -37,7 +37,7 @@ class PrivacyContents extends React.Component {
         const { classes } = this.props;
 
         return (
-          <div style={{minWidth: "300px"}}>
+          <div style={{minWidth: "250px"}}>
             <Typography className={classes.subtitle}>1. 개인정보처리방침이란?</Typography>
             <Typography className={classes.content}>
                 SUMAI(이하"회사")는 이용자의 ‘동의를 기반으로 개인정보를 수집·이용 및 제공’하고 있으며,<br/>

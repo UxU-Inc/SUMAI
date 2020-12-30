@@ -17,6 +17,7 @@ import AccountBirthday from "./components/AccountBirthday";
 import AccountGender from "./components/AccountGender";
 import EmailCertification from "./components/EmailCertification"
 import EmailLogin from "./components/EmailLogin"
+import Test from "./components/popup"
 
 import { connect } from 'react-redux';
 import { getStatusRequest, logoutRequest, getStatusFailure } from './actions/authentication';
@@ -98,6 +99,7 @@ class App extends Component {
             </Switch>
 
             <Route path="/terms" component={ Terms } />
+            <Route path="/test" component={ Test } />
             <Route path="/privacy" component={ Privacy } />
             <Route path="/notices" component={ Notices } />
             <Route path="/email/certification" component={ EmailCertification } />
