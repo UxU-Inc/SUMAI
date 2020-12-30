@@ -52,5 +52,5 @@ app.use(cookieParser())
 app.use('/api', api);
 
 app.listen(PORT, () => {
-    console.log(`Server On : http://localhost:${PORT}/`);
+    console.log(`Server On : https://sumai.co.kr:${PORT}/`);
 })
