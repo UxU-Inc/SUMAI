@@ -168,7 +168,7 @@ router.post("/EmailCertification", function(req, res){
               });
           }
           const id = getRandomValues(new Uint8Array(10)).join('').slice(-10)+String(Date.now()).slice(-10)
-          hashing.encrypt(password).then(password => {
+          hashing.encrypt(id, password).then(password => {
               db.query("INSERT INTO summary.account_info (type, id, email, name, password, salt) VALUES ('SUMAI', "+ id + ", LOWER('"+ email +"'), '"+ name +"', '"+ password.hashed +"', '"+ password.salt +"')", (err, exists) => {
                   if(!err) {
                       // 회원가입 로그
@@ -240,7 +240,7 @@ router.post("/temporary/login/:state", function(req, res) {
   }
   sessionStore.get(id, (err, session)=> {
     const email = session.password2email.email
-    hashing.encrypt(password).then(password => {
+    hashing.encrypt(id, password).then(password => {
       db.query("UPDATE summary.account_info SET password = '"+ password.hashed +"', salt = '"+ password.salt +"' WHERE email = '"+ email + "'", (err, exists) => {
           if(!err) {
               // 계정 변경 사항 account_change [password]

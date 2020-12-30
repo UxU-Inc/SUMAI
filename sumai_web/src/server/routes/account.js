@@ -65,7 +65,7 @@ router.post('/login', (req, res) => {
             })
         } else {
             // 비밀번호 확인
-            hashing.confirm(req.body.password, account[0].salt).then(password => {
+            hashing.confirm(account[0].id, req.body.password, account[0].salt).then(password => {
                 if(account[0].password === password.hashed) {
                     req.session.loginInfo = {
                         type: 'sumai',
@@ -144,10 +144,10 @@ router.post('/passwordChange', (req, res) => {
             })
         } else {
             // 현재 비밀번호 확인
-            hashing.confirm(req.body.passwordCurrent, account[0].salt).then(password => {
+            hashing.confirm(account[0].id, req.body.passwordCurrent, account[0].salt).then(password => {
                 if(account[0].password === password.hashed) {
                     // 변경할 비밀번호 hashing
-                    hashing.encrypt(req.body.passwordChange).then(password => {
+                    hashing.encrypt(account[0].id, req.body.passwordChange).then(password => {
                         db.query("UPDATE summary.account_info SET password = '"+ password.hashed +"', salt = '"+ password.salt +"' WHERE id = '"+ req.body.id + "'", (err, exists) => {
                             if(!err) {
                                 // 계정 변경 사항 account_change [password]
@@ -250,7 +250,7 @@ router.post('/withdrawal', (req, res) => {
             })
         } else {
             // 현재 비밀번호 확인
-            hashing.confirm(req.body.password, account[0].salt).then(password => {
+            hashing.confirm(account[0].id, req.body.password, account[0].salt).then(password => {
                 if(account[0].password === password.hashed) {
                     // 계정, 해당 계정 관련 데이터 제거
                     db.query("DELETE FROM summary.account_info WHERE id = '"+ req.body.id + "'", (err, exists) => {

@@ -74,8 +74,8 @@ router.get('/google',
 
 router.get('/googlecallback', (req, res) => {
 	passport.authenticate('google', (err, user) => {
-        console.log('passport.authenticate(google)실행');
-        console.log(user);
+        // console.log('passport.authenticate(google)실행');
+        // console.log(user);
         if(!user) {
             return res.send("<script>var win = window.open('','_self');win.close();</script>")
         }
@@ -155,8 +155,8 @@ router.get('/kakao',
 
 router.get('/kakaocallback', (req, res) => {
     passport.authenticate('kakao', (err, user) => {
-        console.log('passport.authenticate(kakao)실행');
-        console.log(user);
+        // console.log('passport.authenticate(kakao)실행');
+        // console.log(user);
         if(!user) {
             return res.send("<script>var win = window.open('','_self');win.close();</script>")
         }
@@ -276,8 +276,8 @@ router.get('/naver',
 
 router.get('/navercallback', (req, res) => {
     passport.authenticate('naver', (err, user) => {
-        console.log('passport.authenticate(naver)실행');
-        console.log(user);
+        // console.log('passport.authenticate(naver)실행');
+        // console.log(user);
         if(!user) {
             return res.send("<script>var win = window.open('','_self');win.close();</script>")
         }
@@ -361,8 +361,8 @@ router.get('/facebook',
 
 router.get('/facebookcallback', (req, res) => {
     passport.authenticate('facebook', (err, user) => {
-        console.log('passport.authenticate(facebook)실행');
-        console.log(user);
+        // console.log('passport.authenticate(facebook)실행');
+        // console.log(user);
         if(!user) {
             return res.send("<script>var win = window.open('','_self');win.close();</script>")
         }
