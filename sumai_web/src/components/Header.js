@@ -68,6 +68,9 @@ const useStyles = theme => ({
     alt: 'SUMAI',
   },
   loginButton: {
+    '&:hover': {
+      background: root.HoberColor
+    },
     background: root.PrimaryColor,
     color: "#fff",
   },
@@ -91,6 +94,17 @@ const useStyles = theme => ({
     padding: theme.spacing(0.5),
     paddingLeft: theme.spacing(5),
     fontSize: 13,
+  },
+
+
+  FeedbackDialogRoot: {
+    justifyContent: 'center',
+    margin: '0 auto',
+  },
+  FeedbackDialogContent: {
+    display: 'flex',
+    padding: "10px 15px",
+
   },
 })
 
@@ -130,7 +144,7 @@ const DialogActions = withStyles((theme) => ({
 }))(MuiDialogActions);
 
 function FeedbackDialog(props) {
-  const {open, setOpen, classes} = props
+  const {open, setOpen, classes, matches} = props
   // const [screen, setScreen] = React.useState(null)
   const [message, setMessage] = React.useState('')
   
@@ -198,12 +212,12 @@ function FeedbackDialog(props) {
 
   return (
     <Box>
-      <Dialog id='feedback' onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}
-      style={{width: '460px', justifyContent: 'center', margin: '0 auto'}}>
+      <Dialog id='feedback' onClose={handleClose} aria-labelledby="customized-dialog-title" open={open} fullScreen={!matches}
+      style={matches?{width: '460px', }:{}} className={classes.FeedbackDialogRoot}>
         <DialogTitle id="customized-dialog-title" onClose={handleClose} style={{backgroundColor: root.PrimaryColor, color: 'white', padding: "10px 15px"}}>
           의견 보내기
         </DialogTitle>
-        <Box style={{minHeight: '200px', maxHeight: '250px', display: 'flex', padding: "10px 15px"}}>
+        <Box className={classes.FeedbackDialogContent} style={matches?{minHeight: '200px', maxHeight: '250px'}:{height: '100%'}}>
           <TextareaAutosize className={classes.textInput} maxLength="5000" autoFocus={true} onChange={handleMessage}
           placeholder="의견을 보내고 싶으신가요? 보내 주신 의견은 소중하게 활용되지만, 민감한 정보는 공유하지 말아 주세요. 궁금하신 점이 있나요? 도움말을 참조하시거나 지원팀에 문의해 보세요."
           style={{
@@ -458,7 +472,7 @@ class Header extends Component{
           </Toolbar>
         </AppBar>
 
-        <FeedbackDialog open={this.state.dialogOpen} setOpen={this.dialogOpen} classes={classes}/>        
+        <FeedbackDialog open={this.state.dialogOpen} setOpen={this.dialogOpen} classes={classes} matches={this.props.matches}/>        
 
 
       </div>

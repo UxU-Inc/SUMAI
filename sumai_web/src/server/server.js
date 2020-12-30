@@ -26,7 +26,9 @@ const loginlimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 15,
     message: {error: 'Too many requests, please try again later.', code: 429},
-    onLimitReached: (req) => console.log(req.ip),
+    onLimitReached: (req, res) => {
+        console.log(req.ip);
+    },
     skipSuccessfulRequests: true,
 });
 

@@ -1,29 +1,34 @@
 import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import PrivacyContents from './PrivacyContents'
 import TermsContents from './TermsContents'
 import { DialogTitle, DialogActions, Button } from '@material-ui/core';
 import * as root from '../rootValue';
 import DialogContent from '@material-ui/core/DialogContent';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
-const useStyles = theme => ({
-  '@global': {
-    '*::-webkit-scrollbar': {
-      width: '0.4em'
+const useStyles = makeStyles((theme) => ({
+  DialogContent: {
+    '&::-webkit-scrollbar': {
+      width: '0.2em'
     },
-    '*::-webkit-scrollbar-track': {
-      '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.00)'
+    '&::-webkit-scrollbar-track': {
+      boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
+      '-webkitBoxShadow': 'inset 0 0 6px rgba(0,0,0,0.00)'
     },
-    '*::-webkit-scrollbar-thumb': {
-      backgroundColor: 'rgba(0,0,0,.1)',
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: 'rgba(0,0,0,.2)',
       outline: '1px solid slategrey'
-    }
-  }
-});
+    },
+    padding: '10px 20px',
+  },
+}))
 
-function DialogContents(props) {
+export default function DialogContents(props) {
+  const theme = useTheme();
     const classes = useStyles();
+    const matches = useMediaQuery(theme.breakpoints.up('sm'));
     const {DialogContentState, setDialogContentState, contentType} = props
 
     const handleClose = () => {
@@ -31,12 +36,12 @@ function DialogContents(props) {
     }
 
     return (
-        <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={DialogContentState}
-        style={{width: '500px', justifyContent: 'center', margin: '0 auto'}}>
+        <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={DialogContentState} fullScreen={!matches}
+        style={{justifyContent: 'center', margin: '0 auto'}}>
             <DialogTitle id="customized-dialog-title" onClose={handleClose} style={{backgroundColor: root.PrimaryColor, color: 'white', padding: "10px 15px"}}>
                 {(contentType==='privacy' && '개인정보처리방침') || (contentType==='terms' && '이용약관')}
             </DialogTitle>
-            <DialogContent style={{maxHeight: '500px', padding:'10px 20px'}} className={classes.scrollBar}>
+            <DialogContent style={matches?{maxHeight: '500px', width: '450px',}:{}} className={classes.DialogContent} >
                 {(contentType==='privacy' && <PrivacyContents/>) || (contentType==='terms' && <TermsContents/>)}
             </DialogContent>
             <DialogActions style={{backgroundColor: 'WhiteSmoke'}}>
@@ -46,4 +51,3 @@ function DialogContents(props) {
     )
 }
 
-export default withStyles(useStyles)(DialogContents);

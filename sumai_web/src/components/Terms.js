@@ -65,6 +65,21 @@ const useStyles = theme => ({
 
 class Terms extends Component{ 
 
+
+  onResize = () => {
+    const zoom = Math.min(window.innerWidth / 450, 1);
+    document.documentElement.style.zoom = `${zoom}`;
+  }
+
+  componentDidMount() {
+      this.onResize()
+      window.addEventListener('resize', this.onResize);
+  }
+
+  componentWillUnmount() {
+      window.removeEventListener('resize', this.onResize)
+  }
+
     render(){ 
         const { classes } = this.props;
 

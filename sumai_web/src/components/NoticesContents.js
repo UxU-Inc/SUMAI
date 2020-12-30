@@ -5,8 +5,6 @@ import Box from '@material-ui/core/Box';
 import PropTypes from 'prop-types';
 
 
-import LinearProgress from '@material-ui/core/LinearProgress';
-
 // Table
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -320,14 +318,14 @@ function NoticesTable(props) {
     const {scrollHeight} = document.body;
     // IE에서는 document.documentElement 를 사용.
     const scrollTop = document.documentElement.scrollTop
-    if (scrollHeight - innerHeight - scrollTop < 10 && rowsPerPage<count) {
+    if (scrollHeight*document.documentElement.style.zoom - innerHeight - scrollTop < 30 && rowsPerPage<count) { //zoom 사용 시 innerHeight
       window.removeEventListener("scroll", handleScroll);
       handleChangeRowsPerPage(event)
     }
   }, [count, handleChangeRowsPerPage, rowsPerPage]);
 
   const MobLoading = React.useCallback(() => {
-    if(document.body.scrollHeight < window.innerHeight) { // 비동기 문제 load 관련 수정
+    if(document.body.scrollHeight*document.documentElement.style.zoom < window.innerHeight) { // 비동기 문제 load 관련 수정
       handleChangeRowsPerPage()
     } 
   }, [handleChangeRowsPerPage])
@@ -451,15 +449,6 @@ export default function NoticesContents() {
         width: 0
       }}>
         <NoticesTable matches={matches}/>
-      </Box>
-      <Box style={{
-        position: 'fixed',
-        width: '100%',
-        zIndex: 100,
-        top: 0,
-        left: 0,
-      }}>
-        <LinearProgress id='topLoadingBar' style={{marginBottom: "10px",visibility: 'hidden'}}/>
       </Box>
     </Box>
   );
