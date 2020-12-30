@@ -19,7 +19,7 @@ const s3 = new AWS.S3(s3config);
 
 const ActionLog = require('../function/ActionLog')
 
-passport.use(new GoogleStrategy({
+passport.use(new GoogleStrategy({ // sumai.co.kr@gmail.com
     clientID: snsconfig.google_clientId,
     clientSecret: snsconfig.google_clientSecret,
     callbackURL: "/api/snslogin/googlecallback"
@@ -30,7 +30,7 @@ passport.use(new GoogleStrategy({
     }
 ));
 
-passport.use(new KakaoStrategy({
+passport.use(new KakaoStrategy({ // uxucorp@daum.net
     clientID : snsconfig.kakao_clientId,
     clientSecret: snsconfig.kakao_clientSecret,
     callbackURL : "http://localhost/api/snslogin/kakaocallback"
@@ -40,7 +40,7 @@ passport.use(new KakaoStrategy({
     }
 ));
 
-passport.use(new NaverStrategy({
+passport.use(new NaverStrategy({ // uxuinc@naver.com
     clientID: snsconfig.naver_clientId,
     clientSecret: snsconfig.naver_clientSecret,
     callbackURL: "http://localhost/api/snslogin/navercallback"
@@ -50,7 +50,7 @@ passport.use(new NaverStrategy({
     }
 ));
 
-passport.use(new FacebookStrategy({
+passport.use(new FacebookStrategy({ // uxucorp@gmail.com
     clientID: snsconfig.facebook_clientId,
     clientSecret: snsconfig.facebook_clientSecret,
     callbackURL: "/api/snslogin/facebookcallback",
