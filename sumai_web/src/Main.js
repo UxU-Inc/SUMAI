@@ -154,7 +154,7 @@ class Main extends React.Component {
             loading: true,
           })
           const response = await axios.post(
-            'https://api.sumai.co.kr/summary',
+            'https://www.sumai.co.kr/api/summary/request',
             {
                 summarize: this.state.text,
                 id: this.props.status.currentId,
