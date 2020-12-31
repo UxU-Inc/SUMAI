@@ -5,6 +5,7 @@ const notices = require('./notices');
 const snslogin = require('./snslogin');
 const email = require('./email')
 const recordLog = require('./recordLog')
+const summary = require('./summary')
 const ActionLog = require('../function/ActionLog')
 
 const router = express.Router();
@@ -42,5 +43,8 @@ router.use('/snslogin', snslogin);
 router.use('/email', email);
 // 로그 관련
 router.use('/recordLog', recordLog);
+
+// summary
+router.use('/summary', summary);
  
 module.exports = router;
