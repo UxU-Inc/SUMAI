@@ -10,9 +10,9 @@ const MySQLStore = require('express-mysql-session')(session);
 const sessionStore = new MySQLStore(dbconfig);
 
 const nodemailer = require('nodemailer');
-const gmailOAuth2Data   = require('../security/gmailOAuth2');
-const transporter = nodemailer.createTransport(gmailOAuth2Data);
-const path = require('path')
+const email = require('../security/MailConfig')
+// const gmailOAuth2Data   = require('../security/gmailOAuth2');
+// const transporter = nodemailer.createTransport(gmailOAuth2Data);
 const Email = require('email-templates');
 
 const router = express.Router();
@@ -21,12 +21,14 @@ const cryptoRandomString = require('crypto-random-string')
 const ActionLog = require('../function/ActionLog')
 const getRandomValues = require('get-random-values')
 
+// 의견 보내기
 router.post("/sendEmail", function(req, res){
   let email = req.body.email;
   let message = req.body.message;
   let src = req.body.src;
 
   let mailOptions = {
+    from: 'help@sumai.co.kr', // 송신 메일 주소
     to: 'uxu.co.kr@gmail.com' ,// 수신 메일 주소
     subject: `의견 보내기 ${''}`,   // 제목
     text: message,  // 내용
@@ -42,10 +44,9 @@ router.post("/sendEmail", function(req, res){
       res.status(200).send()
     }
   });
-
 })
 
-
+// 비밀번호 변경, 이메일 전송
 router.post("/temporary/send", function(req, res){
   const email=req.body.email
   const cert = cryptoRandomString({length: 20, type: 'url-safe'})
@@ -59,17 +60,17 @@ router.post("/temporary/send", function(req, res){
     const emails = new Email({
       transport: transporter,
       views: { root: __dirname },
-      // send: true
+      send: true
     })
     emails.send({
       template: 'emails/password',
       message: {
-        from: 'uxu.co.kr@gmail.com',
-        to: 'uxu.co.kr@gmail.com'
+        from: 'help@sumai.co.kr',
+        to: email,
       },
       locals: {
         email: email,
-        certLink: `http://localhost/email/login/login?id=${req.sessionID}&cert=${cert}`,
+        certLink: `https://sumai.co.kr/email/login/login?id=${req.sessionID}&cert=${cert}`, // 테스트시 http://localhost/~~
       }
     }).then(() => {
       res.send(200)
@@ -81,6 +82,7 @@ router.post("/temporary/send", function(req, res){
   })
 })
 
+// 회원가입 이메일 인증
 router.post("/sendEmailCertification", function(req, res){
   const email=req.body.email
   const name = req.body.name
@@ -104,7 +106,7 @@ router.post("/sendEmailCertification", function(req, res){
   }
   req.session.save(
     () => {
-      const link = `http://localhost/email/certification?id=${req.sessionID}&cert=${cert}` // 주소 함수를 이용해서 받아야 할 듯
+      const link = `https://sumai.co.kr/email/certification?id=${req.sessionID}&cert=${cert}` // 주소 함수를 이용해서 받아야 할 듯 // 테스트시 http://localhost/~~
       
       const emails = new Email({
         transport: transporter,
@@ -114,12 +116,12 @@ router.post("/sendEmailCertification", function(req, res){
       emails.send({
         template: 'emails/signup',
         message: {
-          from: 'uxu.co.kr@gmail.com',
-          to: 'uxu.co.kr@gmail.com'
+          from: 'help@sumai.co.kr',
+          to: email,
         },
         locals: {
-          name: req.body.name,
-          email: req.body.email,
+          name: name,
+          email: email,
           certLink: link,
         }
       }).then(() => {
@@ -133,6 +135,7 @@ router.post("/sendEmailCertification", function(req, res){
   )
 })
 
+// 회원가입 이메일 인증, 이메일에서 접속
 router.post("/EmailCertification", function(req, res){
   const id = req.body.id
   const cert = req.body.cert
@@ -189,6 +192,7 @@ router.post("/EmailCertification", function(req, res){
   })
 })
 
+// 비밀번호 변경, 이메일에 있는 주소를 타고 들어옴
 router.post("/temporary/login/:state", function(req, res, next){
   const id = req.body.id
   const cert = req.body.cert
@@ -232,6 +236,7 @@ router.post("/temporary/login/:state", function(req, res, next){
   })
 })
 
+// 비밀번호 변경, 이메일에 있는 주소를 타고 들어옴, 인증 성공 후, 최종 비밀번호 변경
 router.post("/temporary/login/:state", function(req, res) {
   const id = req.body.id
   const password = req.body.password
