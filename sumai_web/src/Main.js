@@ -34,7 +34,7 @@ class Main extends React.Component {
 
             convertSort: false,
 
-            record: false,
+            record: true,
 
             ip: '',
         }

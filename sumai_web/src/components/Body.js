@@ -193,8 +193,8 @@ class Body extends React.Component {
     };
 
     componentDidMount() {
-      if(this.getRecordCookie("record") === "true") this.props.recordTrue() 
-      else this.props.recordFalse()
+      if(this.getRecordCookie("record") === "false") this.props.recordFalse() 
+      else this.props.recordTrue()
       window.addEventListener('scroll', this.scrollFab)
     }
     
