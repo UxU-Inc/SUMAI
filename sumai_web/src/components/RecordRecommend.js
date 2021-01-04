@@ -112,12 +112,8 @@ class RecordRecommend extends Component{
             notLoginError: false,
             isAllLoad: false,
             loadingScroll: false,
-            ip: '',
         }
         references.ref = []
-        fetch('https://api.ipify.org?format=json')
-        .then(res => res.json())
-        .then(json => this.unmount? null:this.setState({ip: json.ip}))
     }
     componentDidMount() {
         this.accountInit();
@@ -358,7 +354,7 @@ class RecordRecommend extends Component{
                                 <Avatar src={image} style={{width: "2.2em", height: "2.2em"}} />
                             } action={
                                 <Grid container direction="row" justify="center" alignItems="center">
-                                    {(this.props.status.currentId !== '' && el.id === this.props.status.currentId) || (el.id === '' && el.ip_addr === this.state.ip)?<DeleteIcon onClick={this.recordDelete.bind(this, key, el.idx)} fontSize="large" className={classes.deleteStyle} />: null}
+                                    {(this.props.status.currentId !== '' && el.id === this.props.status.currentId) || (el.id === '' && el.ip_addr === this.props.ip)?<DeleteIcon onClick={this.recordDelete.bind(this, key, el.idx)} fontSize="large" className={classes.deleteStyle} />: null}
                                     <Typography style={{fontSize: "20px", paddingTop: "18px"}}>{(el.like) + (el.clicked === 1? this.state.isClick[key]? -1:0:this.state.isClick[key]? 1:0)}</Typography>
                                     <IconButton onClick={this.props.status.isLoggedIn? this.onClickChangeColor.bind(this, key, el.clicked, el.idx): this.onClickNotLogin} style={{marginTop: "4px", marginRight: "4px", marginLeft: "-8px", marginBottom: "-8px"}}>
                                         <ThumbUpAltIcon fontSize="large" color={el.clicked === 1? this.state.isClick[key]? "inherit":"primary":this.state.isClick[key]? "primary":"inherit"}/>
