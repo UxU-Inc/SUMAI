@@ -18,6 +18,7 @@ import AccountGender from "./components/AccountGender";
 import EmailCertification from "./components/EmailCertification"
 import EmailLogin from "./components/EmailLogin"
 import Test from "./components/popup"
+import NotFound from "./components/NotFound"
 
 import { connect } from 'react-redux';
 import { getStatusRequest, logoutRequest, getStatusFailure } from './actions/authentication';
@@ -86,17 +87,16 @@ class App extends Component {
     return ( 
       <Router>
         <ClientInfoComponent /> 
-          <div> 
+          <Switch> 
             <Route exact path="/" component={ Main } /> 
               
-            <Switch>
-              <Route exact path="/accounts" component={ Account } />
-              <Route path="/accounts/name" component={ AccountNameChange } />
-              <Route path="/accounts/password" component={ AccountPassword } />
-              <Route path="/accounts/withdrawal" component={ AccountWithdrawal } />
-              <Route path="/accounts/birthday" component={ AccountBirthday } />
-              <Route path="/accounts/gender" component={ AccountGender } />
-            </Switch>
+            <Route exact path="/accounts" component={ Account } />
+            <Route path="/accounts/name" component={ AccountNameChange } />
+            <Route path="/accounts/password" component={ AccountPassword } />
+            <Route path="/accounts/withdrawal" component={ AccountWithdrawal } />
+            <Route path="/accounts/birthday" component={ AccountBirthday } />
+            <Route path="/accounts/gender" component={ AccountGender } />
+            
 
             <Route path="/terms" component={ Terms } />
             <Route path="/test" component={ Test } />
@@ -105,12 +105,13 @@ class App extends Component {
             <Route path="/email/certification" component={ EmailCertification } />
             <Route path="/email/login" component={ EmailLogin } />
 
-            <Switch>
-              <Route path="/login/signup" component={ LoginMain } />
-              <Route path="/login/password/reset" component={ PasswordReset } />
-              <Route path="/login" component={ LoginMain } />
-            </Switch>
-          </div> 
+
+            <Route exact path="/login" component={ LoginMain } />
+            <Route path="/login/signup" component={ LoginMain } />
+            <Route path="/login/password/reset" component={ PasswordReset } />
+            
+            <Route component={ NotFound } status={404}/>
+          </Switch> 
       </Router> 
       ); 
   } 
