@@ -7,12 +7,12 @@ const db = mysql.createPool(dbconfig)
 
 const session = require('express-session')
 const MySQLStore = require('express-mysql-session')(session);
-const sessionStore = new MySQLStore(dbconfig);
+const sessionStore = new MySQLStore(dbconfig); // 다른 기기 접속을 위하여 사용
 
 const nodemailer = require('nodemailer');
-const gmailOAuth2Data   = require('../security/gmailOAuth2');
-const transporter = nodemailer.createTransport(gmailOAuth2Data);
-const path = require('path')
+const email = require('../security/MailConfig')
+// const gmailOAuth2Data   = require('../security/gmailOAuth2');
+// const transporter = nodemailer.createTransport(gmailOAuth2Data);
 const Email = require('email-templates');
 
 const router = express.Router();
@@ -21,12 +21,14 @@ const cryptoRandomString = require('crypto-random-string')
 const ActionLog = require('../function/ActionLog')
 const getRandomValues = require('get-random-values')
 
+// 의견 보내기
 router.post("/sendEmail", function(req, res){
   let email = req.body.email;
   let message = req.body.message;
   let src = req.body.src;
 
   let mailOptions = {
+    from: 'help@sumai.co.kr', // 송신 메일 주소
     to: 'uxu.co.kr@gmail.com' ,// 수신 메일 주소
     subject: `의견 보내기 ${''}`,   // 제목
     text: message,  // 내용
@@ -42,10 +44,9 @@ router.post("/sendEmail", function(req, res){
       res.status(200).send()
     }
   });
-
 })
 
-
+// 비밀번호 변경 이메일 전송
 router.post("/temporary/send", function(req, res){
   const email=req.body.email
   const cert = cryptoRandomString({length: 20, type: 'url-safe'})
@@ -59,17 +60,17 @@ router.post("/temporary/send", function(req, res){
     const emails = new Email({
       transport: transporter,
       views: { root: __dirname },
-      // send: true
+      send: true
     })
     emails.send({
       template: 'emails/password',
       message: {
-        from: 'uxu.co.kr@gmail.com',
-        to: 'uxu.co.kr@gmail.com'
+        from: 'help@sumai.co.kr',
+        to: email,
       },
       locals: {
         email: email,
-        certLink: `http://localhost/email/login/login?id=${req.sessionID}&cert=${cert}`,
+        certLink: `https://sumai.co.kr/email/login/login?id=${req.sessionID}&cert=${cert}`, // 테스트시 http://localhost/~~
       }
     }).then(() => {
       res.send(200)
@@ -81,6 +82,7 @@ router.post("/temporary/send", function(req, res){
   })
 })
 
+// 회원가입 인증 메일 전송
 router.post("/sendEmailCertification", function(req, res){
   const email=req.body.email
   const name = req.body.name
@@ -104,7 +106,7 @@ router.post("/sendEmailCertification", function(req, res){
   }
   req.session.save(
     () => {
-      const link = `http://localhost/email/certification?id=${req.sessionID}&cert=${cert}` // 주소 함수를 이용해서 받아야 할 듯
+      const link = `https://sumai.co.kr/email/certification?id=${req.sessionID}&cert=${cert}` // 주소 함수를 이용해서 받아야 할 듯 // 테스트시 http://localhost/~~
       
       const emails = new Email({
         transport: transporter,
@@ -114,12 +116,12 @@ router.post("/sendEmailCertification", function(req, res){
       emails.send({
         template: 'emails/signup',
         message: {
-          from: 'uxu.co.kr@gmail.com',
-          to: 'uxu.co.kr@gmail.com'
+          from: 'help@sumai.co.kr',
+          to: email,
         },
         locals: {
-          name: req.body.name,
-          email: req.body.email,
+          name: name,
+          email: email,
           certLink: link,
         }
       }).then(() => {
@@ -133,6 +135,7 @@ router.post("/sendEmailCertification", function(req, res){
   )
 })
 
+// 회원가입 인증 완료 작업
 router.post("/EmailCertification", function(req, res){
   const id = req.body.id
   const cert = req.body.cert
@@ -159,27 +162,27 @@ router.post("/EmailCertification", function(req, res){
       return sessionStore.set(id, session, () => {
         db.query("SELECT * FROM summary.account_info WHERE email = '"+ email + "'", (err, data) => {
           if (err) {
-              console.log(err);
-              return res.send(err);
+            console.log(err);
+            return res.send(err);
           } else if(data.length !== 0){
-              return res.status(400).json({
-                  message: "해당 이메일이 존재합니다.",
-                  code: 5
-              });
+            return res.status(400).json({
+              message: "해당 이메일이 존재합니다.", // sns 회원이면??
+              code: 5
+            });
           }
           const id = getRandomValues(new Uint8Array(10)).join('').slice(-10)+String(Date.now()).slice(-10)
           hashing.encrypt(id, password).then(password => {
-              db.query("INSERT INTO summary.account_info (type, id, email, name, password, salt) VALUES ('SUMAI', "+ id + ", LOWER('"+ email +"'), '"+ name +"', '"+ password.hashed +"', '"+ password.salt +"')", (err, exists) => {
-                  if(!err) {
-                      // 회원가입 로그
-                      ActionLog(req, `[S]signup. id: ${id}`)
-                      db.query("INSERT INTO summary.account_change (modifiedDate, changeData, email, name, password, salt) VALUES (now(), 'signup', '"+ email +"', '"+ name +"', '"+ password.hashed +"', '"+ password.salt +"')")
-                        return res.json({message: '이메일 인증이 완료되었습니다.', code: 0, email: email})
-                  } else {
-                      console.log(err);
-                      return res.json({code: 6});
-                  }
-              });
+            db.query("INSERT INTO summary.account_info (type, id, email, name, password, salt) VALUES ('SUMAI', "+ id + ", LOWER('"+ email +"'), '"+ name +"', '"+ password.hashed +"', '"+ password.salt +"')", (err, exists) => {
+              if(!err) {
+                // 회원가입 로그
+                ActionLog(req, `[S]signup. id: ${id}`)
+                db.query("INSERT INTO summary.account_change (modifiedDate, changeData, email, name, password, salt) VALUES (now(), 'signup', '"+ email +"', '"+ name +"', '"+ password.hashed +"', '"+ password.salt +"')")
+                  return res.json({message: '이메일 인증이 완료되었습니다.', code: 0, email: email})
+              } else {
+                console.log(err);
+                return res.json({code: 6});
+              }
+            });
           })
         })
       })
@@ -189,14 +192,15 @@ router.post("/EmailCertification", function(req, res){
   })
 })
 
+// 비밀번호 변경 페이지에서 비밀번호 변경 시도
 router.post("/temporary/login/:state", function(req, res, next){
-  const id = req.body.id
+  const sessionId = req.body.id
   const cert = req.body.cert
   ActionLog(req, `[T]change password for email.`)
-  if (id===undefined || cert===undefined) {
+  if (sessionId===undefined || cert===undefined) {
     return res.json({message: '경로가 잘못되었습니다.', code: 2})
   }
-  sessionStore.get(id, (err, session)=> {
+  sessionStore.get(sessionId, (err, session)=> {
     if (session.password2email === undefined) {
       return res.json({message: '이메일 로그인 상태가 아닙니다.', code: 3})
     }
@@ -205,13 +209,13 @@ router.post("/temporary/login/:state", function(req, res, next){
     const expires = session.password2email.expires
     if (expires === undefined || expires < parseInt(Date.now()/1000)) {
       delete session.password2email
-      return sessionStore.set(id, session, () => {
+      return sessionStore.set(sessionId, session, () => {
         res.json({message: '인증이 만료되었습니다.', code: 6})
       })
     } 
     if (email === undefined || cert === undefined) return res.json({message: '세션 상태가 이상합니다.', code: 4})
     if(cert === req.body.cert) {
-      db.query("SELECT * FROM summary.account_info WHERE email = '"+ email + "'", (err, account) => {
+      db.query("SELECT * FROM summary.account_info WHERE email = '"+ email + "' AND type = 'SUMAI'", (err, account) => {
         if(!err) {
           if(account.length !== 1) {
             res.json({message: '죄송합니다. 서비스를 이용할 수 없습니다.', code: 8})
@@ -232,32 +236,33 @@ router.post("/temporary/login/:state", function(req, res, next){
   })
 })
 
+// 비밀번호 변경 페이지에서 비밀번호 변경 작업
 router.post("/temporary/login/:state", function(req, res) {
-  const id = req.body.id
+  const sessionId = req.body.id
   const password = req.body.password
   if(!/^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[`~!@#$%^&+*()\-_+=.,<>/?'";:[\]{}\\|]).*$/.test(password)) {
     return res.json({ code: 9, message: '변경할 비밀번호가 양식에 맞지 않습니다.'});
   }
-  sessionStore.get(id, (err, session)=> {
+  sessionStore.get(sessionId, (err, session)=> {
     const email = session.password2email.email
-    hashing.encrypt(id, password).then(password => {
-      db.query("UPDATE summary.account_info SET password = '"+ password.hashed +"', salt = '"+ password.salt +"' WHERE email = '"+ email + "'", (err, exists) => {
+    db.query("SELECT * FROM summary.account_info WHERE email = '"+ email + "' AND type = 'SUMAI'", (err, account) => {
+      hashing.encrypt(account[0].id, password).then(password => {
+        db.query("UPDATE summary.account_info SET password = '"+ password.hashed +"', salt = '"+ password.salt +"' WHERE id = '"+ account[0].id + "'", (err, exists) => {
           if(!err) {
-              // 계정 변경 사항 account_change [password]
-              db.query("SELECT * FROM summary.account_info WHERE email = '"+ email + "'", (err, account) => {
-                db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, password, salt) VALUES (now(), 'findPassword', '"
-                + account[0].type +"', '"+ account[0].id + "', '"+ account[0].email + "', '"+ password.hashed + "', '"+ password.salt + "')")
-              delete session.password2email
-              return sessionStore.set(id, session, () => {
-                ActionLog(req, `[S]change password for email. id: ${account[0].id}`)
-                res.json({ code: 0, message: '비밀번호가 변경되었습니다.' });
-              })
-            });
+            // 계정 변경 사항 account_change [password]
+            db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, password, salt) VALUES (now(), 'findPassword', '"
+            + account[0].type +"', '"+ account[0].id + "', '"+ account[0].email + "', '"+ password.hashed + "', '"+ password.salt + "')")
+            delete session.password2email
+            return sessionStore.set(sessionId, session, () => {
+              ActionLog(req, `[S]change password for email. id: ${account[0].id}`)
+              res.json({ code: 0, message: '비밀번호가 변경되었습니다.' });
+            })
           } else {
               console.log(err);
               return res.json({ code: 8, message: '죄송합니다. 잠시후 다시 시도해주세요.'});
           }
-      });
+        });
+      })
     })
   })
 })
