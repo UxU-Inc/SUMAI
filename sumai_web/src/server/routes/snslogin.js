@@ -22,7 +22,7 @@ const ActionLog = require('../function/ActionLog')
 passport.use(new GoogleStrategy({ // sumai.co.kr@gmail.com
     clientID: snsconfig.google_clientId,
     clientSecret: snsconfig.google_clientSecret,
-    callbackURL: "/api/snslogin/googlecallback"
+    callbackURL: "https://www.sumai.co.kr/api/snslogin/googlecallback"
     },
     function(accessToken, refreshToken, profile, done) {
         // 사용자의 정보는 profile에 들어있다.
@@ -33,7 +33,7 @@ passport.use(new GoogleStrategy({ // sumai.co.kr@gmail.com
 passport.use(new KakaoStrategy({ // uxucorp@daum.net
     clientID : snsconfig.kakao_clientId,
     clientSecret: snsconfig.kakao_clientSecret,
-    callbackURL : "http://localhost/api/snslogin/kakaocallback"
+    callbackURL : "https://www.sumai.co.kr/api/snslogin/kakaocallback"
     },
     function(accessToken, refreshToken, profile, done){
         return done(null, profile);
@@ -43,7 +43,7 @@ passport.use(new KakaoStrategy({ // uxucorp@daum.net
 passport.use(new NaverStrategy({ // uxuinc@naver.com
     clientID: snsconfig.naver_clientId,
     clientSecret: snsconfig.naver_clientSecret,
-    callbackURL: "http://localhost/api/snslogin/navercallback"
+    callbackURL: "https://www.sumai.co.kr/api/snslogin/navercallback"
 },
     function(accessToken, refreshToken, profile, done) {
         return done(null, profile);
@@ -53,7 +53,7 @@ passport.use(new NaverStrategy({ // uxuinc@naver.com
 passport.use(new FacebookStrategy({ // uxucorp@gmail.com
     clientID: snsconfig.facebook_clientId,
     clientSecret: snsconfig.facebook_clientSecret,
-    callbackURL: "/api/snslogin/facebookcallback",
+    callbackURL: "https://www.sumai.co.kr/api/snslogin/facebookcallback",
     profileFields: ['id', 'displayName', 'photos', 'email', 'gender', 'name']
     },
     function(accessToken, refreshToken, profile, done) {
@@ -96,15 +96,14 @@ router.get('/googlecallback', (req, res) => {
                                     if(err) {
                                         console.log(err);
                                     }
-                                    console.log(data);
+                                    //console.log(data);
                                 });
                             })
                         });
                         db.query("INSERT INTO summary.account_info (type, id, email, name, image) \
                             VALUES ('GOOGLE', '"+ user.id +"', '"+ user.emails[0].value +"', '"+ user.displayName +"', '"+ encodeURIComponent(imageName) +"')", (err, data) => {
                             if(!err) {
-                                console.log("signup")
-                                // google 회원 가입 로그
+                                //console.log("signup")
                                 db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, name, image) \
                             VALUES (now(), 'signup', 'GOOGLE', '"+ user.id +"', '"+ user.emails[0].value +"', '"+ user.displayName +"', '"+ encodeURIComponent(imageName) +"')")
                                 req.session.loginInfo = {
@@ -114,7 +113,7 @@ router.get('/googlecallback', (req, res) => {
                                     name: user.displayName
                                 };
                                 return req.session.save(() => {
-                                    console.log("login")
+                                    //console.log("login")
                                     res.send("<script>var win = window.open('','_self');win.close();</script>")
                                 })
                             } else {
@@ -128,7 +127,7 @@ router.get('/googlecallback', (req, res) => {
                             id: -1,
                         };
                         return req.session.save(() => {
-                            console.log("failure")
+                            //console.log("failure")
                             res.send("<script>var win = window.open('','_self');win.close();</script>")
                         })
                     }
@@ -141,7 +140,7 @@ router.get('/googlecallback', (req, res) => {
                     name: account[0].name
                 };
                 return req.session.save(() => {
-                    console.log("login")
+                    //console.log("login")
                     res.send("<script>var win = window.open('','_self');win.close();</script>")
                 })
             }
@@ -190,10 +189,9 @@ router.get('/kakaocallback', (req, res) => {
                             db.query("INSERT INTO summary.account_info (type, id, email, name, gender, ageRange, image) \
                                 VALUES ('KAKAO', '"+ user.id +"', "+ email +", '"+ user.username +"', "+ gender +", "+ age_range +", "+ imageURI +")", (err, data) => {
                                 if(!err) {
-                                    // kakao 회원가입 로그
+                                    //console.log("signup")
                                     db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, name, gender, ageRange, image) \
                                     VALUES (now(), 'signup', 'KAKAO', '"+ user.id +"', "+ email +", '"+ user.username +"', "+ gender +", "+ age_range +", "+ imageURI +")")
-                                    console.log("signup")
                                     req.session.loginInfo = {
                                         type: "kakao",
                                         id: user.id,
@@ -201,7 +199,7 @@ router.get('/kakaocallback', (req, res) => {
                                         name: user.username
                                     };
                                     return req.session.save(() => {
-                                        console.log("login")
+                                        //console.log("login")
                                         res.send("<script>var win = window.open('','_self');win.close();</script>")
                                     })
                                 } else {
@@ -215,7 +213,7 @@ router.get('/kakaocallback', (req, res) => {
                                 id: -1,
                             };
                             return req.session.save(() => {
-                                console.log("failure")
+                                //console.log("failure")
                                 res.send("<script>var win = window.open('','_self');win.close();</script>")
                             })
                         }
@@ -227,15 +225,14 @@ router.get('/kakaocallback', (req, res) => {
                                 if(err) {
                                     console.log(err);
                                 }
-                                console.log(data);
+                                //console.log(data);
                             });
                         });
                     }
                     db.query("INSERT INTO summary.account_info (type, id, email, name, gender, ageRange, image) \
                         VALUES ('KAKAO', '"+ user.id +"', "+ email +", '"+ user.username +"', "+ gender +", "+ age_range +", "+ imageURI +")", (err, data) => {
                         if(!err) {
-                            console.log("signup")
-                            // kakao 회원가입 로그
+                            //console.log("signup")
                             db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, name, gender, ageRange, image) \
                             VALUES (now(), 'signup', 'KAKAO', '"+ user.id +"', "+ email +", '"+ user.username +"', "+ gender +", "+ age_range +", "+ imageURI +")")
                             req.session.loginInfo = {
@@ -245,7 +242,7 @@ router.get('/kakaocallback', (req, res) => {
                                 name: user.username
                             };
                             return req.session.save(() => {
-                                console.log("login")
+                                //console.log("login")
                                 res.send("<script>var win = window.open('','_self');win.close();</script>")
                             })
                         } else {
@@ -262,7 +259,7 @@ router.get('/kakaocallback', (req, res) => {
                     name: account[0].name
                 };
                 return req.session.save(() => {
-                    console.log("login")
+                    //console.log("login")
                     res.send("<script>var win = window.open('','_self');win.close();</script>")
                 })
             }
@@ -301,7 +298,7 @@ router.get('/navercallback', (req, res) => {
                                         if(err) {
                                             console.log(err);
                                         }
-                                        console.log(data);
+                                        //console.log(data);
                                     });
                                 })
                             });
@@ -309,8 +306,7 @@ router.get('/navercallback', (req, res) => {
                         db.query("INSERT INTO summary.account_info (type, id, email, name, ageRange, image) \
                             VALUES ('NAVER', '"+ user.id +"', '"+ user.emails[0].value +"', '"+ user.displayName +"', "+ age +", "+ imageURI +")", (err, data) => {
                             if(!err) {
-                                console.log("signup")
-                                // naver 회원가입 로그
+                                //console.log("signup")
                                 db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, name, ageRange, image) \
                                 VALUES (now(), 'signup', 'NAVER', '"+ user.id +"', '"+ user.emails[0].value +"', '"+ user.displayName +"', "+ age +", "+ imageURI +")")
                                 req.session.loginInfo = {
@@ -320,7 +316,7 @@ router.get('/navercallback', (req, res) => {
                                     name: user.displayName
                                 };
                                 return req.session.save(() => {
-                                    console.log("login")
+                                    //console.log("login")
                                     res.send("<script>var win = window.open('','_self');win.close();</script>")
                                 })
                             } else {
@@ -334,7 +330,7 @@ router.get('/navercallback', (req, res) => {
                             id: -1,
                         };
                         return req.session.save(() => {
-                            console.log("failure")
+                            //console.log("failure")
                             res.send("<script>var win = window.open('','_self');win.close();</script>")
                         })
                     }
@@ -347,7 +343,7 @@ router.get('/navercallback', (req, res) => {
                     name: account[0].name
                 };
                 return req.session.save(() => {
-                    console.log("login")
+                    //console.log("login")
                     res.send("<script>var win = window.open('','_self');win.close();</script>")
                 })
             }
@@ -386,14 +382,13 @@ router.get('/facebookcallback', (req, res) => {
                                     if(err) {
                                         console.log(err);
                                     }
-                                    console.log(data);
+                                    //console.log(data);
                                 });
                             });
                             db.query("INSERT INTO summary.account_info (type, id, email, name, gender, image) \
                                 VALUES ('FACEBOOK', '"+ user.id +"', "+ email +", '"+ user.displayName +"', "+ gender +", '"+ encodeURIComponent(imageName) +"')", (err, data) => {
                                 if(!err) {
-                                    console.log("signup")
-                                    // facebook 회원가입 로그
+                                    //console.log("signup")
                                     db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, name, gender, image) \
                                     VALUES (now(), 'signup', 'FACEBOOK', '"+ user.id +"', "+ email +", '"+ user.displayName +"', "+ gender +", '"+ encodeURIComponent(imageName) +"')")
                                     req.session.loginInfo = {
@@ -403,7 +398,7 @@ router.get('/facebookcallback', (req, res) => {
                                         name: user.displayName
                                     };
                                     return req.session.save(() => {
-                                        console.log("login")
+                                        //console.log("login")
                                         res.send("<script>var win = window.open('','_self');win.close();</script>")
                                     })
                                 } else {
@@ -417,7 +412,7 @@ router.get('/facebookcallback', (req, res) => {
                                 id: -1,
                             };
                             return req.session.save(() => {
-                                console.log("failure")
+                                //console.log("failure")
                                 res.send("<script>var win = window.open('','_self');win.close();</script>")
                             })
                         }
@@ -428,14 +423,13 @@ router.get('/facebookcallback', (req, res) => {
                             if(err) {
                                 console.log(err);
                             }
-                            console.log(data);
+                            //console.log(data);
                         });
                     });
                     db.query("INSERT INTO summary.account_info (type, id, email, name, gender, image) \
                         VALUES ('FACEBOOK', '"+ user.id +"', "+ email +", '"+ user.displayName +"', "+ gender +", '"+ encodeURIComponent(imageName) +"')", (err, data) => {
                         if(!err) {
-                            console.log("signup")
-                            // facebook 회원가입 로그
+                            //console.log("signup")
                             db.query("INSERT INTO summary.account_change (modifiedDate, changeData, type, id, email, name, gender, image) \
                             VALUES (now(), 'signup', 'FACEBOOK', '"+ user.id +"', "+ email +", '"+ user.displayName +"', "+ gender +", '"+ encodeURIComponent(imageName) +"')")
                             req.session.loginInfo = {
@@ -445,7 +439,7 @@ router.get('/facebookcallback', (req, res) => {
                                 name: user.displayName
                             };
                             return req.session.save(() => {
-                                console.log("login")
+                                //console.log("login")
                                 res.send("<script>var win = window.open('','_self');win.close();</script>")
                             })
                         } else {
@@ -462,7 +456,7 @@ router.get('/facebookcallback', (req, res) => {
                     name: account[0].name
                 };
                 return req.session.save(() => {
-                    console.log("login")
+                    //console.log("login")
                     res.send("<script>var win = window.open('','_self');win.close();</script>")
                 })
             }
@@ -474,7 +468,7 @@ router.get('/confirm', (req, res) => {
     return new Promise(async (resolve, reject) => {
         req.session.reload((err) => {
             if(typeof req.session.loginInfo !== "undefined"){
-                console.log(req.session.loginInfo);
+                //console.log(req.session.loginInfo);
                 if(req.session.loginInfo.id === -1) {
                     const logintype = req.session.loginInfo.type
                     delete req.session.loginInfo;
