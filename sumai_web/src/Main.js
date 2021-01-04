@@ -35,8 +35,20 @@ class Main extends React.Component {
             convertSort: false,
 
             record: false,
+
+            ip: '',
         }
-        
+        fetch('https://api.ipify.org?format=json')
+        .then(res => res.json())
+        .then(json => this.unmount? null:this.setState({ip: json.ip}))
+    }
+
+    componentDidMount() {
+        this.unmount = false;
+    }
+
+    componentWillUnmount() {
+        this.unmount = true;
     }
 
     convertSortFunction = (convert) => {
@@ -156,11 +168,13 @@ class Main extends React.Component {
           const response = await axios.post(
             'https://www.sumai.co.kr/api/summary/request',
             {
-                summarize: this.state.text,
+                data: this.state.text,
                 id: this.props.status.currentId,
                 record: this.state.record,
+                ip_addr: this.state.ip,
             }
           );
+          window.scrollTo({top:0, left:0, behavior:'smooth'})
           this.setState({
             summaryText: response.data.summarize,
           })
@@ -217,8 +231,8 @@ class Main extends React.Component {
                                 data-ad-width   = "728" 
                                 data-ad-height  = "90"></ins> 
                             </Box>
-                            {this.state.convertSort? <RecordRecommend convertSortFunction={this.convertSortFunction} />:
-                            <RecordLastest convertSortFunction={this.convertSortFunction} />}
+                            {this.state.convertSort? <RecordRecommend convertSortFunction={this.convertSortFunction} ip={this.state.ip}/>:
+                            <RecordLastest convertSortFunction={this.convertSortFunction} ip={this.state.ip}/>}
                         </div> :
                         <div className="MainMob" key={key}> 
                         <Header isLoggedIn={this.props.status.isLoggedIn} currentUser={this.props.status.currentUser}
