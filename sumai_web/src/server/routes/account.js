@@ -32,7 +32,11 @@ const upload = multer({
 
   
 router.post('/checkSignupEmail', (req, res) => {
-    db.query("SELECT * FROM summary.account_info WHERE email = '"+ req.body.email + "'", (err, data) => {
+    const type = req.body.type;
+
+    let queryString="SELECT * FROM summary.account_info WHERE email = '"+ req.body.email + "'";
+    if(type !== undefined) queryString+="AND type = '" + type +"'"; 
+    db.query(queryString, (err, data) => {
         if (err) {
             console.log(err);
             return res.send(err);
