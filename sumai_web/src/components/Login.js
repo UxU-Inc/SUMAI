@@ -217,7 +217,7 @@ class Login extends Component{
                         case "NAVER": snsloginerror = "네이버"; break;
                         case "KAKAO": snsloginerror = "카카오"; break;
                         case "FACEBOOK": snsloginerror = "페이스북"; break;
-                        case "NORMAL": snsloginerror = "일반"; break;
+                        case "SUMAI": snsloginerror = "일반"; break;
                         default: return
                     }
                     this.setState({
