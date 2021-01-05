@@ -184,12 +184,11 @@ class Body extends React.Component {
             </Box>
 
             <div className={clsx("none", {[classes.displayNone]: !this.props.state.summaryLayoutTag})}>
-            <Box boxShadow={3} bgcolor="background.paper" mt={-0.75} mb={0.75} p={2}>
-              <Typography className={classes.summaryLayout} style={{fontSize: this.props.state.fontSizeSummary+'px'}}>
-                {this.props.state.summaryText}
-              </Typography>
-            </Box>
-
+              <Box boxShadow={3} bgcolor="background.paper" mt={-0.75} mb={0.75} p={2}>
+                <Typography className={classes.summaryLayout} style={{fontSize: this.props.state.fontSizeSummary+'px'}}>
+                  {this.props.state.summaryText}
+                </Typography>
+              </Box>
             </div>
             
             <Fab size="small" onClick={this.scrollTop} className={clsx(classes.fab, {[classes.displayNone]: !this.state.fabTag})} >
