@@ -34,7 +34,7 @@ class Main extends React.Component {
 
             convertSort: false,
 
-            record: false,
+            record: true,
         }
         
     }
@@ -122,6 +122,7 @@ class Main extends React.Component {
           textLimitTag: false,
           fontSizeTextArea: 22,
           fontSizeSummary: 22,
+          summaryLayoutTag: false,
         })
     }
 
