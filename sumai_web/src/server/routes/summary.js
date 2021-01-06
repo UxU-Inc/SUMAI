@@ -21,7 +21,7 @@ router.post("/request", function(req, res){
   var remove = req.body.record;
   let ip_addr = req.body.ip_addr;
   let time_str = moment().format('YYYY-MM-DD HH:mm:ss');
-  data = data.trim().replace(/'/gi, "\"")
+  data = data.trim().replace(/\'/gi, "\"")
 
   axios.post('https://api.sumai.co.kr/summary', {
     data: data,
