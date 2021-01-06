@@ -136,6 +136,7 @@ function EmailLoginComponent(props) {
             setPasswordChange(e.target.value.trim())
         } else if (type === "passwordCheck") {
             setPasswordCheck(e.target.value.trim())
+            setPasswordCheckError(false)
         }
         validation(e.target.value.trim(), type)
     }
