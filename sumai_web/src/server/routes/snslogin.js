@@ -123,7 +123,7 @@ router.get('/googlecallback', (req, res) => {
                         });
                     } else {
                         req.session.loginInfo = {
-                            type: account[0].type || "NORMAL",
+                            type: account[0].type,
                             id: -1,
                         };
                         return req.session.save(() => {
@@ -209,7 +209,7 @@ router.get('/kakaocallback', (req, res) => {
                             });
                         } else {
                             req.session.loginInfo = {
-                                type: account[0].type || "NORMAL",
+                                type: account[0].type,
                                 id: -1,
                             };
                             return req.session.save(() => {
@@ -326,7 +326,7 @@ router.get('/navercallback', (req, res) => {
                         });
                     } else {
                         req.session.loginInfo = {
-                            type: account[0].type || "NORMAL",
+                            type: account[0].type,
                             id: -1,
                         };
                         return req.session.save(() => {
@@ -408,7 +408,7 @@ router.get('/facebookcallback', (req, res) => {
                             });
                         } else {
                             req.session.loginInfo = {
-                                type: account[0].type || "NORMAL",
+                                type: account[0].type,
                                 id: -1,
                             };
                             return req.session.save(() => {

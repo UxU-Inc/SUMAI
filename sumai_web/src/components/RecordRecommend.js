@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -21,6 +21,8 @@ import { connect } from 'react-redux';
 import { recommendRequest, likeRequest  } from '../actions/mainRecord';
 import * as root from '../rootValue';
 import axios from 'axios'
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import Tooltip from '@material-ui/core/Tooltip';
 
 const useStyles = theme => ({
     root: {
@@ -95,6 +97,25 @@ function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
+const useStylesBootstrap = makeStyles((theme) => ({
+    arrow: {
+      color: 'rgba(0, 0, 0, 0.6)',
+    },
+    tooltip: {
+      color: '#ffffff',
+      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+      fontSize: 14,
+      fontFamily: "NotoSansKR-Regular",
+      whiteSpace: "pre-wrap"
+    },
+}));
+
+function BootstrapTooltip(props) {
+    const classes = useStylesBootstrap();
+
+    return <Tooltip arrow classes={classes} {...props} />;
+}
+
 class RecordRecommend extends Component{
     constructor(props) {
         super(props)
@@ -137,6 +158,12 @@ class RecordRecommend extends Component{
         })
       }
     recommend = (id) => {
+        if(!this.unmount && this.props.recommend.data.length > 0) {
+            this.setState({
+                data: this.props.recommend.data,
+            })
+            return
+        }
         this.props.recommendRequest(id).then(
             () => {
                 if(this.unmount) {
@@ -144,13 +171,8 @@ class RecordRecommend extends Component{
                 }
                 if(this.props.recommend.status === "SUCCESS") {
                     this.setState({
-                        data: this.state.data.concat(this.props.recommend.data),
+                        data: this.props.recommend.data,
                     })
-                    if(this.state.data[this.state.data.length-1] && this.state.data[this.state.data.length-1].idx === 1) {
-                        this.setState({
-                            isAllLoad: true,
-                        })
-                    }
                 }
             }
         );
@@ -316,7 +338,7 @@ class RecordRecommend extends Component{
                 <div className={classes.lineTop}/>
                 <Grid container direction="row" style={{justifyContent: "space-between"}}>
                     <Typography style={{color: "#0000008A", fontSize: "28px", marginLeft: "10px", marginBottom: "10px"}}>
-                        요약 기록
+                        요약 기록 <BootstrapTooltip title=" 일정 길이 이상 원문의 전체 내용은 자신만 볼 수 있으며, 익명으로 기록된 요약들은 일정 시간 이후 삭제됩니다." placement="bottom"><HelpOutlineIcon fontSize="small"></HelpOutlineIcon></BootstrapTooltip>
                     </Typography>
                     <ButtonGroup variant="text" size="large" style={{marginRight: "5px", marginBottom: "10px"}}>
                         <Button onClick={this.onClickConvertSort}>최신순</Button>
@@ -365,7 +387,14 @@ class RecordRecommend extends Component{
                             <CardContent onClick={this.onClickExpand.bind(this, key)} style={{padding: "0px", position: "relative"}}>
                                 <Grid container direction="row" className={clsx(classes.showExpand, {[classes.hideExpand]: !this.state.isExpand[key]})}>
                                     <Grid item xs={7} sm={7} md={7} lg={7} xl={7}>
-                                        <Typography className={classes.summaryText}>{el.original_data}</Typography>
+                                    {el.original_data.length < 250 || (this.props.status.currentId !== '' && el.id === this.props.status.currentId) || (el.id === '' && el.ip_addr === this.props.ip)? 
+                                        <Typography className={classes.summaryText}>{el.original_data}</Typography> :
+                                        <div>
+                                            <Typography className={classes.summaryText}>{el.original_data.slice(0, 180)+"..."}</Typography>
+                                            <Typography className={classes.summaryText} style={{color: "transparent", textShadow: "#787878 0 0 6px", whiteSpace: "pre-wrap", paddingTop: "0px", paddingBottom: "0px"}}>
+                                                {"\t저작권 보호를 받는 문서일 수 있습니다. 저작권 보호를 위해 일부 내용을 블라인드 처리했습니다."}</Typography>
+                                            <Typography className={classes.summaryText}><span style={{whiteSpace:"pre-wrap"}}>{"\t\t\t\t"}</span>{"..."+el.original_data.slice(-70)}</Typography>
+                                        </div>}
                                     </Grid >
                                     <Grid item xs={5} sm={5} md={5} lg={5} xl={5} style={{borderLeft:'1px solid #e0e0e0'}}>
                                         <Typography className={classes.summaryText}>{el.summarize}</Typography>
