@@ -25,6 +25,7 @@ router.post('/lastest', (req, res) => {
         summary.account_info \
         ON (summary.summary_data.id = summary.account_info.id) \
         WHERE remove = 0 AND summary.summary_data.idx <= "+ req.body.idx +" \
+        AND (summary.summary_data.id != '' OR summary.summary_data.id = '' AND date(summary.summary_data.time) >= date(subdate(now(), INTERVAL 10 DAY))) \
         ORDER BY summary.summary_data.idx DESC LIMIT 10", (err, data) => {
         if(!err) {
             res.send(data);
@@ -53,7 +54,7 @@ router.post('/recommend', (req, res) => {
         LEFT JOIN \
         summary.account_info \
         ON (summary.summary_data.id = summary.account_info.id) \
-        WHERE remove = 0 \
+        WHERE remove = 0 AND (summary.summary_data.id != '' OR summary.summary_data.id = '' AND date(summary.summary_data.time) >= date(subdate(now(), INTERVAL 10 DAY)))\
         ORDER BY `like` DESC, summary.summary_data.time DESC LIMIT 100", (err, data) => {
         if(!err) {
             res.send(data);
