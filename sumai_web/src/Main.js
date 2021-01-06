@@ -226,7 +226,7 @@ class Main extends React.Component {
                                         recordTrue={this.recordTrue} recordFalse={this.recordFalse} fetchUsers={this.fetchUsers} errorSet={this.errorSet} />
                             </div>
                             <Box display="flex" alignItems="center">
-                                <ins class="kakao_ad_area" style={{display: 'none'}} 
+                                <ins className="kakao_ad_area" style={{display: 'none'}} 
                                 data-ad-unit    = "DAN-99dFqz7hNrCGBNUn" 
                                 data-ad-width   = "728" 
                                 data-ad-height  = "90"></ins> 
