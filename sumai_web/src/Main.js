@@ -37,6 +37,7 @@ class Main extends React.Component {
             record: true,
 
             ip: '',
+            refresh: false,
         }
         fetch('https://api.ipify.org?format=json')
         .then(res => res.json())
@@ -177,6 +178,7 @@ class Main extends React.Component {
           window.scrollTo({top:0, left:0, behavior:'smooth'})
           this.setState({
             summaryText: response.data.summarize,
+            refresh: this.state.record? !this.state.refresh:this.state.refresh
           })
   
           if(0 < this.state.summaryText.length) {
@@ -214,39 +216,38 @@ class Main extends React.Component {
 
     render() {
         return ( 
-            <div>
-                {[''].map( (key) => {
-                    return(
-                        isWidthUp('md', this.props.width)? 
-                        <div key={key}> 
-                            <Header isLoggedIn={this.props.status.isLoggedIn} currentUser={this.props.status.currentUser} 
-                                    onLogout={this.handleLogout} onClickLink={this.onClickLink} matches={isWidthUp('md', this.props.width)}/> 
-                            <div >
-                                <Body state={this.state} handleChange={this.handleChange} onClick={this.onClick} textRemove={this.textRemove} onClickRecord={this.onClickRecord} 
-                                        recordTrue={this.recordTrue} recordFalse={this.recordFalse} fetchUsers={this.fetchUsers} errorSet={this.errorSet} />
-                            </div>
-                            <Box display="flex" alignItems="center">
-                                <ins className="kakao_ad_area" style={{display: 'none'}} 
-                                data-ad-unit    = "DAN-99dFqz7hNrCGBNUn" 
-                                data-ad-width   = "728" 
-                                data-ad-height  = "90"></ins> 
-                            </Box>
-                            {this.state.convertSort? <RecordRecommend convertSortFunction={this.convertSortFunction} ip={this.state.ip}/>:
-                            <RecordLastest convertSortFunction={this.convertSortFunction} ip={this.state.ip}/>}
-                        </div> :
-                        <div className="MainMob" key={key}> 
+        <>
+            {[''].map( (key) => {
+                const isWidth = isWidthUp('md', this.props.width)
+                return(
+                <div key={key}>
+                    {isWidth? 
+                    <div> 
+                        <Header isLoggedIn={this.props.status.isLoggedIn} currentUser={this.props.status.currentUser} 
+                                onLogout={this.handleLogout} onClickLink={this.onClickLink} matches={isWidthUp('md', this.props.width)}/> 
+                        <Body state={this.state} handleChange={this.handleChange} onClick={this.onClick} textRemove={this.textRemove} onClickRecord={this.onClickRecord} 
+                                    recordTrue={this.recordTrue} recordFalse={this.recordFalse} fetchUsers={this.fetchUsers} errorSet={this.errorSet} />
+                    </div> :
+                    <div className="MainMob"> 
                         <Header isLoggedIn={this.props.status.isLoggedIn} currentUser={this.props.status.currentUser}
                                 onLogout={this.handleLogout} onClickLink={this.onClickLink} matches={isWidthUp('md', this.props.width)}/> 
-                            <div >
-                                <BodyMob state={this.state} handleChange={this.handleChange} textRemove={this.textRemove} 
+                        <BodyMob state={this.state} handleChange={this.handleChange} textRemove={this.textRemove} 
                                         recordFalseMob={this.recordFalseMob} fetchUsers={this.fetchUsers} errorSet={this.errorSet} />
-                            </div>
-                            
-                        </div> 
-                    )
-                })}
-            </div>
-        )
+                    </div>}
+                    <Box display="flex" alignItems="center" style={{width: "100%"}}>
+                        <ins className="kakao_ad_area" style={{display: 'none'}} 
+                        data-ad-unit    = "DAN-99dFqz7hNrCGBNUn" 
+                        data-ad-width   = "728" 
+                        data-ad-height  = "90"></ins> 
+                    </Box>
+                    {isWidth? 
+                    <div> 
+                        {this.state.convertSort? <RecordRecommend convertSortFunction={this.convertSortFunction} ip={this.state.ip}/>:
+                        <RecordLastest convertSortFunction={this.convertSortFunction} ip={this.state.ip} key={this.state.refresh}/>}
+                    </div> : null}
+                </div>)
+            })}
+        </>)
 
     }
 }
