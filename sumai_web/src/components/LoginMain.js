@@ -10,6 +10,13 @@ import { loginRequest, snsloginRequest } from '../actions/authentication';
 
 import axios from 'axios'
 
+
+function returnUrl() {
+    const url=window.location.search?.slice(1)?.split('url=')[1]?.split('&')[0]
+
+    return url?url:'https://www.sumai.co.kr'
+}
+
 class LoginMain extends Component{ 
     handleChckSignupEmail = (email) => {
         return axios.post('/api/account/checkSignupEmail', {email}).then((res) => {
@@ -23,16 +30,20 @@ class LoginMain extends Component{
         return this.props.loginRequest(email, password).then(
             () => {
                 if(this.props.login.status === "SUCCESS") {
+                    let domainIndex = window.location.hostname.indexOf('.') // ex) asdf.good.com -> 5 (.의 위치)
+                    let domainName
+                    if(domainIndex === -1) domainName = window.location.hostname // .을 못 찾은 경우 그대로 씀 -> localhost
+                    else domainName = window.location.hostname.substr(domainIndex) // .이 있는 경우 -> .good.com
                     // create session data
                     let loginData = {
                         isLoggedIn: true,
                         email: email
                     };
  
-                    document.cookie = 'key=' + btoa(JSON.stringify(loginData)) + ';path=/;';
+                    document.cookie = 'key=' + btoa(JSON.stringify(loginData)) + ';domain=' + domainName + ';path=/;';
  
                     if(navigator.cookieEnabled) {  // 쿠키 허용 상태
-                        this.props.history.push('/');
+                        window.location.assign(returnUrl())
                     } else {  // 쿠키 차단 상태
                         return { success: true, error: 92 }
                     }
@@ -48,16 +59,20 @@ class LoginMain extends Component{
         return this.props.snsloginRequest(type).then(
             (email) => {
                 if(this.props.login.status === "SUCCESS") {
+                    let domainIndex = window.location.hostname.indexOf('.') // ex) asdf.good.com -> 5 (.의 위치)
+                    let domainName
+                    if(domainIndex === -1) domainName = window.location.hostname // .을 못 찾은 경우 그대로 씀 -> localhost
+                    else domainName = window.location.hostname.substr(domainIndex) // .이 있는 경우 -> .good.com
                     // create session data
                     let loginData = {
                         isLoggedIn: true,
                         email: email
                     };
  
-                    document.cookie = 'key=' + btoa(JSON.stringify(loginData)) + ';path=/;';
+                    document.cookie = 'key=' + btoa(JSON.stringify(loginData)) + ';domain=' + domainName + ';path=/;';
  
                     if(navigator.cookieEnabled) {  // 쿠키 허용 상태
-                        this.props.history.push('/');
+                        window.location.assign(returnUrl())
                     } else {  // 쿠키 차단 상태
                         return { success: true, error: 92 }
                     }
