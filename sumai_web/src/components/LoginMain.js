@@ -10,6 +10,13 @@ import { loginRequest, snsloginRequest } from '../actions/authentication';
 
 import axios from 'axios'
 
+
+function returnUrl() {
+    const url=window.location.search?.slice(1)?.split('url=')[1]?.split('&')[0]
+
+    return url?url:'https://www.sumai.co.kr'
+}
+
 class LoginMain extends Component{ 
     handleChckSignupEmail = (email) => {
         return axios.post('/api/account/checkSignupEmail', {email}).then((res) => {
@@ -36,7 +43,7 @@ class LoginMain extends Component{
                     document.cookie = 'key=' + btoa(JSON.stringify(loginData)) + ';domain=' + domainName + ';path=/;';
  
                     if(navigator.cookieEnabled) {  // 쿠키 허용 상태
-                        this.props.history.push('/');
+                        window.location.assign(returnUrl())
                     } else {  // 쿠키 차단 상태
                         return { success: true, error: 92 }
                     }
@@ -65,7 +72,7 @@ class LoginMain extends Component{
                     document.cookie = 'key=' + btoa(JSON.stringify(loginData)) + ';domain=' + domainName + ';path=/;';
  
                     if(navigator.cookieEnabled) {  // 쿠키 허용 상태
-                        this.props.history.push('/');
+                        window.location.assign(returnUrl())
                     } else {  // 쿠키 차단 상태
                         return { success: true, error: 92 }
                     }
