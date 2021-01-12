@@ -27,6 +27,12 @@ import { ClientInfoComponent } from './reducers/clientInfo';
 class App extends Component { 
   componentDidMount() { //컴포넌트 렌더링이 맨 처음 완료된 이후에 바로 세션확인
 
+    let domainIndex = window.location.hostname.indexOf('.') // ex) asdf.good.com -> 5 (.의 위치)
+    let domainName
+    if(domainIndex === -1) domainName = window.location.hostname // .을 못 찾은 경우 그대로 씀
+    else domainName = window.location.hostname.substr(domainIndex) // .이 있는 경우 -> .good.com
+    console.log(domainName)
+
     // 쿠키 차단 설정 시 자동 로그아웃
     if(!navigator.cookieEnabled && this.props.status.isLoggedIn) {
       this.props.history.push("/")
@@ -37,7 +43,7 @@ class App extends Component {
                   isLoggedIn: false,
                   email: ''
               };
-              document.cookie = 'key=' + btoa(JSON.stringify(loginData)) + ';path=/;';
+              document.cookie = 'key=' + btoa(JSON.stringify(loginData)) + ';domain=' + domainName + ';path=/;';
           }
       );
     }
@@ -78,7 +84,7 @@ class App extends Component {
                     email: ''
                 };
 
-                document.cookie='key=' + btoa(JSON.stringify(loginData)) + ';path=/;';
+                document.cookie='key=' + btoa(JSON.stringify(loginData)) + ';domain=' + domainName + ';path=/;';
             }
         }
     );

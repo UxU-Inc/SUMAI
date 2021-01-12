@@ -37,6 +37,12 @@ app.use("/api/account/login", loginlimiter);
 app.use(express.json());
 app.use(session({
     secret: 'keyboard cat',
+    cookie: { 
+        domain: '.sumai.co.kr', 
+        path: '/', 
+        httpOnly: true, 
+        secure: false, 
+    },
     resave: false,
     saveUninitialized: false,
     store: sessionStore 
