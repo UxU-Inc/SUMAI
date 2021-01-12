@@ -31,12 +31,6 @@ class App extends Component {
     if(domainIndex === -1) domainName = window.location.hostname // .을 못 찾은 경우 그대로 씀
     else domainName = window.location.hostname.substr(domainIndex) // .이 있는 경우 -> .good.com
 
-    let domainIndex = window.location.hostname.indexOf('.') // ex) asdf.good.com -> 5 (.의 위치)
-    let domainName
-    if(domainIndex === -1) domainName = window.location.hostname // .을 못 찾은 경우 그대로 씀
-    else domainName = window.location.hostname.substr(domainIndex) // .이 있는 경우 -> .good.com
-    console.log(domainName)
-
     // 쿠키 차단 설정 시 자동 로그아웃
     if(!navigator.cookieEnabled && this.props.status.isLoggedIn) {
       this.props.history.push("/")
