@@ -240,7 +240,7 @@ class Main extends React.Component {
                         <BodyMob state={this.state} handleChange={this.handleChange} textRemove={this.textRemove} 
                                         recordFalseMob={this.recordFalseMob} fetchUsers={this.fetchUsers} errorSet={this.errorSet} />
                     </div>}
-                    <Box display="flex" alignItems="center" style={{width: "100%"}}>
+                    <Box display="flex" alignItems="center" style={isWidth?{width: "100%"}:{display:"none"}}>
                         <ins className="kakao_ad_area" style={{display: 'none'}} 
                         data-ad-unit    = "DAN-99dFqz7hNrCGBNUn" 
                         data-ad-width   = "728" 
