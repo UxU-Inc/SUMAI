@@ -166,6 +166,12 @@ class Main extends React.Component {
             summaryText: '',
             loading: true,
           })
+          if(this.state.ip === "") {
+            const ipify = await fetch('https://api.ipify.org?format=json')
+            const ipjson = await ipify.json()
+            this.setState({ip: ipjson.ip})
+          }
+          
           const response = await axios.post(
             'https://www.sumai.co.kr/api/summary/request',
             {
