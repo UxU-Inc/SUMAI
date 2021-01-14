@@ -17,7 +17,6 @@ import AccountBirthday from "./components/AccountBirthday";
 import AccountGender from "./components/AccountGender";
 import EmailCertification from "./components/EmailCertification"
 import EmailLogin from "./components/EmailLogin"
-import Test from "./components/popup"
 import NotFound from "./components/NotFound"
 
 import { connect } from 'react-redux';
@@ -103,7 +102,6 @@ class App extends Component {
             
 
             <Route path="/terms" component={ Terms } />
-            <Route path="/test" component={ Test } />
             <Route path="/privacy" component={ Privacy } />
             <Route path="/notices" component={ Notices } />
             <Route path="/email/certification" component={ EmailCertification } />
