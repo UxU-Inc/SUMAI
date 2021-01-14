@@ -336,7 +336,7 @@ class RecordLastest extends Component{
                 <div className={classes.lineTop}/>
                 <Grid container direction="row" style={{justifyContent: "space-between"}}>
                     <Typography style={{color: "#0000008A", fontSize: "28px", marginLeft: "10px", marginBottom: "10px"}}>
-                        요약 기록 <BootstrapTooltip title=" 일정 길이 이상 원문의 전체 내용은 자신만 볼 수 있으며, 익명으로 기록된 요약들은 일정 시간 이후 삭제됩니다." placement="bottom"><HelpOutlineIcon fontSize="small"></HelpOutlineIcon></BootstrapTooltip>
+                        요약 기록 <BootstrapTooltip title=" 일정 길이 이상 원문의 전체 내용은 자신만 볼 수 있으며, 익명으로 기록된 요약들은 일정 시간 이후 삭제됩니다." placement="bottom"><HelpOutlineIcon fontSize="small" /></BootstrapTooltip>
                     </Typography>
                     <ButtonGroup variant="text" size="large" style={{marginRight: "5px", marginBottom: "10px"}}>
                         <Button color="primary">최신순</Button>
@@ -387,12 +387,12 @@ class RecordLastest extends Component{
                                     <Grid item xs={7} sm={7} md={7} lg={7} xl={7}>
                                         {el.original_data.length < 250 || (this.props.status.currentId !== '' && el.id === this.props.status.currentId) || (el.id === '' && el.ip_addr === this.props.ip)? 
                                         <Typography className={classes.summaryText}>{el.original_data}</Typography> :
-                                        <div>
+                                        <>
                                             <Typography className={classes.summaryText}>{el.original_data.slice(0, 180)+"..."}</Typography>
                                             <Typography className={classes.summaryText} style={{color: "transparent", textShadow: "#787878 0 0 6px", whiteSpace: "pre-wrap", paddingTop: "0px", paddingBottom: "0px"}}>
                                                 {"\t저작권 보호를 받는 문서일 수 있습니다. 저작권 보호를 위해 일부 내용을 블라인드 처리했습니다."}</Typography>
                                             <Typography className={classes.summaryText}><span style={{whiteSpace:"pre-wrap"}}>{"\t\t\t\t"}</span>{"..."+el.original_data.slice(-70)}</Typography>
-                                        </div>}
+                                        </>}
                                     </Grid >
                                     <Grid item xs={5} sm={5} md={5} lg={5} xl={5} style={{borderLeft:'1px solid #e0e0e0'}}>
                                         <Typography className={classes.summaryText}>{el.summarize}</Typography>
