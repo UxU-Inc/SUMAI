@@ -158,12 +158,6 @@ class RecordRecommend extends Component{
         })
       }
     recommend = (id) => {
-        if(!this.unmount && this.props.recommend.data.length > 0) {
-            this.setState({
-                data: this.props.recommend.data,
-            })
-            return
-        }
         this.props.recommendRequest(id).then(
             () => {
                 if(this.unmount) {

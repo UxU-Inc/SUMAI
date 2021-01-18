@@ -185,7 +185,7 @@ class Main extends React.Component {
                 ip_addr: this.state.ip,
             }
           );
-          window.scrollTo({top:0, left:0, behavior:'smooth'})
+          if(isWidthUp('md', this.props.width)) window.scrollTo({top:0, left:0, behavior:'smooth'})
           this.setState({
             summaryText: response.data.summarize,
             refresh: this.state.record? !this.state.refresh:this.state.refresh
