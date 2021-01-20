@@ -24,7 +24,6 @@ import Paper from '@material-ui/core/Paper';
 import Popper from '@material-ui/core/Popper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import AccountIcon from '@material-ui/icons/AccountCircle';
 import Grid from '@material-ui/core/Grid';
 import Avatar from '@material-ui/core/Avatar';
@@ -469,6 +468,8 @@ class Header extends Component {
 
     const [open, setOpen] = React.useState(false);
     const [image, setImage] = React.useState('');
+    const [avatarName, setAvatarName] = React.useState('');
+    const [avatarColor, setAvatarColor] = React.useState('');
 
     const anchorRef = React.useRef(null);
 
@@ -525,9 +526,11 @@ class Header extends Component {
       if (props.currentId !== '') {
         profile_image(props.currentId).then((imageURL) => {
           setImage(imageURL);
+          setAvatarName(re_name(props.currentUser))
+          setAvatarColor('#' + CryptoJS.MD5(props.currentId).toString().substring(1, 7))
         })
       }
-    }, [props.currentId]);
+    }, [props.currentId, props.currentUser]);
 
 
     function profile_image(id) {
@@ -547,14 +550,11 @@ class Header extends Component {
           onClick={handleToggle}
           style={{ color: "#0000008A", cursor: 'pointer' }}
         >
-          {console.log("imageURL : " + image)}
           {
             image === '' ?
-              props.currentId === '' ?
-                <Avatar style={{ width: "2.2em", height: "2.2em", fontWeight: 'bold', textTransform: "none" }} /> :
-                <Avatar style={{ backgroundColor: '#' + CryptoJS.MD5(props.currentId).toString().substring(1, 7), width: "2.2em", height: "2.2em", fontWeight: 'bold', textTransform: "none" }}>
-                  {re_name(props.currentUser)}
-                </Avatar> :
+              <Avatar style={{ backgroundColor: avatarColor, width: "2.2em", height: "2.2em", fontWeight: 'bold', textTransform: "none" }}>
+                {avatarName}
+              </Avatar> :
               <Avatar src={image} style={{ width: "2.2em", height: "2.2em" }} />
           }
 
