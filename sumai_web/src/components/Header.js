@@ -537,7 +537,7 @@ class Header extends Component {
       return new Promise((res, rej) => axios.get('/api/account/accountLoad/' + id).then((data) => {
         res(data.data.image);
       }).catch(() => {
-        res(null);
+        res('');
       }))
     }
 
