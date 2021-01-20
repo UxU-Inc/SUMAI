@@ -468,7 +468,7 @@ class Header extends Component {
   AccountManagementMenu = (props) => {
 
     const [open, setOpen] = React.useState(false);
-    const [image, setImage] = React.useState();
+    const [image, setImage] = React.useState('');
 
     const anchorRef = React.useRef(null);
 
@@ -522,14 +522,19 @@ class Header extends Component {
     }, [open]);
 
     React.useEffect(() => {
-      profile_image(props.currentId).then((imageURL) => {
-        setImage(imageURL);
-      })
+      if (props.currentId !== '') {
+        profile_image(props.currentId).then((imageURL) => {
+          setImage(imageURL);
+        })
+      }
     }, [props.currentId]);
+
 
     function profile_image(id) {
       return new Promise((res, rej) => axios.get('/api/account/accountLoad/' + id).then((data) => {
         res(data.data.image);
+      }).catch(() => {
+        res(null);
       }))
     }
 
@@ -542,13 +547,12 @@ class Header extends Component {
           onClick={handleToggle}
           style={{ color: "#0000008A", cursor: 'pointer' }}
         >
+          {console.log("imageURL : " + image)}
           {
-            image === null ?
-              props.currentUser === null ?
-                <Avatar style={{ width: "2.2em", height: "2.2em", fontWeight: 'bold', textTransform: "none" }}>
-                  {re_name(props.currentUser)}
-                </Avatar> :
-                <Avatar src={image} style={{ backgroundColor: '#' + CryptoJS.MD5(props.currentId).toString().substring(1, 7), width: "2.2em", height: "2.2em", fontWeight: 'bold', textTransform: "none" }}>
+            image === '' ?
+              props.currentId === '' ?
+                <Avatar style={{ width: "2.2em", height: "2.2em", fontWeight: 'bold', textTransform: "none" }} /> :
+                <Avatar style={{ backgroundColor: '#' + CryptoJS.MD5(props.currentId).toString().substring(1, 7), width: "2.2em", height: "2.2em", fontWeight: 'bold', textTransform: "none" }}>
                   {re_name(props.currentUser)}
                 </Avatar> :
               <Avatar src={image} style={{ width: "2.2em", height: "2.2em" }} />
@@ -619,14 +623,14 @@ class Header extends Component {
 
                 <Drawer anchor={anchor} open={this.state.anchor} onClose={this.toggleDrawer(anchor, false)}>
 
-                  {this.props.xsm
+                  {/* {this.props.xsm
                     ?
                     null
                     :
                     <Box display="flex" justifyContent="flex-end" style={{ background: "#f5f5f5" }}>
                       <MenuListComposition xsm={this.props.xsm} />
                     </Box>
-                  }
+                  } */}
 
                   <div
                     className={clsx(classes.list, {
@@ -679,7 +683,7 @@ class Header extends Component {
 
             <div style={{ flexGrow: 1 }} />
 
-            {this.props.matches
+            {/* {this.props.matches
               ?  // PC
               <Button className={classes.newsButton} onClick={this.onClickExternLink("https://news.sumai.co.kr")} style={this.props.matches ? { padding: "7.5px 15px" } : { padding: "5px", minWidth: '80px' }}>
                 <FeaturedPlayListIcon style={{ color: root.PrimaryColor, marginRight: "5px" }} />
@@ -691,7 +695,7 @@ class Header extends Component {
                 <MenuListComposition xsm={this.props.xsm} />
                 :  // Mobile(0~360)
                 null
-            }
+            } */}
 
             {this.props.isLoggedIn ? loginLayout : loginButton}
 
