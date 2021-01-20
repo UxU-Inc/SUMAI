@@ -132,7 +132,7 @@ function PasswordResetComponent(props) {
             if(emailError || email==='') { //focus 좀
                 return 
             }
-            axios.post('/api/account/checkSignupEmail', {email}).then((res) => { // 이메일 체크용으로 악용 가능?
+            axios.post('/api/account/checkSignupEmail', {email: email, type:'SUMAI'}).then((res) => { // 이메일 체크용으로 악용 가능?
                 if(errorCode===1){
                     setRefresh(true)
                     setTimeout(() => {
@@ -209,7 +209,7 @@ function PasswordResetComponent(props) {
             <Snackbar open={errorCode!==0 && !refresh} autoHideDuration={3000} onClose={onSnackbarClose}> 
                 <Alert severity="error">
                     {
-                        (errorCode===1 && "해당 이메일로 가입한 계정은 존재하지 않습니다.") ||
+                        (errorCode===1 && "존재하지 않는 SUMAI 계정입니다.") ||
                         (errorCode===2 && "죄송합니다. 메일 보내기에 실패하였습니다.")
                     }
                 </Alert>

@@ -184,13 +184,18 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-function useQueryCount() {
-  const [rows, setRows] = React.useState([])
+async function queryCount() {
+    return axios.get('/api/notices/noticesCount').then((response) => {
+      const t=response.data[0]['COUNT(*)']
+      return(t)
+    })
+}
 
+function useRows() {
+  const [rows, setRows] = React.useState([])
   useEffect(() => {
-    axios.get('/api/notices/noticesCount').then((res) => {
-      const t=res.data[0]['COUNT(*)']
-      setRows(Array.from({length: t}, () => ({index: 0, title: '', content: '', date: ''})))
+    queryCount().then((res) => {
+      setRows(Array.from({length: res}, () => ({index: 0, title: '', content: '', date: ''})))
     })
   }, [])
 
@@ -198,7 +203,7 @@ function useQueryCount() {
 }
 
 function useQueryData(queryRows) {
-  const [rows, setRows] = useQueryCount()
+  const [rows, setRows] = useRows()
   const count = rows.length
   const [loading, setLoading] = React.useState(false)
   const [insideLoading, setInsideLoading] = React.useState(false)
@@ -235,6 +240,7 @@ function useQueryData(queryRows) {
         emptyArray=emptyArray.concat([emptyPoint.concat([start-emptyPoint[0]])])
         emptyPoint=[]
       }
+      console.log(emptyArray)
       if(emptyArray.length!==0) {
         setTimeout(() => {
           process(emptyArray)
@@ -244,7 +250,7 @@ function useQueryData(queryRows) {
         setInsideLoading(false)
       }
     }
-  },[queryRows, count, rows, insideLoading, process])
+  }, [queryRows, rows, insideLoading, process])
 
   return [loading, setLoading, rows, count]
 }
@@ -294,12 +300,12 @@ function NoticesTable(props) {
         setChangePage(0)
         setChangeRowsPerPage(parseInt(eventTargetValue, 10))
       }
-    } else {
+    } else if(rowsPerPage < count) {
       setLoading(true)
       setQueryRows([0, rowsPerPage+5])
       setChangeRowsPerPage(rowsPerPage+5)
     }
-  }, [rowsPerPage, loading, setLoading]);
+  }, [count, loading, rowsPerPage, setLoading]);
   const handleChangeSelectId = (newSelect) => {
     if (newSelect!==selectId) {
       setSelectId(newSelect)
@@ -314,18 +320,21 @@ function NoticesTable(props) {
   }, [])
 
   const handleScroll = React.useCallback((event) => {
-    const {innerHeight} = window;
-    const {scrollHeight} = document.body;
-    // IE에서는 document.documentElement 를 사용.
-    const scrollTop = document.documentElement.scrollTop
-    if (scrollHeight*document.documentElement.style.zoom - innerHeight - scrollTop < 30 && rowsPerPage<count) { //zoom 사용 시 innerHeight
+    function getCurrentScrollPercentage(){
+      return (window.scrollY + window.innerHeight) / document.body.clientHeight * 100
+    }
+    const currentScrollPercentage = getCurrentScrollPercentage()
+    if (currentScrollPercentage > 90) {
       window.removeEventListener("scroll", handleScroll);
       handleChangeRowsPerPage(event)
     }
-  }, [count, handleChangeRowsPerPage, rowsPerPage]);
+  }, [handleChangeRowsPerPage]);
 
   const MobLoading = React.useCallback(() => {
-    if(document.body.scrollHeight*document.documentElement.style.zoom < window.innerHeight) { // 비동기 문제 load 관련 수정
+    function getCurrentScrollPercentage(){
+      return (window.scrollY + window.innerHeight) / document.body.clientHeight * 100
+    }
+    if(getCurrentScrollPercentage() > 90) {
       handleChangeRowsPerPage()
     } 
   }, [handleChangeRowsPerPage])
@@ -352,72 +361,80 @@ function NoticesTable(props) {
       window.removeEventListener("scroll", handleScroll)
       document.documentElement.scrollTop = 0;
     }
-    
-  }, [rowsPerPage, matches, MobLoading, handleScroll])
+  }, [matches, MobLoading, handleScroll])
 
   
   return(
-    <TableContainer >
-      <Table aria-label="collapsible table" style={{width: '100%', borderTop: (matches?'1px solid black':'')}}>
-        <TableHead style={{display: matches?'table-header-group':'none'}}>
-          <TableRow>
-            <TableCell align="center" style={{width: '90%',}}>내용</TableCell>
-            <TableCell align="center">등록일</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows && (rowsPerPage > 0? rows.slice(page*rowsPerPage, (page+1)*rowsPerPage): rows).map((row, index) => {
-            return (
-              <React.Fragment key={index}>
-                  <TableRow className={classes.table} onClick={() => handleChangeSelectId(row.index)} style={{backgroundColor: selectId===row.index ? 'WhiteSmoke': '',}}>
-                    <TableCell component="th" scope="row" style={{fontSize: '16px', width: '90%',}}>{row.title}</TableCell>
-                    <TableCell style={{align: "center", minWidth: '100px'}}>{row.date}</TableCell>
-                  </TableRow>
-                <TableRow >
-                  <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={2}>
-                    <Collapse in={selectId===row.index} timeout="auto" unmountOnExit>
-                      <Box margin={1}>
-                        <Typography variant="h6" gutterBottom component="div" dangerouslySetInnerHTML={{__html: row.content}}>
-                        </Typography>
-                      </Box>
-                    </Collapse>
-                  </TableCell>
+    <Box>
+      {(count === 0 && (
+        <Box style={{display:"flex", justifyContent:"center", padding:'16px'}}>
+          아직 공지사항이 없습니다.
+        </Box>
+      )) || (
+        <TableContainer >
+          <Table aria-label="collapsible table" style={{width: '100%', borderTop: (matches?'1px solid black':'')}}>
+            <TableHead style={{display: matches?'table-header-group':'none'}}>
+              <TableRow>
+                <TableCell align="center" style={{width: '90%',}}>내용</TableCell>
+                <TableCell align="center">등록일</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows && (rowsPerPage > 0? rows.slice(page*rowsPerPage, (page+1)*rowsPerPage): rows).map((row, index) => {
+                return (
+                  <React.Fragment key={index}>
+                      <TableRow className={classes.table} onClick={() => handleChangeSelectId(row.index)} style={{backgroundColor: selectId===row.index ? 'WhiteSmoke': '',}}>
+                        <TableCell component="th" scope="row" style={{fontSize: '16px', width: '90%',}}>{row.title}</TableCell>
+                        <TableCell style={{align: "center", minWidth: '100px'}}>{row.date}</TableCell>
+                      </TableRow>
+                    <TableRow >
+                      <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={2}>
+                        <Collapse in={selectId===row.index} timeout="auto" unmountOnExit>
+                          <Box margin={1}>
+                            <Typography variant="h6" gutterBottom component="div" dangerouslySetInnerHTML={{__html: row.content}}>
+                            </Typography>
+                          </Box>
+                        </Collapse>
+                      </TableCell>
+                    </TableRow>
+                  </React.Fragment>
+                )
+              })}
+              {matches && emptyRows > 0 && (
+                <TableRow style={{ height: 56 * emptyRows }}>
+                  <TableCell colSpan={2} />
                 </TableRow>
-              </React.Fragment>
-            )
-          })}
-          {matches && emptyRows > 0 && (
-            <TableRow style={{ height: 56 * emptyRows }}>
-              <TableCell colSpan={2} />
-            </TableRow>
-          )}
-        </TableBody>
-        <TableFooter style={{overflow: 'hidden'}}>
-          <TableRow>
-            {matches && (
-              <TableCell colSpan={2}>
-                {page >= 0 && (
-                  <TablePagination 
-                    classes={{root: classes.tablePaginationRoot, selectRoot: classes.tablePagination, toolbar: classes.tablePagination}}
-                    rowsPerPageOptions={[5,10]} rowsPerPage={rowsPerPage}
-                    labelRowsPerPage={'페이지 당 개수'}
-                    component="div" count={count} page={page}
-                    onChangePage={handleChangePage}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                    ActionsComponent={TablePaginationActions}
+              )}
+            </TableBody>
+            <TableFooter style={{overflow: 'hidden'}}>
+              <TableRow>
+                {matches && (
+                  <TableCell colSpan={2}>
+                    {page >= 0 && (
+                      <TablePagination 
+                        classes={{root: classes.tablePaginationRoot, selectRoot: classes.tablePagination, toolbar: classes.tablePagination}}
+                        rowsPerPageOptions={[5,10]} rowsPerPage={rowsPerPage}
+                        labelRowsPerPage={'페이지 당 개수'}
+                        component="div" count={count} page={page}
+                        onChangePage={handleChangePage}
+                        onChangeRowsPerPage={handleChangeRowsPerPage}
+                        ActionsComponent={TablePaginationActions}
 
-                    labelDisplayedRows={() => ``}
-                    SelectProps={{
-                    inputProps: { 'aria-label': 'rows per page' },
-                    native: true,
-                  }}/>
+                        labelDisplayedRows={() => ``}
+                        SelectProps={{
+                        inputProps: { 'aria-label': 'rows per page' },
+                        native: true,
+                      }}/>
+                    )}
+                  </TableCell>
                 )}
-              </TableCell>
-            )}
-          </TableRow>
-        </TableFooter>
-      </Table>
-    </TableContainer>
+              </TableRow>
+            </TableFooter>
+          </Table>
+        </TableContainer>
+      )}
+      
+    </Box>
   )
 }
 
