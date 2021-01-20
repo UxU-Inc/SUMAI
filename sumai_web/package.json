@@ -11,7 +11,7 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "aws-sdk": "^2.739.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "browser-image-compression": "^1.0.12",
     "canvas2image": "^1.0.5",
     "cookie-parser": "^1.4.5",
@@ -57,7 +57,6 @@
   "scripts": {
     "start": "npm-run-all --parallel start:**",
     "start:client": "set PORT=80 && react-scripts start",
-    "start:server": "node ./src/server/server.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
