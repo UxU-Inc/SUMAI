@@ -194,7 +194,7 @@ function FeedbackDialog(props) {
         </DialogTitle>
         <Box style={{minHeight: '200px', maxHeight: '250px', display: 'flex', padding: "10px 15px"}}>
           <TextareaAutosize className={classes.textInput} maxLength="5000" autoFocus={true} onChange={handleMessage}
-          placeholder="의견을 보내고 싶으신가요? 보내 주신 의견은 소중하게 활용되지만, 민감한 정보는 공유하지 말아 주세요. 궁금하신 점이 있나요? 도움말을 참조하시거나 지원팀에 문의해 보세요."
+          placeholder="의견을 보내고 싶으신가요? 보내 주신 의견은 소중하게 활용되지만, 민감한 정보는 공유하지 말아 주세요. 궁금하신 점이 있나요? 지원팀에 문의해 보세요."
           style={{
             boxSizing: "border-box",
             flexGrow: 1,
@@ -227,8 +227,7 @@ function FeedbackDialog(props) {
           font: "12px NotoSansKR-Regular",
           padding: "15px 15px"
         }}>
-            법적인 이유로 콘텐츠 변경을 요청하려면 법적 도움말 페이지로 이동하세요.
-            일부 계정 및 시스템 정보가 UxU에 전송될 수 있습니다. 
+            일부 계정 및 시스템 정보가 SUMAI에 전송될 수 있습니다. 
             제공해 주신 정보는 개인정보처리방침 및 서비스 약관에 따라 기술 문제를 해결하고 서비스를 개선하는 데 사용됩니다.
         </small>
         <DialogActions

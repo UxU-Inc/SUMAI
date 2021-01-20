@@ -207,13 +207,13 @@ class Main extends React.Component {
                         isWidthUp('md', this.props.width)? 
                         <div key={key}> 
                             <Header isLoggedIn={this.props.status.isLoggedIn} currentUser={this.props.status.currentUser} 
-                                    onLogout={this.handleLogout} onClickLink={this.onClickLink} matches={isWidthUp('md', this.props.width)}/> 
+                                    onLogout={this.handleLogout} onClickLink={this.onClickLink} matches={isWidthUp('md', this.props.width)} xsm={isWidthUp('xsm', this.props.width)}/> 
                             <div >
                                 <Body state={this.state} handleChange={this.handleChange} onClick={this.onClick} textRemove={this.textRemove} onClickRecord={this.onClickRecord} 
                                         recordTrue={this.recordTrue} recordFalse={this.recordFalse} fetchUsers={this.fetchUsers} errorSet={this.errorSet} />
                             </div>
                             <Box display="flex" alignItems="center">
-                                <ins class="kakao_ad_area" style={{display: 'none'}} 
+                                <ins className="kakao_ad_area" style={{display: 'none'}} 
                                 data-ad-unit    = "DAN-99dFqz7hNrCGBNUn" 
                                 data-ad-width   = "728" 
                                 data-ad-height  = "90"></ins> 
@@ -223,7 +223,7 @@ class Main extends React.Component {
                         </div> :
                         <div className="MainMob" key={key}> 
                         <Header isLoggedIn={this.props.status.isLoggedIn} currentUser={this.props.status.currentUser}
-                                onLogout={this.handleLogout} onClickLink={this.onClickLink} matches={isWidthUp('md', this.props.width)}/> 
+                                onLogout={this.handleLogout} onClickLink={this.onClickLink} matches={isWidthUp('md', this.props.width)} xsm={isWidthUp('xsm', this.props.width)}/> 
                             <div >
                                 <BodyMob state={this.state} handleChange={this.handleChange} textRemove={this.textRemove} 
                                         recordFalseMob={this.recordFalseMob} fetchUsers={this.fetchUsers} errorSet={this.errorSet} />

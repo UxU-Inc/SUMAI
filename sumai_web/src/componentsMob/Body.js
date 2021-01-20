@@ -176,7 +176,7 @@ class Body extends React.Component {
                     <CloseIcon className={clsx("none", {[classes.displayNone]: this.props.state.text.length === 0})} onClick={this.textRemove} style={{color: "#737373"}} />
                   </Box>
                 </Box>
-                <div style={{height: "50px", background: "#fff", borderBottom: '1px solid #e0e0e0'}}>
+                <div style={{height: "50px", background: "#fff", borderBottom: '1px solid #e0e0e0', zIndex:0}}>
                   <IconButton onClick={this.fetchUsers} className={classes.summaryButton} style={{position: "absolute", right: 0}}>
                     <ArrowForwardIcon />
                   </IconButton>
