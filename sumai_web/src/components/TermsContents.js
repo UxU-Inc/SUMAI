@@ -183,9 +183,9 @@ class TermsContents extends React.Component {
 
             <Typography className={classes.content}>
               공지 일자:<br/>
-              2020년 9월 1일<br/>
+              2021년 01월 03일<br/>
               적용 일자:<br/>
-              2020년 9월 1일<br/>
+              2021년 01월 03일<br/>
               <br/>
               SUMAI 서비스와 관련하여 궁금하신 사항이 있으시면 고객센터(help@sumai.co.kr)로 문의 주시기 바랍니다.
             </Typography>

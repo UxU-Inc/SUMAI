@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { Component } from 'react'; 
 import { withStyles, } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import './Header.css';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -25,6 +26,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import AccountIcon from '@material-ui/icons/AccountCircle';
+import Grid from '@material-ui/core/Grid';
 import * as root from '../rootValue';
 
 import Dialog from '@material-ui/core/Dialog';
@@ -32,6 +34,8 @@ import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import CloseIcon from '@material-ui/icons/Close';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
+import FeaturedPlayListIcon from '@material-ui/icons/FeaturedPlayList';
+import AppsIcon from '@material-ui/icons/Apps';
 
 // import html2canvas from 'html2canvas';
 // import emailjs from 'emailjs-com';
@@ -66,6 +70,15 @@ const useStyles = theme => ({
     width: 64,
     height: 22.56,
     alt: 'SUMAI',
+  },
+  newsButton: {
+    '&:hover': {
+      background: "#e3f2fd"
+    },
+    background: "#fff",
+    color: root.PrimaryColor,
+    border: '1px solid #d4d4d4',
+    marginRight: "10px",
   },
   loginButton: {
     '&:hover': {
@@ -219,7 +232,7 @@ function FeedbackDialog(props) {
         </DialogTitle>
         <Box className={classes.FeedbackDialogContent} style={matches?{minHeight: '200px', maxHeight: '250px'}:{height: '100%'}}>
           <TextareaAutosize className={classes.textInput} maxLength="5000" autoFocus={true} onChange={handleMessage}
-          placeholder="의견을 보내고 싶으신가요? 보내 주신 의견은 소중하게 활용되지만, 민감한 정보는 공유하지 말아 주세요. 궁금하신 점이 있나요? 도움말을 참조하시거나 지원팀에 문의해 보세요."
+          placeholder="의견을 보내고 싶으신가요? 보내 주신 의견은 소중하게 활용되지만, 민감한 정보는 공유하지 말아 주세요. 궁금하신 점이 있나요? 지원팀에 문의해 보세요."
           style={{
             boxSizing: "border-box",
             flexGrow: 1,
@@ -252,8 +265,7 @@ function FeedbackDialog(props) {
           font: "12px NotoSansKR-Regular",
           padding: "15px 15px"
         }}>
-            법적인 이유로 콘텐츠 변경을 요청하려면 법적 도움말 페이지로 이동하세요.
-            일부 계정 및 시스템 정보가 UxU에 전송될 수 있습니다. 
+            일부 계정 및 시스템 정보가 SUMAI에 전송될 수 있습니다. 
             제공해 주신 정보는 개인정보처리방침 및 서비스 약관에 따라 기술 문제를 해결하고 서비스를 개선하는 데 사용됩니다.
         </small>
         <DialogActions
@@ -281,6 +293,156 @@ function FeedbackDialog(props) {
 }
 
 
+const useStyles2 = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+  },
+  paper: {
+    marginRight: theme.spacing(2),
+  },
+}));
+
+function MenuListComposition(props) {
+  const classes = useStyles2();
+  const [open, setOpen] = React.useState(false);
+  const anchorRef = React.useRef(null);
+  // const { xsm } = props
+
+  const handleToggle = () => {
+    setOpen((prevOpen) => !prevOpen);
+  };
+
+  const handleClose = (event) => {
+    if (anchorRef.current && anchorRef.current.contains(event.target)) {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  const onClickExternLink = (url) => {
+    window.location.assign(url)
+  };
+
+  function handleListKeyDown(event) {
+    if (event.key === 'Tab') {
+      event.preventDefault();
+      setOpen(false);
+    }
+  }
+
+  // return focus to the button when we transitioned from !open -> open
+  const prevOpen = React.useRef(open);
+  React.useEffect(() => {
+    if (prevOpen.current === true && open === false) {
+      anchorRef.current.focus();
+    }
+
+    prevOpen.current = open;
+  }, [open]);
+
+
+  function FormRow() {
+    return (
+      <React.Fragment>
+               {/* xs={xsm?4:6} */}
+        <Grid item xs={12} >  
+          <MenuItem onClick={onClickExternLink.bind(this, "https://news.sumai.co.kr")} style={{width: "100%"}}>
+            <div style={{margin: "0 auto"}}>
+              <Box> 
+                <FeaturedPlayListIcon fontSize="large" style={{color: root.PrimaryColor}}/> 
+              </Box>
+              <Box> 
+                <Typography style={{fontFamily: "NotoSansKR-Regular"}}> 
+                  뉴스
+                </Typography> 
+              </Box>
+            </div>
+          </MenuItem>
+        </Grid>
+        {/* <Grid item xs={xsm?4:6}>
+          <MenuItem onClick={handleClose} style={{width: "100%"}}>
+            <div style={{margin: "0 auto"}}>
+              <Box> 
+                <FeaturedPlayListIcon fontSize="large" style={{color: root.PrimaryColor}}/> 
+              </Box>
+              <Box> 
+                <Typography style={{fontFamily: "NotoSansKR-Regular"}}> 
+                  뉴스
+                </Typography> 
+              </Box>
+            </div>
+          </MenuItem>
+        </Grid>
+
+      {xsm
+      ?
+        <Grid item xs={xsm?4:6}>
+        <MenuItem onClick={handleClose} style={{width: "100%"}}>
+          <div style={{margin: "0 auto"}}>
+            <Box> 
+              <FeaturedPlayListIcon fontSize="large" style={{color: root.PrimaryColor}}/> 
+            </Box>
+            <Box> 
+              <Typography style={{fontFamily: "NotoSansKR-Regular"}}> 
+                뉴스
+              </Typography> 
+            </Box>
+          </div>
+        </MenuItem>
+      </Grid>
+      :
+        null
+      } */}
+
+      </React.Fragment>
+    );
+  }
+
+  return (
+    <div className={classes.root}>
+      <div>
+        <IconButton style={{marginRight: "5px"}} 
+          ref={anchorRef}
+          aria-controls={open ? 'menu-list-grow' : undefined}
+          aria-haspopup="true"
+          onClick={handleToggle}>
+          <AppsIcon />
+        </IconButton> 
+                                                                                               {/* style={{marginRight: xsm?"70px":undefined, zIndex:100}} */}
+        <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal style={{zIndex:100}}>
+          {({ TransitionProps, placement }) => (
+            <Grow
+              {...TransitionProps}
+              style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom'}}
+            >
+              <Paper elevation={3} >
+                <ClickAwayListener onClickAway={handleClose}>
+                  <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
+                 
+                {/* <Grid container spacing={1} style={{width: xsm?"300px":"200px"}}>  */}
+                    <Grid container spacing={1} >
+                      <Grid container item xs={12}>
+                        <FormRow />
+                      </Grid>
+                      {/* <Grid container item xs={12}>
+                        <FormRow />
+                      </Grid>
+                      <Grid container item xs={12}>
+                        <FormRow />
+                      </Grid> */}
+                    </Grid>
+
+                  </MenuList>
+                </ClickAwayListener>
+              </Paper>
+            </Grow>
+          )}
+        </Popper>
+      </div>
+    </div>
+  );
+}
 
 
 class Header extends Component{
@@ -382,7 +544,9 @@ class Header extends Component{
   onClickLink = (url) => (e) => {
     this.props.onClickLink(url)
   }
-
+  onClickExternLink = (url) => (e) => {
+    window.location.assign(url)
+  }
 
   
   
@@ -413,6 +577,16 @@ class Header extends Component{
                 </IconButton>
 
                 <Drawer anchor={anchor} open={this.state.anchor} onClose={this.toggleDrawer(anchor, false)}>
+
+                  {this.props.xsm
+                    ?
+                    null
+                    :
+                    <Box display="flex" justifyContent="flex-end" style={{background: "#f5f5f5"}}>
+                      <MenuListComposition xsm={this.props.xsm}/>
+                    </Box>
+                  }
+                  
                   <div
                     className={clsx(classes.list, {
                       [classes.fullList]: anchor === 'top' || anchor === 'bottom',
@@ -422,6 +596,7 @@ class Header extends Component{
                     onKeyDown={this.toggleDrawer(anchor, false)}
                     style={this.props.matches?{}:{width:  '250px'}}
                   >
+
                   <ListItem >
                     <a href="/" style={{marginTop: 5, marginLeft: 5}} className={classes.link} >
                       <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
@@ -463,17 +638,26 @@ class Header extends Component{
 
             <div style={{flexGrow: 1}}/>
 
-            {/* <IconButton style={{marginRight: "10px"}}>
-                <NewsIcon style={{color: root.PrimaryColor}}/>
-            </IconButton> */}
-
+            {this.props.matches 
+            ?  // PC
+              <Button className={classes.newsButton} onClick={this.onClickExternLink("https://news.sumai.co.kr")} style={this.props.matches?{padding: "7.5px 15px" }:{padding: "5px", minWidth: '80px'}}>
+                <FeaturedPlayListIcon style={{color: root.PrimaryColor, marginRight: "5px"}}/>
+                뉴스
+              </Button>
+            :  // Mobile
+              this.props.xsm 
+              ?  // Mobile(360~720)
+                <MenuListComposition xsm={this.props.xsm}/>
+              :  // Mobile(0~360)
+                null
+            }
+            
             {this.props.isLoggedIn ? loginLayout : loginButton}
 
           </Toolbar>
         </AppBar>
 
         <FeedbackDialog open={this.state.dialogOpen} setOpen={this.dialogOpen} classes={classes} matches={this.props.matches}/>        
-
 
       </div>
     )
