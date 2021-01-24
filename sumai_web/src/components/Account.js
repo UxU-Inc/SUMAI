@@ -92,7 +92,7 @@ class Account extends Component{
                     clearInterval(Interval)
                   } else {
                     const id = this.props.status.currentId
-                  axios.get('/api/account/accountLoad/'+id).then((data) => {
+                  axios.post('/api/account/accountLoad/'+id, { }).then((data) => {
                     this.setState({
                       imagesrc: data.data.image,
                       passwordChangeTime: data.data.passwordChangeTime,

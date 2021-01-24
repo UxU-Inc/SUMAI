@@ -534,7 +534,7 @@ class Header extends Component {
 
 
     function profile_image(id) {
-      return new Promise((res, rej) => axios.get('/api/account/accountLoad/' + id).then((data) => {
+      return new Promise((res, rej) => axios.post('/api/account/accountLoad/' + id, { } ).then((data) => {
         res(data.data.image);
       }).catch(() => {
         res('');
