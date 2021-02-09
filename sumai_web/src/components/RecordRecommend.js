@@ -168,6 +168,11 @@ class RecordRecommend extends Component{
                         data: this.props.recommend.data,
                     })
                 }
+                if(this.props.recommend.data.length < 10) {
+                    this.setState({
+                        isAllLoad: true,
+                    })
+                }
             }
         );
     }
