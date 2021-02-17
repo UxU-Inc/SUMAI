@@ -205,10 +205,14 @@ function NoticesTable(props) {
 
   // loading bar
   useEffect(() => {
-    if(!loading) {
-      document.getElementById('topLoadingBar').style.visibility='hidden'
-    }else{
-      document.getElementById('topLoadingBar').style.visibility='visible'
+    try {
+      if(!loading) {
+        document.getElementById('topLoadingBar').style.visibility='hidden'
+      }else{
+        document.getElementById('topLoadingBar').style.visibility='visible'
+      }
+    } catch (e) {
+      
     }
   }, [loading])
 
