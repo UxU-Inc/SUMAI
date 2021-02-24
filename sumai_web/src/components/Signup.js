@@ -472,7 +472,16 @@ class Signup extends Component{
                     }
                 })
             }else if(this.state.slideOpen===1 && this.validationBirthday() && this.validationGender()){ // 2번째 페이지에서 다음을 누를 경우..
-                axios.post('/api/email/sendEmailCertification', {email: this.state.email, name: this.state.name, password: this.state.password}).then((res) => {
+                let birthday
+                if(this.state.month.length === 1) birthday = this.state.year + "0" + this.state.month + this.state.date
+                else birthday = this.state.year + this.state.month + this.state.date
+                if(this.state.date.length === 1) birthday = this.state.year + this.state.month + "0" + this.state.date
+                else birthday = this.state.year + this.state.month + this.state.date
+
+                let gender = this.state.genderCurrent
+                if(this.state.genderCurrent === '사용자 지정') gender = this.state.genderCustom
+
+                axios.post('/api/email/sendEmailCertification', {email: this.state.email, name: this.state.name, password: this.state.password, birthday: birthday, gender: gender}).then((res) => {
                 }) // catch 일 경우.... 
                 this.setState({ slideOpen: 2 })
                 e.target.textContent='완료'
