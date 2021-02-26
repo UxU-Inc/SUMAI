@@ -22,9 +22,9 @@ import NotFound from "./components/NotFound"
 import { connect } from 'react-redux';
 import { getStatusRequest, logoutRequest, getStatusFailure } from './actions/authentication';
 import { ClientInfoComponent } from './reducers/clientInfo';
-import TermsContents from './components/TermsContents';
-import PrivacyContents from './components/PrivacyContents';
-import NoticesContents from './components/NoticesContents';
+import { TermsContentsPadding } from './components/TermsContents';
+import { PrivacyContentsPadding } from './components/PrivacyContents';
+import { NoticesContentsPadding } from './components/NoticesContents';
 
 class App extends Component { 
   componentDidMount() { //컴포넌트 렌더링이 맨 처음 완료된 이후에 바로 세션확인
@@ -104,9 +104,9 @@ class App extends Component {
             <Route path="/accounts/gender" component={ AccountGender } />
             
 
-            <Route path="/terms/content" component = { TermsContents } />
-            <Route path="/privacy/content" component = { PrivacyContents } />
-            <Route path="/notices/content" component = { NoticesContents } />
+            <Route path="/terms/content" component = { TermsContentsPadding } />
+            <Route path="/privacy/content" component = { PrivacyContentsPadding } />
+            <Route path="/notices/content" component = { NoticesContentsPadding } />
             <Route path="/terms" component={ Terms } />
             <Route path="/privacy" component={ Privacy } />
             <Route path="/notices" component={ Notices } />

@@ -308,6 +308,14 @@ function NoticesTable(props) {
   )
 }
 
+export function NoticesContentsPadding() {
+  return (
+      <Box style={{padding: '20px'}}>
+          <NoticesContents />
+      </Box>
+  )
+}
+
 export default function NoticesContents() {
   const theme = useTheme();
   const classes = useStyles();

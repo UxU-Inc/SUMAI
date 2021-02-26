@@ -14,7 +14,11 @@ import axios from 'axios'
 function returnUrl() {
     const url=window.location.search?.slice(1)?.split('url=')[1]?.split('&')[0]
 
-    return url?url:'https://www.sumai.co.kr'
+    if(/^https:\/\/.*?.sumai.co.kr\/.*$/i.test(url)) {
+        return url
+    }
+
+    return 'https://www.sumai.co.kr'
 }
 
 class LoginMain extends Component{ 
