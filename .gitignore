@@ -64,4 +64,7 @@ sumai_mob/yarn-error.log
 # Expo
 sumai_mob/.expo
 
+
 ######################### SUMAI MOB #########################
+
+sumai_web/.eslintcache
