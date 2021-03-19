@@ -59,7 +59,8 @@ class AccountNameChange extends React.Component {
                 }.bind(this), 0)
             } 
         }
-        if(this.props.status.isLoggedIn && this.state.nameCurrent === '' && typeof this.props.status.currentUser !== "undefined") {
+        if(this.props.status.isLoggedIn && typeof this.props.status.currentUser !== 'undefined' && typeof this.state.nameCurrent === 'undefined') {
+            console.log("마법")
             this.setState({
                 nameCurrent: this.props.status.currentUser,
                 nameChange: this.props.status.currentUser,
@@ -89,12 +90,12 @@ class AccountNameChange extends React.Component {
     }
 
     onClickSave = () => {
-        if(this.state.nameChange === "" || this.state.nameError || this.state.nameCurrent === this.state.nameChange) {
+        if(typeof this.state.nameChange === "undefined" || this.state.nameError || this.state.nameCurrent === this.state.nameChange) {
             this.textFieldRef[0].current.focus()
             return
         }
 
-        if(this.state.id !== "" && !this.state.nameError) {
+        if(typeof this.state.id !== "undefined" && !this.state.nameError) {
             if(this.state.isLoading) return
             this.setState({ isLoading: true })
             this.onNameChange(this.state.id, this.state.email, this.state.nameChange).then(data => {
@@ -108,7 +109,7 @@ class AccountNameChange extends React.Component {
     onNameChange = (id, email, nameChange) => {
         return this.props.nameChangeRequest(id, email, nameChange).then(
             () => {
-                if(this.props.status.currentUser !== "") {
+                if(typeof this.props.status.currentUser !== 'undefined') {
                     return { success: true }
                 } else {
                     return { success: false }
