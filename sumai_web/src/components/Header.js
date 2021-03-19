@@ -79,7 +79,7 @@ const useStyles = theme => ({
     background: "#fff",
     color: root.PrimaryColor,
     border: '1px solid #d4d4d4',
-    marginRight: "10px",
+    marginRight: "20px",
   },
   loginButton: {
     '&:hover': {
