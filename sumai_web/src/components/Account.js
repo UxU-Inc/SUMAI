@@ -123,12 +123,12 @@ function useLoadAccount() {
         avatarcolor: '#' + CryptoJS.MD5(id).toString().substring(1, 7),
       })
     } catch(e) {
-      history.push("/")
+      history.push("/") // 로직 변경해야함
     }
   }, [avatarName, status, history])
 
   React.useEffect(() => {
-    if(true) {
+    if(status.loaded) {
       loadAccount()
     }
   }, [loadAccount, status])
@@ -147,11 +147,6 @@ export default function Account() {
       account.image = ''
     } else if (image !== '') {
       account.image = image
-    } else {
-      // this.setState({
-      //   ...this.state,
-      //   open: false,
-      // })
     }
     setOpen(false)
   }, [account])
