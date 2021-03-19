@@ -523,7 +523,7 @@ class Header extends Component {
     }, [open]);
 
     React.useEffect(() => {
-      if (props.currentId !== '') {
+      if (typeof props.currentId !== 'undefined') {
         profile_image(props.currentId).then((imageURL) => {
           setImage(imageURL);
           setAvatarName(re_name(props.currentUser))
@@ -718,8 +718,8 @@ Header.propTypes = {
 
 Header.defaultProps = {
   isLoggedIn: false,
-  currentUser: '',
-  currentId: '',
+  currentUser: undefined,
+  currentId: undefined,
   onLogout: () => { console.error("logout function not defined"); }
 };
 

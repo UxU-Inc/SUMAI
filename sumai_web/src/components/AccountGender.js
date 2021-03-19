@@ -86,7 +86,7 @@ class AccountNameChange extends React.Component {
                 }.bind(this), 0)            
             } 
         }
-        if(this.props.status.isLoggedIn && this.state.id === '' && typeof this.props.status.currentId !== "undefined") {
+        if(this.props.status.isLoggedIn && typeof this.state.id === 'undefined' && typeof this.props.status.currentId !== "undefined") {
             this.setState({ id: this.props.status.currentId }) 
             if(this.props.location.state.gender === "여성" || this.props.location.state.gender === "남성" || this.props.location.state.gender === "공개 안함") {
                 this.setState({ genderCurrent: this.props.location.state.gender }) 
