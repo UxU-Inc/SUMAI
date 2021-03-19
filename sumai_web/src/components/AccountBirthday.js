@@ -73,7 +73,6 @@ class AccountNameChange extends React.Component {
     }
     
     componentDidUpdate() {
-        console.log(this.props.status.isLoggedIn, this.state.id, this.props.status.currentId)
         if(this.props.status.loaded) {
             if(this.props.status.isLoggedIn === false) {
                 setTimeout(function() { 

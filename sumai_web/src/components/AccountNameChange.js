@@ -60,7 +60,6 @@ class AccountNameChange extends React.Component {
             } 
         }
         if(this.props.status.isLoggedIn && typeof this.props.status.currentUser !== 'undefined' && typeof this.state.nameCurrent === 'undefined') {
-            console.log("마법")
             this.setState({
                 nameCurrent: this.props.status.currentUser,
                 nameChange: this.props.status.currentUser,

@@ -143,7 +143,6 @@ export default function Account() {
   const history = useHistory()
 
   const handleclose = React.useCallback((image) => {
-    console.log("ggooo")
     if (image === 'delete') {
       account.image = ''
     } else if (image !== '') {
@@ -153,7 +152,6 @@ export default function Account() {
   }, [account])
 
   const onClickLink = React.useCallback((url) => {
-    console.log(account)
     if (Object.keys(account).length !== 0 || account.constructor !== Object) {
       history.push({
         pathname: url,
