@@ -683,7 +683,7 @@ class Header extends Component {
 
             <div style={{ flexGrow: 1 }} />
 
-            {/* {this.props.matches
+            {this.props.matches
               ?  // PC
               <Button className={classes.newsButton} onClick={this.onClickExternLink("https://news.sumai.co.kr")} style={this.props.matches ? { padding: "7.5px 15px" } : { padding: "5px", minWidth: '80px' }}>
                 <FeaturedPlayListIcon style={{ color: root.PrimaryColor, marginRight: "5px" }} />
@@ -695,7 +695,7 @@ class Header extends Component {
                 <MenuListComposition xsm={this.props.xsm} />
                 :  // Mobile(0~360)
                 null
-            } */}
+            }
 
             {this.props.isLoggedIn ? loginLayout : loginButton}
 
