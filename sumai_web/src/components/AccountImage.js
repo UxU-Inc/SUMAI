@@ -72,7 +72,7 @@ export default function AccountImage(props) {
       setIsLoading(true)
       let data = new FormData();
       data.append('img', imgFile, imgFile.name);
-      axios.post('/api/account/imageUpload/'+props.id, data, { headers: {
+      axios.post('/api/account/imageUpload', data, { headers: {
         'accept': 'application/json',
         'Content-Type': `multipart/form-data; boundary=${data._boundary}`,
       }}).then((data) => {
@@ -92,7 +92,7 @@ export default function AccountImage(props) {
 
   const handleDelete = () => {
     setIsLoading(true)
-    axios.get('/api/account/imageDelete/'+props.id).then(() => {
+    axios.post('/api/account/imageDelete', {}).then(() => {
       props.onClose('delete');
     }).catch(() => {
       setIsLoading(false)

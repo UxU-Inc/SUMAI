@@ -145,7 +145,7 @@ class RecordRecommend extends Component{
     accountInit = () => {
         new Promise(async (resolve, reject) => {
             const Interval = setInterval(() => {
-                if(typeof this.props.status.currentId !== "undefined") {
+                if(typeof this.props.status.loaded) {
                     const id = this.props.status.currentId
                     this.recommend(id);
                     resolve();

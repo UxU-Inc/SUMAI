@@ -116,7 +116,7 @@ function useLoadAccount() {
   const loadAccount = React.useCallback(async() => {
     try {
       const id = status.currentId
-      const data = await axios.post('/api/account/accountLoad/' + id, {})
+      const data = await axios.post('/api/account/accountLoad', {})
       setAccount({
         ...data.data,
         avatarname: avatarName(status.currentUser),
@@ -143,6 +143,7 @@ export default function Account() {
   const history = useHistory()
 
   const handleclose = React.useCallback((image) => {
+    console.log("ggooo")
     if (image === 'delete') {
       account.image = ''
     } else if (image !== '') {
