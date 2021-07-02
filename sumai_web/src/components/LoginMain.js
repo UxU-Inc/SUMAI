@@ -18,7 +18,7 @@ function returnUrl() {
         return url
     }
 
-    return 'https://www.sumai.co.kr'
+    return 'https://'+window.location.hostname
 }
 
 class LoginMain extends Component{ 
