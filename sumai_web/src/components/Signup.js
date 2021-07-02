@@ -10,9 +10,7 @@ import TextField from '@material-ui/core/TextField';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import Box from '@material-ui/core/Box';
-import imgLogo from '../images/sumai_logo_blue.png';
 import Typography from '@material-ui/core/Typography';
-import * as root from '../rootValue';
 import clsx from 'clsx';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -29,6 +27,11 @@ import IconButton from '@material-ui/core/IconButton';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 import DialogContents from './DialogContents'
+
+import { checkSite } from '../functions/CheckSite';
+import { returnUrl } from '../functions/util';
+
+const root = checkSite();
 
 const useStyles = theme => ({
     root: {
@@ -515,7 +518,7 @@ class Signup extends Component{
             }else if(this.state.slideOpen===2){
                 this.props.onLogin(this.state.email, this.state.password).then(data => { // login 부분 ***********
                     if (data.success) {
-                        this.props.history.push('/')
+                        this.props.history.push(returnUrl())
                     } else {
                         this.setState({ errorCode: 2})
                     }
@@ -581,7 +584,7 @@ class Signup extends Component{
                                                 </IconButton>
                                                 : null}
 
-                                                <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
+                                                <img src={root.imgLogo} alt={root.site} className={classes.imgLogo} /> 
 
                                                 <Typography style={{color: "#0000008A", fontSize: "28px", marginLeft: "10px"}}>
                                                     계정 만들기
@@ -598,7 +601,7 @@ class Signup extends Component{
                                                         : null}
                                                     </Box>
 
-                                                    <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
+                                                    <img src={root.imgLogo} alt={root.site} className={classes.imgLogo} /> 
                                                 </Box>
 
                                                 <Box display="flex" justifyContent="center" style={{paddingTop: "10px"}}>

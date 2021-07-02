@@ -11,10 +11,7 @@ import TextField from '@material-ui/core/TextField';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import Box from '@material-ui/core/Box';
-import imgSumaiLogo from '../images/sumai_logo_blue.png';
-import imgVoiLogo from '../images/VOI_logo.png';
 import Typography from '@material-ui/core/Typography';
-import * as root from '../rootValue';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import googleLogo from '../images/btn_google_light_normal_ios@3x.png';
 import kakaoLogo from '../images/kakaolink_btn_small.png';
@@ -22,15 +19,9 @@ import naverLogo from '../images/naver_btn_green.png';
 import facebookLogo from '../images/facebook_icon.png';
 import clsx from 'clsx';
 
+import { checkSite } from '../functions/CheckSite';
 
-const checkSite = () => {
-  const hostname=window.location.search?.slice(1)?.split('url=')[1]?.split('&')[0]
-
-  if (hostname === "https://voi.sumai.co.kr/") return { site: "VOI", logo: imgVoiLogo, color: [root.VoiPrimaryColor, root.VoiHoberColor] };
-  else return { site: "SUMAI", logo: imgSumaiLogo, color: [root.PrimaryColor, root.HoberColor] };
-}
-
-const site = checkSite();
+const root = checkSite();
 
 const useStyles = theme => ({
   root: {
@@ -72,9 +63,9 @@ const useStyles = theme => ({
   loginButton: {
     variant: 'contained',
     color: '#ffffff',
-    background: site.color[0],
+    background: root.PrimaryColor,
     "&:hover": {
-      background: site.color[1],
+      background: root.HoberColor,
     },
     width: '100%',
     height: '50px',
@@ -85,9 +76,9 @@ const useStyles = theme => ({
   loginButtonMob: {
     variant: 'contained',
     color: '#ffffff',
-    background: site.color[0],
+    background: root.PrimaryColor,
     "&:hover": {
-      background: site.color[1],
+      background: root.HoberColor,
     },
     width: '100%',
     height: '50px',
@@ -97,7 +88,7 @@ const useStyles = theme => ({
   accountCreateButton: {
     padding: "7.5px 10px",
     fontSize: "15px",
-    color: site.color[0],
+    color: root.PrimaryColor,
     "&:hover": {
       background: "none"
     },
@@ -252,7 +243,7 @@ class Login extends Component {
               <CardHeader className={classes.cardTitleText}
                 title={
                   <Box display="flex" alignItems="center" >
-                    <img src={site.logo} alt={site.site} className={classes.imgLogo} />
+                    <img src={root.imgLogo} alt={root.site} className={classes.imgLogo} />
 
                     <Typography style={{ color: "#0000008A", fontSize: "28px", marginLeft: "10px" }}>
                       로그인
@@ -268,8 +259,8 @@ class Login extends Component {
                   fullWidth label="비밀번호" placeholder="비밀번호를 입력해주세요." type="password" style={{ height: "70px" }} inputRef={this.textFieldRef[1]}
                   onKeyPress={this.onKeyPress} />
                 <Box textAlign="right" fontSize={13}>
-                  <Link to="/login/password/reset" style={{ textDecoration: 'none' }}><Button className={classes.accountCreateButton}>비밀번호 찾기</Button></Link>
-                  <Link to="/login/signup" style={{ textDecoration: 'none' }}><Button className={classes.accountCreateButton}>계정 만들기</Button></Link>
+                  <Link to={"/login/password/reset" + window.location.search} style={{ textDecoration: 'none' }}><Button className={classes.accountCreateButton}>비밀번호 찾기</Button></Link>
+                  <Link to={"/login/signup" + window.location.search} style={{ textDecoration: 'none' }}><Button className={classes.accountCreateButton}>계정 만들기</Button></Link>
                 </Box>
                 <Typography variant="body2" className={clsx("none", { [classes.displayNone]: this.state.cookieState === true })} style={{ color: "#f44336" }}>
                   브라우저 설정 오류입니다. 현재 사용하시는 인터넷 브라우저의 설정에 문제가 있어 로그인이 되지 않았습니다.
@@ -341,7 +332,7 @@ class Login extends Component {
         <Box >
           <Box className={classes.rootMob} >
             <Box display="flex" alignItems="center" justifyContent="center">
-              <img src={site.logo} alt={site.site} className={classes.imgLogo} />
+              <img src={root.imgLogo} alt={root.site} className={classes.imgLogo} />
             </Box>
 
             <Box display="flex" justifyContent="center" style={{ paddingTop: "10px" }}>

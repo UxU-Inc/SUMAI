@@ -9,17 +9,7 @@ import { connect } from 'react-redux';
 import { loginRequest, snsloginRequest } from '../actions/authentication';
 
 import axios from 'axios'
-
-
-function returnUrl() {
-    const url=window.location.search?.slice(1)?.split('url=')[1]?.split('&')[0]
-
-    if(/^https:\/\/.*?.sumai.co.kr\/.*$/i.test(url)) {
-        return url
-    }
-
-    return 'https://'+window.location.hostname
-}
+import { returnUrl } from '../functions/util';
 
 class LoginMain extends Component{ 
     handleChckSignupEmail = (email) => {
