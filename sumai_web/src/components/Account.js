@@ -20,6 +20,11 @@ import axios from 'axios';
 import moment from 'moment'
 import CryptoJS from 'crypto-js';
 
+import { checkSite } from '../functions/CheckSite';
+import { returnUrl } from '../functions/util';
+
+const root = checkSite();
+
 const useStyles = makeStyles((theme) => ({
   AppBarStyle: {
     paddingTop: 10,
@@ -168,8 +173,8 @@ export default function Account() {
       <AppBar position="static" className={classes.AppBarStyle}>
         <Toolbar variant="dense">
 
-          <a href="/" className={classes.link} >
-            <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} />
+          <a href={returnUrl()} className={classes.link} >
+            <img src={root.imgLogo} alt={root.site} className={classes.imgLogo} />
             <Typography style={{ color: "#0000008A", paddingLeft: "10px", fontSize: "28px" }}>계정</Typography>
           </a>
 
