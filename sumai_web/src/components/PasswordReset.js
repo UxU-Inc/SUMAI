@@ -9,7 +9,6 @@ import TextField from '@material-ui/core/TextField';
 
 import Snackbar from '@material-ui/core/Snackbar';
 import axios from 'axios'
-import { useHistory } from 'react-router-dom';
 import MuiAlert from '@material-ui/lab/Alert';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
@@ -100,7 +99,6 @@ function Alert(props) {
 }
 
 function PasswordResetComponent(props) {
-    const history = useHistory()
     const [email, setEmail] = useState('')
     const [emailError, setEmailError] = useState(false)
     const [errorCode, setErrorCode] = useState(0)
@@ -159,7 +157,7 @@ function PasswordResetComponent(props) {
                 })
             })
         }else if(slideNumber===1) {
-             history.push(returnUrl)
+            window.location.assign(returnUrl())
         }
     }
     const onEnteredSlide = useCallback((e) => {
