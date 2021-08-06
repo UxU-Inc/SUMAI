@@ -7,7 +7,7 @@ export const SecondaryColor = blue[200];
 export const HoberColor = blue[500];
 
 
-export const VoiPrimaryColor = purple[600];
-export const VoiHoberColor = purple[500];
-export const VoiSecondaryColor = purple[200];
-export const VoiWhiteHoberColor = purple[50];
+export const VOIPrimaryColor = purple[600];
+export const VOIHoberColor = purple[500];
+export const VOISecondaryColor = purple[200];
+export const VOIWhiteHoberColor = purple[50];
