@@ -171,11 +171,6 @@ class Main extends React.Component {
         summaryText: '',
         loading: true,
       })
-      if (this.state.ip === "") {
-        const ipify = await fetch('https://api.ipify.org?format=json')
-        const ipjson = await ipify.json()
-        this.setState({ ip: ipjson.ip })
-      }
 
       const response = await axios.post(
         'https://www.sumai.co.kr/api/summary/request',
@@ -183,7 +178,6 @@ class Main extends React.Component {
           data: this.state.text,
           id: this.props.status.currentId,
           record: this.state.record,
-          ip_addr: this.state.ip,
         }
       );
       if (isWidthUp('md', this.props.width)) window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })

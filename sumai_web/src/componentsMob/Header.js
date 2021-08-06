@@ -463,7 +463,7 @@ Header.propTypes = {
 
 Header.defaultProps = {
   isLoggedIn: false,
-  currentUser: '',
+  currentUser: undefined,
   onLogout: () => { console.error("logout function not defined");}
 };
 

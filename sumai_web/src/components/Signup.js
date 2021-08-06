@@ -10,9 +10,7 @@ import TextField from '@material-ui/core/TextField';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import Box from '@material-ui/core/Box';
-import imgLogo from '../images/sumai_logo_blue.png';
 import Typography from '@material-ui/core/Typography';
-import * as root from '../rootValue';
 import clsx from 'clsx';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -30,32 +28,64 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 import DialogContents from './DialogContents'
 
+import { checkSite } from '../functions/CheckSite';
+import { returnUrl } from '../functions/util';
+
+const root = checkSite();
+
 const useStyles = theme => ({
     root: {
         minHeight: '100vh',
         flexDirection: 'column',
-        '&::before, &::after' : {
-            minHeight: '30px',
-            height: '24px',
-            boxSizing: 'border-box',
-            display: 'block',
-            content: '""',
-            flexGrow: 1,
-        },
         display: 'flex',
-
+        [theme.breakpoints.between(0, 600)]: {
+            position: "relative",
+        },
+        [theme.breakpoints.up(600)]: {
+            '&::before, &::after' : {
+                minHeight: '30px',
+                height: '24px',
+                boxSizing: 'border-box',
+                display: 'block',
+                content: '""',
+                flexGrow: 1,
+            },
+        },
     },
-    rootMob: {
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        position: "relative",
+    card: {
+        position: 'relative',
+        [theme.breakpoints.between(0, 600)]: {
+            padding: '40px 40px 0px 40px',
+            boxShadow: '0px 0px'
+        },
+        [theme.breakpoints.up(600)]: {
+            maxWidth: '450px',
+            width:'100%',
+            minWidth:'300px',
+        },
     },
-    cardTitleText: {
-        borderBottom: '1px solid #e0e0e0',
-        color: '#0000008a',
-        padding: theme.spacing(1),
-        paddingLeft: theme.spacing(2),
+    cardHead: {
+        [theme.breakpoints.between(0, 600)]: {
+            padding: '0px',
+            marginBottom: '15px'
+        },
+        [theme.breakpoints.up(600)]: {
+            borderBottom: '1px solid #e0e0e0',
+            color: '#0000008a',
+            padding: theme.spacing(1),
+            paddingLeft: theme.spacing(2),
+        },
+    },
+    cardBody: {
+        [theme.breakpoints.between(0, 600)]: {
+            position: "relative",
+            overflow: 'hidden',
+            paddingBottom: '25px',
+        },
+        [theme.breakpoints.up(600)]: {
+            padding: "16px 10%",
+            minHeight: '450px',
+        }
     },
     textInput: {
         background: '#ffffff',
@@ -472,14 +502,23 @@ class Signup extends Component{
                     }
                 })
             }else if(this.state.slideOpen===1 && this.validationBirthday() && this.validationGender()){ // 2번째 페이지에서 다음을 누를 경우..
-                axios.post('/api/email/sendEmailCertification', {email: this.state.email, name: this.state.name, password: this.state.password}).then((res) => {
+                let birthday
+                if(this.state.month.length === 1) birthday = this.state.year + "0" + this.state.month + this.state.date
+                else birthday = this.state.year + this.state.month + this.state.date
+                if(this.state.date.length === 1) birthday = this.state.year + this.state.month + "0" + this.state.date
+                else birthday = this.state.year + this.state.month + this.state.date
+
+                let gender = this.state.genderCurrent
+                if(this.state.genderCurrent === '사용자 지정') gender = this.state.genderCustom
+
+                axios.post('/api/email/sendEmailCertification', {email: this.state.email, name: this.state.name, password: this.state.password, birthday: birthday, gender: gender}).then((res) => {
                 }) // catch 일 경우.... 
                 this.setState({ slideOpen: 2 })
                 e.target.textContent='완료'
             }else if(this.state.slideOpen===2){
                 this.props.onLogin(this.state.email, this.state.password).then(data => { // login 부분 ***********
                     if (data.success) {
-                        this.props.history.push('/')
+                        this.props.history.push(returnUrl())
                     } else {
                         this.setState({ errorCode: 2})
                     }
@@ -531,44 +570,63 @@ class Signup extends Component{
 
     render(){ 
         const { classes } = this.props;
+        return (
+            <div className={classes.root}>
+                <Box display="flex" justifyContent="center">
+                    <Card elevation={3} className={classes.card}>
+                        <CardHeader className={classes.cardHead} style={{minHeight: '48px'}}
+                                    title={
+                                            isWidthUp('sm', this.props.width)?
+                                            <Box display="flex" alignItems="center">
+                                                {this.state.slideOpen < 2
+                                                ? <IconButton style={{marginRight: "10px"}} onClick={this.state.slideOpen === 0 ? () => this.props.history.goBack() : this.onClickBack}>
+                                                    <ArrowBackIcon style={{color: "#0000008A"}}/>  
+                                                </IconButton>
+                                                : null}
 
-        /**************************************************** PC *****************************************************/
-        if(isWidthUp('sm', this.props.width)) {
-            return ( 
-                <div className={classes.root}>
-                    <Box display="flex" justifyContent="center" >
-                        <Card elevation={3} style={{maxWidth: '450px', width:'100%', minWidth:'300px', position: 'relative'}}>
-                            <CardHeader className={classes.cardTitleText} style={{minHeight: '48px'}}
-                                        title={
-                                                <Box display="flex" alignItems="center">
-                                                    {this.state.slideOpen < 2
-                                                    ? <IconButton style={{marginRight: "10px"}} onClick={this.state.slideOpen === 0 ? () => this.props.history.goBack() : this.onClickBack}>
-                                                        <ArrowBackIcon style={{color: "#0000008A"}}/>  
-                                                    </IconButton>
-                                                    : null}
+                                                <img src={root.imgLogo} alt={root.site} className={classes.imgLogo} /> 
 
-                                                    <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
+                                                <Typography style={{color: "#0000008A", fontSize: "28px", marginLeft: "10px"}}>
+                                                    계정 만들기
+                                                </Typography>
+                                            </Box>
+                                            :
+                                            <Box>
+                                                <Box display="flex" alignItems="center" justifyContent="center"> 
+                                                    <Box style={{position: "absolute", left: "20px"}}>
+                                                        {this.state.slideOpen < 2
+                                                        ? <IconButton onClick={this.state.slideOpen === 0 ? () => this.props.history.goBack() : this.onClickBack}>
+                                                            <ArrowBackIcon style={{color: "#0000008A"}}/>  
+                                                        </IconButton>
+                                                        : null}
+                                                    </Box>
 
-                                                    <Typography style={{color: "#0000008A", fontSize: "28px", marginLeft: "10px"}}>
+                                                    <img src={root.imgLogo} alt={root.site} className={classes.imgLogo} /> 
+                                                </Box>
+
+                                                <Box display="flex" justifyContent="center" style={{paddingTop: "10px"}}>
+                                                    <Typography style={{color: "#0000008A", fontSize: "28px", minWidth: "140px"}}>
                                                         계정 만들기
                                                     </Typography>
                                                 </Box>
-                                            }   
-                            />
-                            <Box style={{padding: "16px 10%", minHeight: '450px'}}>
+                                            </Box>
+                                        }
+                        />
+                        <form autoComplete="off">
+                            <Box className={classes.cardBody}>
                                 <Slide style={{position: 'relative', }} direction="left" in={this.state.slideOpen===0} timeout={{exit:0, enter: 0,}} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
                                     <CardContent style={{padding: 0}}>
-                                        <TextField variant="outlined" value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.emailerror || this.state.errorCode===1}
-                                            fullWidth label="이메일" placeholder="이메일을 입력해주세요." style={{margin: "15px 0px 7.5px 0px"}} inputRef={this.textFieldRef[0]}
-                                            helperText={this.state.emailerror? "이메일 형식이 올바르지 않습니다.": false} onKeyPress={this.onKeyPress} spellCheck="false"/>
-                                        <TextField variant="outlined" value={this.state.name} onChange={this.handleChange.bind(this, "name")} error={this.state.nameerror}
-                                            fullWidth label="이름" placeholder="이름을 입력해주세요." style={{margin: "7.5px 0px"}} inputRef={this.textFieldRef[1]}
+                                        <TextField variant="outlined" onChange={this.handleChange.bind(this, "name")} error={this.state.nameerror}
+                                            fullWidth label="이름" placeholder="이름을 입력해주세요." name="nickname" id="nickname" autoComplete="nickname" style={{margin: "15px 0px 7.5px 0px"}} inputRef={this.textFieldRef[1]}
                                             helperText={this.state.nameerror? "한글, 영어만 사용, 2~10자리": false} onKeyPress={this.onKeyPress} spellCheck="false"/>
-                                        <TextField variant="outlined" value={this.state.password} onChange={this.handleChange.bind(this, "password")} error={this.state.passworderror}
-                                            fullWidth label="비밀번호" placeholder="비밀번호를 입력해주세요." type="password" style={{margin: "7.5px 0px"}} inputRef={this.textFieldRef[2]}
+                                        <TextField variant="outlined" onChange={this.handleChange.bind(this, "email")} error={this.state.emailerror || this.state.errorCode===1}
+                                            fullWidth label="이메일" placeholder="이메일을 입력해주세요." type="email" name="username" id="username" autoComplete="username" style={{margin: "7.5px 0px"}} inputRef={this.textFieldRef[0]}
+                                            helperText={this.state.emailerror? "이메일 형식이 올바르지 않습니다.": false} onKeyPress={this.onKeyPress} spellCheck="false"/>
+                                        <TextField variant="outlined" onChange={this.handleChange.bind(this, "password")} error={this.state.passworderror}
+                                            fullWidth label="비밀번호" placeholder="비밀번호를 입력해주세요." type="password" name="newPassword" id="newPassword" autoComplete="new-password" style={{margin: "7.5px 0px"}} inputRef={this.textFieldRef[2]}
                                             helperText={this.state.passworderror? "영어, 숫자, 특수문자 포함, 8~15자리": false} onKeyPress={this.onKeyPress}/>
-                                        <TextField variant="outlined" value={this.state.passwordcheck} onChange={this.handleChange.bind(this, "passwordcheck")} error={this.state.passwordcheckerror}
-                                            fullWidth label="비밀번호 확인" placeholder="비밀번호를 한 번 더 입력해주세요." type="password" style={{margin: "7.5px 0px 15px 0px"}} inputRef={this.textFieldRef[3]}
+                                        <TextField variant="outlined" onChange={this.handleChange.bind(this, "passwordcheck")} error={this.state.passwordcheckerror}
+                                            fullWidth label="비밀번호 확인" placeholder="비밀번호를 한 번 더 입력해주세요." type="password" name="confimPassword" id="confimPassword" autoComplete="new-password" style={{margin: "7.5px 0px 15px 0px"}} inputRef={this.textFieldRef[3]}
                                             helperText={this.state.passwordcheckerror? "비밀번호가 다릅니다.": false} onKeyPress={this.onKeyPress}/>
 
 
@@ -645,200 +703,48 @@ class Signup extends Component{
                                     </CardContent>
                                 </Slide>
                             </Box>
+                        </form>
 
-                            <CardActions className={classes.signupButtonLayout}>
-                                <Button onClick={this.onClickSignup} className={classes.signupButton}>
-                                    다음
-                                </Button>
-                            </CardActions>
-                        </Card >
-                    </Box >
-
-                    <Snackbar open={this.state.errorCode!==0} autoHideDuration={3000} onClose={this.snackBarHandleClose}> 
-                        <Alert severity="error">
-                            {
-                                (this.state.errorCode===1 && "해당 이메일로 가입한 계정이 존재합니다.") ||
-                                (this.state.errorCode===2 && "이메일 인증 후 회원가입이 완료됩니다.") ||
-                                (this.state.errorCode===3 && "인증 상태가 아닙니다.") ||
-                                (this.state.errorCode===4 && "더 이상 인증 메일을 보낼 수 없습니다.")
-                            }
-                        </Alert>
-                    </Snackbar>
-
-                    <Snackbar open={this.state.emailSendMessage} autoHideDuration={3000} onClose={this.snackBarHandleClose}>
-                        <Alert severity="success">
-                            인증 메일을 전송했습니다.<br/>(남은 전송 횟수: {this.state.emailSendCount})
-                        </Alert>
-                    </Snackbar>
-
-                    <Snackbar open={this.state.termsCheckederror} autoHideDuration={3000} onClose={this.snackBarHandleClose}>
-                        <Alert severity="error">
-                            이용약관에 동의해주세요.
-                        </Alert>
-                    </Snackbar>
-
-                    <Snackbar open={this.state.privacyCheckederror} autoHideDuration={3000} onClose={this.snackBarHandleClose}>
-                        <Alert severity="error">
-                            개인정보처리방침에 동의해주세요.
-                        </Alert>
-                    </Snackbar>
-                    <DialogContents DialogContentState={this.state.dialogOpen} setDialogContentState={this.setDialogOpen} contentType={this.state.dialogContentType}/>
-                </div> 
-            ) 
-        }
-
-
-        /*************************************************** 모바일 ***************************************************/
-        else {
-            return ( 
-                <div >
-                    <Box className={classes.rootMob}>
-                        <Box style={{padding: "40px 40px 0px 40px"}} display="flex" flexDirection="column" >
-
-                            <Box display="flex" alignItems="center" justifyContent="center">
-
-                                <Box style={{position: "absolute", left: "20px"}}>
-                                    {this.state.slideOpen < 2
-                                    ? <IconButton onClick={this.state.slideOpen === 0 ? () => this.props.history.goBack() : this.onClickBack}>
-                                        <ArrowBackIcon style={{color: "#0000008A"}}/>  
-                                    </IconButton>
-                                    : null}
-                                </Box>
-
-                                <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
-                            </Box>
-
-                            <Box display="flex" justifyContent="center" style={{paddingTop: "10px"}}>
-                                <Typography style={{color: "#0000008A", fontSize: "28px", minWidth: "140px"}}>
-                                    계정 만들기
-                                </Typography>
-                            </Box>
-
-                            <Box paddingBottom={'25px'} position='relative' overflow='hidden' >
-                                <Slide direction="left" in={this.state.slideOpen===0} timeout={{exit:0, enter: 0,}} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
-                                    <Box style={{position: 'absolute'}}>
-                                        <TextField variant="outlined" value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.emailerror || this.state.errorCode===1}
-                                            fullWidth label="이메일" placeholder="이메일을 입력해주세요." style={{margin: "30px 0px 7.5px 0px"}} inputRef={this.textFieldRef[0]}
-                                            helperText={this.state.emailerror? "이메일 형식이 올바르지 않습니다.": false} onKeyPress={this.onKeyPress} spellCheck="false"/>
-                                        <TextField variant="outlined" value={this.state.name} onChange={this.handleChange.bind(this, "name")} error={this.state.nameerror}
-                                            fullWidth label="이름" placeholder="이름을 입력해주세요." style={{margin: "7.5px 0px"}} inputRef={this.textFieldRef[1]}
-                                            helperText={this.state.nameerror? "한글, 영어만 사용, 2~10자리": false} onKeyPress={this.onKeyPress} spellCheck="false"/>
-                                        <TextField variant="outlined" value={this.state.password} onChange={this.handleChange.bind(this, "password")} error={this.state.passworderror}
-                                            fullWidth label="비밀번호" placeholder="비밀번호를 입력해주세요." type="password" style={{margin: "7.5px 0px"}} inputRef={this.textFieldRef[2]}
-                                            helperText={this.state.passworderror? "영어, 숫자, 특수문자 포함, 8~15자리": false} onKeyPress={this.onKeyPress}/>
-                                        <TextField variant="outlined" value={this.state.passwordcheck} onChange={this.handleChange.bind(this, "passwordcheck")} error={this.state.passwordcheckerror}
-                                            fullWidth label="비밀번호 확인" placeholder="비밀번호를 한 번 더 입력해주세요." type="password" style={{margin: "7.5px 0px 15px 0px"}} inputRef={this.textFieldRef[3]}
-                                            helperText={this.state.passwordcheckerror? "비밀번호가 다릅니다.": false} onKeyPress={this.onKeyPress}/>
-
-                                        <Box display="flex" alignItems={'center'} style={{marginTop: "10px"}}>
-                                            <FormControlLabel label="이용약관 동의" className={classes.termsCheckBox} control={<Checkbox checked={this.state.termsChecked} onChange={this.handleChange.bind(this, "terms")} size="medium" value="termsChecked" color="primary"/>}   />
-                                            <Button className={classes.termsButton} onClick={this.setDialogOpen.bind(this, true, 'terms')} style={{textDecoration: 'none', marginLeft: "auto", maxHeight: '35px', minWidth: '105px'}}>이용약관</Button>
-                                        </Box>
-                                        <Box display="flex" alignItems={'center'} >
-                                            <FormControlLabel label="개인정보처리방침 동의" className={classes.termsCheckBox} control={<Checkbox checked={this.state.privacyChecked} onChange={this.handleChange.bind(this, "privacy")} size="medium" value="privacyChecked" color="primary"/>}   />
-                                            <Button className={classes.termsButton} onClick={this.setDialogOpen.bind(this, true, 'privacy')} style={{textDecoration: 'none', marginLeft: "auto", maxHeight: '35px', minWidth: '105px'}}>개인정보처리방침</Button>
-                                        </Box>
-
-                                    </Box>
-                                </Slide>
-
-                                <Slide direction="left" in={this.state.slideOpen===1} timeout={{exit:0, enter: 500,}} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
-                                    <Box style={{paddingTop: "30px", position: "absolute"}}>
-                                        <Typography style={{color: '#0000008A', fontFamily: 'NotoSansKR-Regular', minWidth: "140px"}}>생년월일 (선택사항)</Typography>
-                                        <Box display="flex" mt={2}>
-                                            <TextField fullWidth variant="outlined" value={this.state.year || ""} onChange={event => this.handleChangeBirthday(event.target.value, "year")}
-                                                        label={"연"} style={{width: "100%", minWidth: "70px"}} spellCheck="false" inputRef={this.textFieldRefBirthday[0]} />
-
-                                            <FormControl variant="outlined" className={classes.formControl} style={{width: "100%", minWidth: "80px"}}>
-                                                <InputLabel id="demo-simple-select-outlined-label">월</InputLabel>
-                                                <Select labelId="demo-simple-select-outlined-label" id="demo-simple-select-outlined" value={this.state.month} onChange={event => this.handleChangeBirthday(event.target.value, "month")} label="월" >
-                                                    <MenuItem value={"01"}>1월</MenuItem> <MenuItem value={"02"}>2월</MenuItem> <MenuItem value={"03"}>3월</MenuItem> 
-                                                    <MenuItem value={"04"}>4월</MenuItem> <MenuItem value={"05"}>5월</MenuItem> <MenuItem value={"06"}>6월</MenuItem> 
-                                                    <MenuItem value={"07"}>7월</MenuItem> <MenuItem value={"08"}>8월</MenuItem> <MenuItem value={"09"}>9월</MenuItem> 
-                                                    <MenuItem value={"10"}>10월</MenuItem> <MenuItem value={"11"}>11월</MenuItem> <MenuItem value={"12"}>12월</MenuItem>
-                                                </Select>
-                                            </FormControl>
-
-                                            <TextField fullWidth variant="outlined" value={this.state.date || ""} onChange={event => this.handleChangeBirthday(event.target.value, "date")} 
-                                                        label={"일"} style={{width: "100%", minWidth: "50px"}} spellCheck="false" inputRef={this.textFieldRefBirthday[1]}/>
-                                        </Box>
-
-                                        <Typography variant="body2" style={{fontFamily: "NotoSansKR-Regular", color: "#f44336", marginTop: "3px"}}>
-                                            {this.state.errorMassage}
-                                        </Typography>
-
-                                        <FormControl variant="outlined" style={{width: '100%', marginTop: "12px", minWidth: "150px"}}>
-                                            <InputLabel htmlFor="gender">성별 (선택사항)</InputLabel>
-                                            <Select native label="성별 (선택사항)" labelId='gender' onChange={this.handleChangeGender} defaultValue=''>
-                                                <option aria-label="None" value="" disabled hidden />
-                                                <option value={"여성"}>여성</option>
-                                                <option value={"남성"}>남성</option>
-                                                <option value={"공개 안함"}>공개 안함</option>
-                                                <option value={"사용자 지정"}>사용자 지정</option>
-                                            </Select>
-                                        </FormControl>
-
-                                        <TextField fullWidth variant="outlined" value={this.state.genderCustom || ''} label="성별 입력" style={{width: "100%", marginTop: "10px"}} onChange={this.handleChangeGenderCustom}
-                                                className={clsx("none", {[classes.displayNone]: this.state.genderCurrent !== "사용자 지정"})}
-                                                error={this.state.genderError === -2} inputRef={this.textFieldRefGender[0]}
-                                                helperText={this.state.genderError === -2 ? "사용자 지정 성별을 입력해주세요." : false} />
-                                    </Box>
-                                </Slide>
-
-                                <Slide direction="left" in={this.state.slideOpen===2} timeout={{exit:0, enter: 500,}} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
-                                    <CardContent style={{display: 'flex', flexDirection: 'column', position: 'absolute', padding: "10px 0px 0px 0px"}}>
-                                        <Box height='auto' mt={2}>
-                                            <Typography variant='h6' style={{color: '#0000008A'}}><span style={{color: root.PrimaryColor}}>{this.state.email}</span>로 인증 메일을 보냈습니다. 이메일을 확인해 주세요. <br/><br/>이메일 인증 후 회원가입이 완료됩니다.</Typography>
-                                        </Box>
-                                    </CardContent>
-                                </Slide>
-                            </Box>
-
-                        </Box >
-
-                        <Box className={classes.signupButtonMobLayout}>
-                            <Button onClick={this.onClickSignup} className={classes.signupButtonMob}>
+                        <CardActions className={classes.signupButtonLayout}>
+                            <Button onClick={this.onClickSignup} className={classes.signupButton}>
                                 다음
                             </Button>
-                        </Box>
-                    </Box>
-                    
+                        </CardActions>
+                    </Card >
+                </Box >
 
-                    <Snackbar open={this.state.errorCode!==0} autoHideDuration={3000} onClose={this.snackBarHandleClose}> 
-                        <Alert severity="error">
-                            {
-                                (this.state.errorCode===1 && "해당 이메일로 가입한 계정이 존재합니다.") ||
-                                (this.state.errorCode===2 && "이메일 인증 후 회원가입이 완료됩니다.") ||
-                                (this.state.errorCode===3 && "인증 상태가 아닙니다.") ||
-                                (this.state.errorCode===4 && "더 이상 인증 메일을 보낼 수 없습니다.")
-                            }
-                        </Alert>
-                    </Snackbar>
+                <Snackbar open={this.state.errorCode!==0} autoHideDuration={3000} onClose={this.snackBarHandleClose}> 
+                    <Alert severity="error">
+                        {
+                            (this.state.errorCode===1 && "해당 이메일로 가입한 계정이 존재합니다.") ||
+                            (this.state.errorCode===2 && "이메일 인증 후 회원가입이 완료됩니다.") ||
+                            (this.state.errorCode===3 && "인증 상태가 아닙니다.") ||
+                            (this.state.errorCode===4 && "더 이상 인증 메일을 보낼 수 없습니다.")
+                        }
+                    </Alert>
+                </Snackbar>
 
-                    <Snackbar open={this.state.emailSendMessage} autoHideDuration={3000} onClose={this.snackBarHandleClose}>
-                        <Alert severity="success">
-                            인증 메일을 전송했습니다.<br/>(남은 전송 횟수: {this.state.emailSendCount})
-                        </Alert>
-                    </Snackbar>
+                <Snackbar open={this.state.emailSendMessage} autoHideDuration={3000} onClose={this.snackBarHandleClose}>
+                    <Alert severity="success">
+                        인증 메일을 전송했습니다.<br/>(남은 전송 횟수: {this.state.emailSendCount})
+                    </Alert>
+                </Snackbar>
 
-                    <Snackbar open={this.state.termsCheckederror} autoHideDuration={3000} onClose={this.snackBarHandleClose}>
-                        <Alert severity="error">
-                            이용약관에 동의해주세요.
-                        </Alert>
-                    </Snackbar>
+                <Snackbar open={this.state.termsCheckederror} autoHideDuration={3000} onClose={this.snackBarHandleClose}>
+                    <Alert severity="error">
+                        이용약관에 동의해주세요.
+                    </Alert>
+                </Snackbar>
 
-                    <Snackbar open={this.state.privacyCheckederror} autoHideDuration={3000} onClose={this.snackBarHandleClose}>
-                        <Alert severity="error">
-                            개인정보처리방침에 동의해주세요.
-                        </Alert>
-                    </Snackbar>
-                    <DialogContents DialogContentState={this.state.dialogOpen} setDialogContentState={this.setDialogOpen} contentType={this.state.dialogContentType}/>
-                    
-                </div> 
-            ) 
-        }
-        
-    } 
+                <Snackbar open={this.state.privacyCheckederror} autoHideDuration={3000} onClose={this.snackBarHandleClose}>
+                    <Alert severity="error">
+                        개인정보처리방침에 동의해주세요.
+                    </Alert>
+                </Snackbar>
+                <DialogContents DialogContentState={this.state.dialogOpen} setDialogContentState={this.setDialogOpen} contentType={this.state.dialogContentType}/>
+            </div> 
+        ) 
+    }
 }
 
 export default withStyles(useStyles)(withWidth()(withRouter(Signup)));

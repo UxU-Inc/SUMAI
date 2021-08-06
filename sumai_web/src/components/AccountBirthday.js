@@ -80,7 +80,7 @@ class AccountNameChange extends React.Component {
                 }.bind(this), 0)
             } 
         }
-        if(this.props.status.isLoggedIn && this.state.id === '' && typeof this.props.status.currentId !== "undefined") {
+        if(this.props.status.isLoggedIn && typeof this.state.id === "undefined" && typeof this.props.status.currentId !== "undefined") {
             this.setState({
                 id: this.props.status.currentId,
                 year: moment(this.props.location.state.birthday).format('YYYY') === "Invalid date" ? "" : moment(this.props.location.state.birthday).format('YYYY'),

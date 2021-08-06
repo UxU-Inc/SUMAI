@@ -7,13 +7,15 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 
-import imgLogo from '../images/sumai_logo_blue.png';
-import * as root from '../rootValue';
 import Snackbar from '@material-ui/core/Snackbar';
 import axios from 'axios'
-import { useHistory } from 'react-router-dom';
 import MuiAlert from '@material-ui/lab/Alert';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+
+import { checkSite } from '../functions/CheckSite';
+import { returnUrl } from '../functions/util';
+
+const root = checkSite();
 
 const useStyles = theme => ({
     root: {
@@ -72,14 +74,14 @@ const Header = (props) => {
         (matches && <CardHeader className={classes.cardTitleText} 
             title={
                 <Box display="flex" alignItems="center">
-                    <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
+                    <img src={root.imgLogo} alt={root.site} className={classes.imgLogo} /> 
                     <Typography style={{color: "#0000008A", fontSize: "28px", marginLeft: "10px"}}>비밀번호 찾기</Typography>
                 </Box>
             }
         />) || (
             <Box>
                 <Box display="flex" alignItems="center" justifyContent="center">
-                    <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
+                    <img src={root.imgLogo} alt={root.site} className={classes.imgLogo} /> 
                 </Box>
 
                 <Box display="flex" justifyContent="center" style={{paddingTop: "10px", paddingBottom: '15px'}}>
@@ -97,7 +99,6 @@ function Alert(props) {
 }
 
 function PasswordResetComponent(props) {
-    const history = useHistory()
     const [email, setEmail] = useState('')
     const [emailError, setEmailError] = useState(false)
     const [errorCode, setErrorCode] = useState(0)
@@ -156,7 +157,7 @@ function PasswordResetComponent(props) {
                 })
             })
         }else if(slideNumber===1) {
-             history.push("/")
+            window.location.assign(returnUrl())
         }
     }
     const onEnteredSlide = useCallback((e) => {
