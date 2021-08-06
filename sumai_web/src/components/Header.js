@@ -79,7 +79,7 @@ const useStyles = theme => ({
     background: "#fff",
     color: root.PrimaryColor,
     border: '1px solid #d4d4d4',
-    marginRight: "10px",
+    marginRight: "20px",
   },
   loginButton: {
     '&:hover': {
@@ -523,7 +523,7 @@ class Header extends Component {
     }, [open]);
 
     React.useEffect(() => {
-      if (props.currentId !== '') {
+      if (typeof props.currentId !== 'undefined') {
         profile_image(props.currentId).then((imageURL) => {
           setImage(imageURL);
           setAvatarName(re_name(props.currentUser))
@@ -534,7 +534,7 @@ class Header extends Component {
 
 
     function profile_image(id) {
-      return new Promise((res, rej) => axios.post('/api/account/accountLoad/' + id, { } ).then((data) => {
+      return new Promise((res, rej) => axios.post('/api/account/accountLoad', { } ).then((data) => {
         res(data.data.image);
       }).catch(() => {
         res('');
@@ -683,7 +683,7 @@ class Header extends Component {
 
             <div style={{ flexGrow: 1 }} />
 
-            {/* {this.props.matches
+            {this.props.matches
               ?  // PC
               <Button className={classes.newsButton} onClick={this.onClickExternLink("https://news.sumai.co.kr")} style={this.props.matches ? { padding: "7.5px 15px" } : { padding: "5px", minWidth: '80px' }}>
                 <FeaturedPlayListIcon style={{ color: root.PrimaryColor, marginRight: "5px" }} />
@@ -695,7 +695,7 @@ class Header extends Component {
                 <MenuListComposition xsm={this.props.xsm} />
                 :  // Mobile(0~360)
                 null
-            } */}
+            }
 
             {this.props.isLoggedIn ? loginLayout : loginButton}
 
@@ -718,8 +718,8 @@ Header.propTypes = {
 
 Header.defaultProps = {
   isLoggedIn: false,
-  currentUser: '',
-  currentId: '',
+  currentUser: undefined,
+  currentId: undefined,
   onLogout: () => { console.error("logout function not defined"); }
 };
 

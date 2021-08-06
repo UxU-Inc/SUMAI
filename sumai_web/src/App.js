@@ -4,9 +4,6 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.css';
 
 import Main from "./Main";
-import Terms from "./components/Terms";
-import Privacy from "./components/Privacy";
-import Notices from "./components/Notices";
 import LoginMain from "./components/LoginMain";
 import PasswordReset from './components/PasswordReset';
 import Account from "./components/Account";
@@ -22,6 +19,10 @@ import NotFound from "./components/NotFound"
 import { connect } from 'react-redux';
 import { getStatusRequest, logoutRequest, getStatusFailure } from './actions/authentication';
 import { ClientInfoComponent } from './reducers/clientInfo';
+import { TermsContentsPadding } from './components/TermsContents';
+import { PrivacyContentsPadding } from './components/PrivacyContents';
+import { NoticesContentsPadding } from './components/NoticesContents';
+import Policy from './components/Policy';
 
 class App extends Component { 
   componentDidMount() { //컴포넌트 렌더링이 맨 처음 완료된 이후에 바로 세션확인
@@ -101,9 +102,12 @@ class App extends Component {
             <Route path="/accounts/gender" component={ AccountGender } />
             
 
-            <Route path="/terms" component={ Terms } />
-            <Route path="/privacy" component={ Privacy } />
-            <Route path="/notices" component={ Notices } />
+            <Route path="/terms/content" component = { TermsContentsPadding } />
+            <Route path="/privacy/content" component = { PrivacyContentsPadding } />
+            <Route path="/notices/content" component = { NoticesContentsPadding } />
+            <Route path="/terms" component={ Policy } />
+            <Route path="/privacy" component={ Policy } />
+            <Route path="/notices" component={ Policy } />
             <Route path="/email/certification" component={ EmailCertification } />
             <Route path="/email/login" component={ EmailLogin } />
 

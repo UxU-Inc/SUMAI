@@ -14,9 +14,9 @@ const initialState = {
         loaded: false,
         valid: false,
         isLoggedIn: false,
-        currentId: '',
-        currentEmail: '',
-        currentUser: '',
+        currentId: undefined,
+        currentEmail: undefined,
+        currentUser: undefined,
     }
 };
  
@@ -82,7 +82,7 @@ export default function authentication(state = initialState, action) {
       return {
         ...state,
         status: {
-          ...state.staus,
+          ...state.status,
           isLoggedIn: true
         }
       }
@@ -119,9 +119,9 @@ export default function authentication(state = initialState, action) {
         status: {
           ...state.status,
           isLoggedIn: false,
-          currentId: '',
-          currentEmail: '',
-          currentUser: ''
+          currentId: undefined,
+          currentEmail: undefined,
+          currentUser: undefined
         }
       }
     /* NAME_CHANGE */
@@ -129,7 +129,7 @@ export default function authentication(state = initialState, action) {
       return {
         ...state,
         status: {
-          ...state.staus,
+          ...state.status,
           isLoggedIn: true
         }
       }

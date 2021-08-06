@@ -145,7 +145,7 @@ class RecordLastest extends Component{
     accountInit = () => {
         new Promise(async (resolve, reject) => {
             const Interval = setInterval(() => {
-                if(typeof this.props.status.currentId !== "undefined") {
+                if(typeof this.props.status.loaded) {
                     const id = this.props.status.currentId
                     this.lastest(id, -1);
                     resolve();
@@ -374,7 +374,7 @@ class RecordLastest extends Component{
                                 <Avatar src={image} style={{width: "2.2em", height: "2.2em"}} />
                             } action={
                                 <Grid container direction="row" justify="center" alignItems="center">
-                                    {(this.props.status.currentId !== '' && el.id === this.props.status.currentId) || (el.id === '' && el.ip_addr === this.props.ip)?<DeleteIcon onClick={this.recordDelete.bind(this, key, el.idx)} fontSize="large" className={classes.deleteStyle} />: null}
+                                    {(typeof this.props.status.currentId !== 'undefined' && el.id === this.props.status.currentId) || (el.id === '' && el.ip_addr === this.props.ip)?<DeleteIcon onClick={this.recordDelete.bind(this, key, el.idx)} fontSize="large" className={classes.deleteStyle} />: null}
                                     <Typography style={{fontSize: "20px", paddingTop: "18px"}}>{(el.like) + (el.clicked === 1? this.state.isClick[key]? -1:0:this.state.isClick[key]? 1:0)}</Typography>
                                     <IconButton onClick={this.props.status.isLoggedIn? this.onClickChangeColor.bind(this, key, el.clicked, el.idx): this.onClickNotLogin}  style={{margin: "4px 4px -8px -8px"}}>
                                         <ThumbUpAltIcon fontSize="large" color={el.clicked === 1? this.state.isClick[key]? "inherit":"primary":this.state.isClick[key]? "primary":"inherit"}/>
@@ -385,7 +385,7 @@ class RecordLastest extends Component{
                             <CardContent onClick={this.onClickExpand.bind(this, key)} style={{padding: "0px", position: "relative"}}>
                                 <Grid container direction="row" className={clsx(classes.showExpand, {[classes.hideExpand]: !this.state.isExpand[key]})}>
                                     <Grid item xs={7} sm={7} md={7} lg={7} xl={7}>
-                                        {el.original_data.length < 250 || (this.props.status.currentId !== '' && el.id === this.props.status.currentId) || (el.id === '' && el.ip_addr === this.props.ip)? 
+                                        {el.original_data.length < 250 || (typeof this.props.status.currentId !== 'undefined' && el.id === this.props.status.currentId) || (el.id === '' && el.ip_addr === this.props.ip)? 
                                         <Typography className={classes.summaryText}>{el.original_data}</Typography> :
                                         <>
                                             <Typography className={classes.summaryText}>{el.original_data.slice(0, 180)+"..."}</Typography>
