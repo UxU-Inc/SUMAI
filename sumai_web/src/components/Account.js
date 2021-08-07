@@ -33,9 +33,8 @@ const useStyles = makeStyles((theme) => ({
     borderBottom: '1px solid #e0e0e0',
   },
   imgLogo: {
-    width: 80,
-    height: 28.2,
-    alt: 'SUMAI',
+    width: root.logoWidth,
+    height: root.logoHeight,
   },
   link: {
     display: 'flex',
@@ -103,7 +102,7 @@ function useLoadAccount() {
   const status = useSelector(state => state.authentication.status)
   const [account, setAccount] = React.useState({})
   const history = useHistory()
-  
+
   const avatarName = React.useCallback((name) => {
     if (/[a-zA-Z0-9]/.test(name.charAt(0))) {
       return name.charAt(0)
@@ -118,7 +117,7 @@ function useLoadAccount() {
     }
   }, [])
 
-  const loadAccount = React.useCallback(async() => {
+  const loadAccount = React.useCallback(async () => {
     try {
       const id = status.currentId
       const data = await axios.post('/api/account/accountLoad', {})
@@ -127,13 +126,13 @@ function useLoadAccount() {
         avatarname: avatarName(status.currentUser),
         avatarcolor: '#' + CryptoJS.MD5(id).toString().substring(1, 7),
       })
-    } catch(e) {
+    } catch (e) {
       history.push("/") // 로직 변경해야함
     }
   }, [avatarName, status, history])
 
   React.useEffect(() => {
-    if(status.loaded) {
+    if (status.loaded) {
       loadAccount()
     }
   }, [loadAccount, status])
@@ -190,15 +189,15 @@ export default function Account() {
           <Paper variant="outlined" className={classes.contentBody}>
 
             {open ? <AccountImage onClose={handleclose} id={account.id} imagesrc={account.image} /> : null}
-            <Button onClick={()=>setOpen(true)} className={classes.itemButton}>
+            <Button onClick={() => setOpen(true)} className={classes.itemButton}>
               <Box className={classes.itemRoot}>
                 <Box className={classes.itemContext}>
                   <Typography variant="caption" className={classes.itemTitle}>
                     사진
-                                    </Typography>
+                  </Typography>
                   <Typography variant="subtitle2" className={classes.itemContent}>
                     프로필 사진 설정
-                                    </Typography>
+                  </Typography>
                 </Box>
                 <Box>
                   {account.image !== '' ?
@@ -218,7 +217,7 @@ export default function Account() {
                 <Box className={classes.itemContext}>
                   <Typography variant="caption" className={classes.itemTitle}>
                     이름
-                                </Typography>
+                  </Typography>
                   <Typography variant="subtitle2" className={classes.itemContent} >
                     {account.name}
                   </Typography>
@@ -235,11 +234,11 @@ export default function Account() {
                   <Box className={classes.itemContext}>
                     <Typography variant="caption" className={classes.itemTitle}>
                       비밀번호
-                                </Typography>
+                    </Typography>
                     <Box>
                       <Typography variant="subtitle2" className={classes.itemContent} style={{ letterSpacing: "1px" }}>
                         ••••••••
-                                  </Typography>
+                      </Typography>
                       <Typography variant="subtitle2" className={classes.itemContent}>
                         최종 변경일: {moment(account.passwordChangeTime).format('YYYY. M. D.') === "Invalid date" ? "" : moment(account.passwordChangeTime).format('YYYY. M. D.')}
                       </Typography>
@@ -255,7 +254,7 @@ export default function Account() {
               <Box className={classes.itemContext}>
                 <Typography variant="caption" className={classes.itemTitle}>
                   회원가입 계정
-                                </Typography>
+                </Typography>
                 <Typography variant="subtitle2" className={classes.itemContent}>
                   {account.type === null ? "SUMAI" : account.type}
                 </Typography>
@@ -268,7 +267,7 @@ export default function Account() {
               <Box className={classes.itemContext}>
                 <Typography variant="caption" className={classes.itemTitle}>
                   이메일
-                                </Typography>
+                </Typography>
                 <Typography variant="subtitle2" className={classes.itemContent}>
                   {account.email}
                 </Typography>
@@ -282,7 +281,7 @@ export default function Account() {
                 <Box className={classes.itemContext}>
                   <Typography variant="caption" className={classes.itemTitle}>
                     생년월일
-                                </Typography>
+                  </Typography>
                   <Typography variant="subtitle2" className={classes.itemContent}>
                     {account.birth === null || moment(account.birth).format('YYYY년 M월 D일') === "Invalid date" ? "생년월일 설정" : moment(account.birth).format('YYYY년 M월 D일')}
                   </Typography>
@@ -299,7 +298,7 @@ export default function Account() {
                 <Box className={classes.itemContext}>
                   <Typography variant="caption" className={classes.itemTitle}>
                     성별
-                                </Typography>
+                  </Typography>
                   <Typography variant="subtitle2" className={classes.itemContent}>
                     {account.gender === null ? "성별 설정" : account.gender}
                   </Typography>
@@ -316,7 +315,7 @@ export default function Account() {
           <Box display="flex" flexDirection="row-reverse" style={{ width: "640px", marginTop: "10px" }}>
             <Button onClick={() => onClickLink("/accounts/withdrawal")} style={{ color: "#0000008A", fontFamily: "NotoSansKR-Light" }}>
               회원탈퇴
-                      </Button>
+            </Button>
           </Box>
         </Grid>
 
