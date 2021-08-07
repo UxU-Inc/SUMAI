@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, { useCallback } from 'react';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -8,7 +8,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import PhotoIcon from '@material-ui/icons/Photo';
-import {useDropzone} from 'react-dropzone'
+import { useDropzone } from 'react-dropzone'
 import FormData from 'form-data'
 import axios from 'axios';
 import { Typography } from '@material-ui/core';
@@ -20,9 +20,9 @@ export default function AccountImage(props) {
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [imgBase64, setImgBase64] = React.useState(props.imagesrc); // 파일 base64
   const [imgFile, setImgFile] = React.useState(null);	//파일	
-  const [notImg, setNotImg] = React.useState(false);	
+  const [notImg, setNotImg] = React.useState(false);
   const [imgContents, setImgContents] = React.useState('클릭 또는 이미지를 드래그');	//파일	
-  const [isDelete, setIsDelete] = React.useState(false);	
+  const [isDelete, setIsDelete] = React.useState(false);
   const [isImageLoading, setIsImageLoading] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -30,7 +30,7 @@ export default function AccountImage(props) {
     if (isLoading) return
     if (acceptedFiles[0]) {
       setIsImageLoading(true)
-      if(acceptedFiles[0].type.indexOf("image/") === -1) {
+      if (acceptedFiles[0].type.indexOf("image/") === -1) {
         setNotImg(true)
         setImgBase64("");
         setImgFile(null); // 파일 상태 업데이트
@@ -57,25 +57,27 @@ export default function AccountImage(props) {
       }
     }
   }, [isLoading])
-  const {getRootProps, getInputProps} = useDropzone({onDrop})
+  const { getRootProps, getInputProps } = useDropzone({ onDrop })
 
   const handleClose = () => {
     props.onClose('');
   };
 
   const handleChange = () => {
-    if(imgFile === null) {
+    if (imgFile === null) {
       props.onClose('');
-    } else if(isLoading) {
+    } else if (isLoading) {
       return
     } else {
       setIsLoading(true)
       let data = new FormData();
       data.append('img', imgFile, imgFile.name);
-      axios.post('/api/account/imageUpload', data, { headers: {
-        'accept': 'application/json',
-        'Content-Type': `multipart/form-data; boundary=${data._boundary}`,
-      }}).then((data) => {
+      axios.post('/api/account/imageUpload', data, {
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': `multipart/form-data; boundary=${data._boundary}`,
+        }
+      }).then((data) => {
         props.onClose(data.data.image);
       }).catch(() => {
         setImgBase64("");
@@ -111,51 +113,51 @@ export default function AccountImage(props) {
       >
         <DialogTitle>
           {"프로필 사진 선택"}
-          {!isDelete && props.imagesrc !== "" && props.imagesrc === imgBase64? <Button onClick={handleDeleteOpen} disabled={isLoading? true: false} style={{color: "#ba000d", position: 'absolute', right: theme.spacing(1),}}>
+          {!isDelete && props.imagesrc !== "" && props.imagesrc === imgBase64 ? <Button onClick={handleDeleteOpen} disabled={isLoading ? true : false} style={{ color: "#ba000d", position: 'absolute', right: theme.spacing(1), }}>
             삭제
           </Button> : null}
         </DialogTitle>
-        {!isDelete? <DialogContent style={{borderTop: '1px solid #e0e0e0'}}>
-          <Box {...getRootProps()} display="flex" justifyContent="center" alignItems="center" flexDirection="column">
-            <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" style={{height: "380px", width: "380px"}}>
-              {imgBase64 === "" || notImg? 
-                <PhotoIcon style={{ fontSize: 100 }}/> : 
-                isImageLoading? <CircularProgress /> : <img src={imgBase64} alt="profileImage" />}
-              <Typography style={{textAlign: "center"}}>{imgContents}</Typography>
+        {!isDelete ? <DialogContent style={{ borderTop: '1px solid #e0e0e0' }}>
+          <Box {...getRootProps()} display="flex" justifyContent="center" alignItems="center" flexDirection="column" style={{ cursor: 'pointer' }}>
+            <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" style={{ height: "380px", width: "380px" }}>
+              {imgBase64 === "" || notImg ?
+                <PhotoIcon style={{ fontSize: 100 }} /> :
+                isImageLoading ? <CircularProgress /> : <img src={imgBase64} alt="profileImage" />}
+              <Typography style={{ textAlign: "center" }}>{imgContents}</Typography>
             </Box>
             <input
               {...getInputProps()}
               accept="image/*"
               style={{ display: 'none' }}
               type="file"
-              disabled={isLoading? true: false}
+              disabled={isLoading ? true : false}
             />
           </Box>
         </DialogContent> :
-        <DialogContent style={{borderTop: '1px solid #e0e0e0'}}>
-          <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column">
-            <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" style={{height: "380px", width: "380px"}}>
-              <img src={props.imagesrc} alt="profileImage"/>
-              <Typography style={{textAlign: "center", color: "#ba000d"}}>삭제하시겠습니까?</Typography>
+          <DialogContent style={{ borderTop: '1px solid #e0e0e0' }}>
+            <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column">
+              <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" style={{ height: "380px", width: "380px" }}>
+                <img src={props.imagesrc} alt="profileImage" />
+                <Typography style={{ textAlign: "center", color: "#ba000d" }}>삭제하시겠습니까?</Typography>
+              </Box>
             </Box>
-          </Box>
-        </DialogContent>}
-        {!isDelete? <DialogActions>
-          <Button onClick={handleChange} color="primary" disabled={isLoading? true: false}>
+          </DialogContent>}
+        {!isDelete ? <DialogActions>
+          <Button onClick={handleChange} color="primary" disabled={isLoading ? true : false}>
             변경
           </Button>
-          <Button autoFocus onClick={handleClose} color="primary" disabled={isLoading? true: false}>
+          <Button autoFocus onClick={handleClose} color="primary" disabled={isLoading ? true : false}>
             취소
           </Button>
         </DialogActions> :
-        <DialogActions>
-          <Button onClick={handleDelete} disabled={isLoading? true: false} style={{color: "#ba000d"}}>
-            삭제
-          </Button>
-          <Button autoFocus onClick={handleDeleteClose} disabled={isLoading? true: false} color="primary">
-            취소
-          </Button>
-        </DialogActions>}
+          <DialogActions>
+            <Button onClick={handleDelete} disabled={isLoading ? true : false} style={{ color: "#ba000d" }}>
+              삭제
+            </Button>
+            <Button autoFocus onClick={handleDeleteClose} disabled={isLoading ? true : false} color="primary">
+              취소
+            </Button>
+          </DialogActions>}
       </Dialog>
     </div>
   );
