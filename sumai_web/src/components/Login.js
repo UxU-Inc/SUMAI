@@ -17,6 +17,9 @@ import googleLogo from '../images/btn_google_light_normal_ios@3x.png';
 import naverLogo from '../images/naver_btn_green.png';
 import clsx from 'clsx';
 
+
+import DialogContents from './DialogContents'
+
 import { checkSite } from '../functions/CheckSite';
 
 const root = checkSite();
@@ -248,6 +251,13 @@ class Login extends Component {
       })
     }
   }
+  
+  setDialogOpen = (bool, contentType) => {
+    this.setState({
+        dialogOpen: bool,
+        dialogContentType: contentType,
+    })
+  }
 
   render() {
     const { classes } = this.props;
@@ -315,8 +325,8 @@ class Login extends Component {
 
           <Grid container justify="center" >
             <Box display="flex" flexDirection="row-reverse" style={{ width: "450px" }}>
-              <Link to="/privacy" style={{ textDecoration: 'none' }}><Button className={classes.termsButton}>개인정보처리방침</Button></Link>
-              <Link to="/terms" style={{ textDecoration: 'none' }}><Button className={classes.termsButton}>이용약관</Button></Link>
+              <Button className={classes.termsButton} onClick={this.setDialogOpen.bind(this, true, 'terms')}>개인정보처리방침</Button>
+              <Button className={classes.termsButton} onClick={this.setDialogOpen.bind(this, true, 'privacy')}>이용약관</Button>
             </Box>
           </Grid>
 
@@ -327,6 +337,7 @@ class Login extends Component {
               {this.state.toomanyerror ? "잠시 후 시도해주세요." : null}
             </Alert>
           </Snackbar>
+          <DialogContents DialogContentState={this.state.dialogOpen} setDialogContentState={this.setDialogOpen} contentType={this.state.dialogContentType}/>
         </div>
       )
     }
@@ -383,8 +394,8 @@ class Login extends Component {
 
 
           <Box textAlign="right" alignSelf="flex-end" style={{ padding: "10px 30px 20px 40px" }}>
-            <Link to="/terms" style={{ textDecoration: 'none' }}><Button className={classes.termsButton}>이용약관</Button></Link>
-            <Link to="/privacy" style={{ textDecoration: 'none' }}><Button className={classes.termsButton}>개인정보처리방침</Button></Link>
+            <Button className={classes.termsButton} onClick={this.setDialogOpen.bind(this, true, 'terms')}>이용약관</Button>
+            <Button className={classes.termsButton} onClick={this.setDialogOpen.bind(this, true, 'privacy')}>개인정보처리방침</Button>
           </Box>
 
           <Snackbar open={this.state.errorNotice} autoHideDuration={3000} onClose={this.snackBarHandleClose}>
@@ -394,6 +405,7 @@ class Login extends Component {
               {this.state.toomanyerror ? "잠시 후 시도해주세요." : null}
             </Alert>
           </Snackbar>
+          <DialogContents DialogContentState={this.state.dialogOpen} setDialogContentState={this.setDialogOpen} contentType={this.state.dialogContentType}/>
         </Box>
       )
     }
