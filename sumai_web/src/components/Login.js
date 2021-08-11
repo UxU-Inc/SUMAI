@@ -14,9 +14,7 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import googleLogo from '../images/btn_google_light_normal_ios@3x.png';
-import kakaoLogo from '../images/kakaolink_btn_small.png';
 import naverLogo from '../images/naver_btn_green.png';
-import facebookLogo from '../images/facebook_icon.png';
 import clsx from 'clsx';
 
 import { checkSite } from '../functions/CheckSite';
@@ -300,27 +298,15 @@ class Login extends Component {
           <Grid container justify="center">
             <Box style={{ margin: "24px 0px" }}>
               <Box boxShadow={2} display="flex" justifyContent="center" style={{ width: "450px", marginTop: "10px" }}>
-                <Button onClick={this.SNSLogin.bind(this, "google")} style={{ width: "100%", borderRadius: "0px", padding: "10px" }}>
-                  <img src={googleLogo} alt="G" style={{ width: "22.5px" }} />
-                  <Typography style={{ color: "#757575", marginLeft: "10px", fontSize: "20px", fontFamily: "NotoSansKR-Medium" }}>구글 로그인</Typography>
-                </Button>
-              </Box>
-              <Box boxShadow={2} display="flex" justifyContent="center" style={{ width: "450px", marginTop: "10px" }}>
-                <Button onClick={this.SNSLogin.bind(this, "kakao")} style={{ width: "100%", borderRadius: "0px", padding: "10px", background: "#ffeb00" }}>
-                  <img src={kakaoLogo} alt="G" style={{ width: "30px" }} />
-                  <Typography style={{ color: "#3c1e1e", marginLeft: "10px", fontSize: "20px", fontFamily: "NotoSansKR-Medium" }}>카카오 로그인</Typography>
-                </Button>
-              </Box>
-              <Box boxShadow={2} display="flex" justifyContent="center" style={{ width: "450px", marginTop: "10px" }}>
                 <Button onClick={this.SNSLogin.bind(this, "naver")} style={{ width: "100%", borderRadius: "0px", padding: "10px", background: "#1ec800" }}>
                   <img src={naverLogo} alt="G" style={{ width: "30px" }} />
                   <Typography style={{ color: "#fff", marginLeft: "10px", fontSize: "20px", fontFamily: "NotoSansKR-Medium" }}>네이버 로그인</Typography>
                 </Button>
               </Box>
               <Box boxShadow={2} display="flex" justifyContent="center" style={{ width: "450px", marginTop: "10px" }}>
-                <Button onClick={this.SNSLogin.bind(this, "facebook")} style={{ width: "100%", borderRadius: "0px", padding: "10px", background: "#3a5daa" }}>
-                  <img src={facebookLogo} alt="G" style={{ width: "25px" }} />
-                  <Typography style={{ color: "#fff", marginLeft: "10px", fontSize: "20px", fontFamily: "NotoSansKR-Medium" }}>페이스북 로그인</Typography>
+                <Button onClick={this.SNSLogin.bind(this, "google")} style={{ width: "100%", borderRadius: "0px", padding: "10px" }}>
+                  <img src={googleLogo} alt="G" style={{ width: "22.5px" }} />
+                  <Typography style={{ color: "#757575", marginLeft: "10px", fontSize: "20px", fontFamily: "NotoSansKR-Medium" }}>구글 로그인</Typography>
                 </Button>
               </Box>
             </Box>
@@ -380,27 +366,15 @@ class Login extends Component {
 
             <Box style={{ marginTop: "20px" }}>
               <Box boxShadow={2} display="flex" justifyContent="center" style={{ marginTop: "10px" }}>
-                <Button onClick={this.SNSLogin.bind(this, "google")} style={{ width: "100%", borderRadius: "0px", padding: "10px" }}>
-                  <img src={googleLogo} alt="G" style={{ width: "22.5px" }} />
-                  <Typography style={{ color: "#757575", marginLeft: "10px", fontSize: "20px", fontFamily: "NotoSansKR-Medium" }}>구글 로그인</Typography>
-                </Button>
-              </Box>
-              <Box boxShadow={2} display="flex" justifyContent="center" style={{ marginTop: "10px" }}>
-                <Button onClick={this.SNSLogin.bind(this, "kakao")} style={{ width: "100%", borderRadius: "0px", padding: "10px", background: "#ffeb00" }}>
-                  <img src={kakaoLogo} alt="G" style={{ width: "30px" }} />
-                  <Typography style={{ color: "#3c1e1e", marginLeft: "10px", fontSize: "20px", fontFamily: "NotoSansKR-Medium" }}>카카오 로그인</Typography>
-                </Button>
-              </Box>
-              <Box boxShadow={2} display="flex" justifyContent="center" style={{ marginTop: "10px" }}>
                 <Button onClick={this.SNSLogin.bind(this, "naver")} style={{ width: "100%", borderRadius: "0px", padding: "10px", background: "#1ec800" }}>
                   <img src={naverLogo} alt="G" style={{ width: "30px" }} />
                   <Typography style={{ color: "#fff", marginLeft: "10px", fontSize: "20px", fontFamily: "NotoSansKR-Medium" }}>네이버 로그인</Typography>
                 </Button>
               </Box>
               <Box boxShadow={2} display="flex" justifyContent="center" style={{ marginTop: "10px" }}>
-                <Button onClick={this.SNSLogin.bind(this, "facebook")} style={{ width: "100%", borderRadius: "0px", padding: "10px", background: "#3a5daa" }}>
-                  <img src={facebookLogo} alt="G" style={{ width: "25px" }} />
-                  <Typography style={{ color: "#fff", marginLeft: "10px", fontSize: "20px", fontFamily: "NotoSansKR-Medium" }}>페이스북 로그인</Typography>
+                <Button onClick={this.SNSLogin.bind(this, "google")} style={{ width: "100%", borderRadius: "0px", padding: "10px" }}>
+                  <img src={googleLogo} alt="G" style={{ width: "22.5px" }} />
+                  <Typography style={{ color: "#757575", marginLeft: "10px", fontSize: "20px", fontFamily: "NotoSansKR-Medium" }}>구글 로그인</Typography>
                 </Button>
               </Box>
             </Box>
