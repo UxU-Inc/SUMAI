@@ -1,8 +1,8 @@
 import React, { Component } from 'react'; 
 
 // import Header from "../components/Header"; 
-import Signup from "../components/Signup";
-import Login from "../components/Login";
+import Signup from "./Signup";
+import Login from "./Login";
 import { Alert, AlertTitle } from '@material-ui/lab';
 
 import { connect } from 'react-redux';
