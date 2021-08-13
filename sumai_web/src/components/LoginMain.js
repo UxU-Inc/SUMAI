@@ -1,6 +1,5 @@
 import React, { Component } from 'react'; 
 
-// import Header from "../components/Header"; 
 import Signup from "./Signup";
 import Login from "./Login";
 import { Alert, AlertTitle } from '@material-ui/lab';
