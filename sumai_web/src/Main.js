@@ -2,7 +2,7 @@ import React from 'react';
 import './components/Main.css';
 import './componentsMob/MainMob.css';
 
-import Header from "./components/Header";
+import Header from "./components/header/Header";
 import Body from "./components/Body";
 import RecordLastest from "./components/RecordLastest";
 import RecordRecommend from "./components/RecordRecommend";

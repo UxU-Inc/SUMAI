@@ -44,7 +44,7 @@ const useStyles = theme => ({
   imgLogo: {
     width: root.logoWidth,
     height: root.logoHeight,
-    alt: 'SUMAI',
+    alt: root.site,
   },
   textInput: {
     background: '#ffffff',
@@ -251,11 +251,11 @@ class Login extends Component {
       })
     }
   }
-  
+
   setDialogOpen = (bool, contentType) => {
     this.setState({
-        dialogOpen: bool,
-        dialogContentType: contentType,
+      dialogOpen: bool,
+      dialogContentType: contentType,
     })
   }
 
@@ -337,7 +337,7 @@ class Login extends Component {
               {this.state.toomanyerror ? "잠시 후 시도해주세요." : null}
             </Alert>
           </Snackbar>
-          <DialogContents DialogContentState={this.state.dialogOpen} setDialogContentState={this.setDialogOpen} contentType={this.state.dialogContentType}/>
+          <DialogContents DialogContentState={this.state.dialogOpen} setDialogContentState={this.setDialogOpen} contentType={this.state.dialogContentType} />
         </div>
       )
     }
@@ -405,7 +405,7 @@ class Login extends Component {
               {this.state.toomanyerror ? "잠시 후 시도해주세요." : null}
             </Alert>
           </Snackbar>
-          <DialogContents DialogContentState={this.state.dialogOpen} setDialogContentState={this.setDialogOpen} contentType={this.state.dialogContentType}/>
+          <DialogContents DialogContentState={this.state.dialogOpen} setDialogContentState={this.setDialogOpen} contentType={this.state.dialogContentType} />
         </Box>
       )
     }
