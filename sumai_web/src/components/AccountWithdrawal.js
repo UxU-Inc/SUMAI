@@ -80,17 +80,26 @@ class AccountPassword extends React.Component {
             dialogOpen: false,
             code: 0,
             isLoading: false,
+            account: null
         }
         this.textFieldRef = [React.createRef()]
     }
 
-    componentDidUpdate() {
-        if(this.props.status.loaded) {
-            if(this.props.status.isLoggedIn === false) {
-                setTimeout(function() { 
-                    this.props.history.push("/") 
-                }.bind(this), 0)
-            } 
+    async componentDidMount() {
+        const account = await this.loadAccount();
+        
+        this.setState({
+            account: account
+        })
+        
+    }
+    
+    loadAccount = async () => {
+        try {
+            const data = await axios.post('/api/account/accountLoad', {})
+            return data.data;
+        } catch (e) {
+            this.props.history.push("/") 
         }
     }
 
@@ -125,6 +134,21 @@ class AccountPassword extends React.Component {
     }
 
     onClickPasswordCheck = () => {
+        if (this.state.account.type !== "SUMAI") {
+            if (this.state.password === "삭제") {
+                this.setState({
+                    dialogOpen: true,
+                    isLoading: false,
+                })  
+            } else {
+                this.setState({
+                    passwordError: true,
+                    isLoading: false,
+                })
+            }
+            return
+        }
+        
         if(this.state.password === "") {
             this.textFieldRef[0].current.focus()
             return
@@ -266,10 +290,17 @@ class AccountPassword extends React.Component {
                                 회원탈퇴
                             </Typography>
 
-                            <TextField autoFocus fullWidth variant="outlined" value={this.state.password} onChange={this.handleChange} label="비밀번호 입력" 
-                                        style={{margin: "30px 0px 7.5px 0px"}} placeholder="비밀번호를 입력해주세요." type="password" error={this.state.passwordError} inputRef={this.textFieldRef[0]}
-                                        helperText={this.state.passwordError ? "잘못된 비밀번호입니다. 다시 시도하거나 비밀번호 찾기를 클릭하여 재설정하세요." : false}
-                                        disabled={this.state.isLoading? true : false} />
+                            { this.state.account === null || this.state.account.type === "SUMAI" ? 
+                                <TextField autoFocus fullWidth variant="outlined" value={this.state.password} onChange={this.handleChange} label="비밀번호 입력" 
+                                    style={{margin: "30px 0px 7.5px 0px"}} placeholder="비밀번호를 입력해주세요." type="password" error={this.state.passwordError} inputRef={this.textFieldRef[0]}
+                                    helperText={this.state.passwordError ? "잘못된 비밀번호입니다. 다시 시도하거나 비밀번호 찾기를 클릭하여 재설정하세요." : false}
+                                    disabled={this.state.isLoading? true : false} />
+                                :
+                                <TextField autoFocus fullWidth variant="outlined" value={this.state.password} onChange={this.handleChange} label="계정 삭제" 
+                                    style={{margin: "30px 0px 7.5px 0px"}} placeholder="회원탈퇴하시려면 '삭제'를 입력해주세요. " type="word" error={this.state.passwordError} inputRef={this.textFieldRef[0]}
+                                    helperText={this.state.passwordError ? "잘못 입력하였습니다. '삭제'를 입력해주세요." : false}
+                                    disabled={this.state.isLoading? true : false} />
+                            }
 
                             <Box display="flex" flexDirection="row-reverse" style={{marginTop: "10px"}}>
                                 <Button onClick={this.onClickPasswordCheck} disabled={this.state.isLoading? true : false} style={{background: root.PrimaryColor, color: "#fff"}}>
