@@ -1,6 +1,6 @@
-import React, { Component } from 'react'; 
+import React, { Component } from 'react';
 
-// import Header from "../components/Header"; 
+// import Header from "../components/header/Header"; 
 import Signup from "./Signup";
 import Login from "./Login";
 import { Alert, AlertTitle } from '@material-ui/lab';
@@ -11,32 +11,35 @@ import { loginRequest, snsloginRequest } from '../actions/authentication';
 import axios from 'axios'
 import { returnUrl } from '../functions/util';
 
-class LoginMain extends Component{ 
+import { checkSite } from '../functions/CheckSite';
+const root = checkSite();
+
+class LoginMain extends Component {
     handleChckSignupEmail = (email) => {
-        return axios.post('/api/account/checkSignupEmail', {email}).then((res) => {
+        return axios.post('/api/account/checkSignupEmail', { email }).then((res) => {
             return { success: true }
         }).catch((err) => {
-            return { success: false}
+            return { success: false }
         })
     }
 
     handleLogin = (email, password) => {
         return this.props.loginRequest(email, password).then(
             () => {
-                if(this.props.login.status === "SUCCESS") {
+                if (this.props.login.status === "SUCCESS") {
                     let domainIndex = window.location.hostname.indexOf('.') // ex) asdf.good.com -> 5 (.의 위치)
                     let domainName
-                    if(domainIndex === -1) domainName = window.location.hostname // .을 못 찾은 경우 그대로 씀 -> localhost
+                    if (domainIndex === -1) domainName = window.location.hostname // .을 못 찾은 경우 그대로 씀 -> localhost
                     else domainName = window.location.hostname.substr(domainIndex) // .이 있는 경우 -> .good.com
                     // create session data
                     let loginData = {
                         isLoggedIn: true,
                         email: email
                     };
- 
+
                     document.cookie = 'key=' + btoa(JSON.stringify(loginData)) + ';domain=' + domainName + ';path=/;';
- 
-                    if(navigator.cookieEnabled) {  // 쿠키 허용 상태
+
+                    if (navigator.cookieEnabled) {  // 쿠키 허용 상태
                         window.location.assign(returnUrl())
                     } else {  // 쿠키 차단 상태
                         return { success: true, error: 92 }
@@ -52,25 +55,25 @@ class LoginMain extends Component{
     handleSNSLogin = (type) => {
         return this.props.snsloginRequest(type).then(
             (email) => {
-                if(this.props.login.status === "SUCCESS") {
+                if (this.props.login.status === "SUCCESS") {
                     let domainIndex = window.location.hostname.indexOf('.') // ex) asdf.good.com -> 5 (.의 위치)
                     let domainName
-                    if(domainIndex === -1) domainName = window.location.hostname // .을 못 찾은 경우 그대로 씀 -> localhost
+                    if (domainIndex === -1) domainName = window.location.hostname // .을 못 찾은 경우 그대로 씀 -> localhost
                     else domainName = window.location.hostname.substr(domainIndex) // .이 있는 경우 -> .good.com
                     // create session data
                     let loginData = {
                         isLoggedIn: true,
                         email: email
                     };
- 
+
                     document.cookie = 'key=' + btoa(JSON.stringify(loginData)) + ';domain=' + domainName + ';path=/;';
- 
-                    if(navigator.cookieEnabled) {  // 쿠키 허용 상태
+
+                    if (navigator.cookieEnabled) {  // 쿠키 허용 상태
                         window.location.assign(returnUrl())
                     } else {  // 쿠키 차단 상태
                         return { success: true, error: 92 }
                     }
-                    
+
                     return { success: true };
                 } else {
                     return { success: false, error: this.props.login.error }
@@ -78,24 +81,24 @@ class LoginMain extends Component{
             }
         );
     }
-    render(){ 
-        return ( 
-            <div> 
+    render() {
+        return (
+            <div>
                 {/* <Header props={this.props}/>  */}
-                {this.props.signup.status === "SUCCESS"? 
+                {this.props.signup.status === "SUCCESS" ?
                     <Alert severity="success">
-                        <AlertTitle>SUMAI 회원가입 완료!</AlertTitle>
+                        <AlertTitle>{root.site} 회원가입 완료!</AlertTitle>
                         <strong>로그인을 해주세요!</strong>
-                    </Alert>: null}
-                <div style={{backgroundColor: "#fff"}}>
-                    {this.props.match.path === "/login/signup"? 
-                        <Signup onCheckSignupEmail={this.handleChckSignupEmail} onLogin={this.handleLogin}/>:
-                        <Login onLogin={this.handleLogin} onSNSLogin={this.handleSNSLogin} loginStatus={this.props.login.status}/>
+                    </Alert> : null}
+                <div style={{ backgroundColor: "#fff" }}>
+                    {this.props.match.path === "/login/signup" ?
+                        <Signup onCheckSignupEmail={this.handleChckSignupEmail} onLogin={this.handleLogin} /> :
+                        <Login onLogin={this.handleLogin} onSNSLogin={this.handleSNSLogin} loginStatus={this.props.login.status} />
                     }
                 </div>
-            </div> 
-        ) 
-    } 
+            </div>
+        )
+    }
 }
 
 const mapStateToProps = (state) => {
@@ -104,7 +107,7 @@ const mapStateToProps = (state) => {
         signup: state.authentication.signup,
     };
 };
- 
+
 const mapDispatchToProps = (dispatch) => {
     return {
         loginRequest: (email, password) => {

@@ -2,12 +2,15 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import imgLogo from '../images/sumai_logo.png';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import Box from '@material-ui/core/Box';
 import { useHistory, useLocation } from 'react-router';
 import { useMediaQuery, useTheme } from '@material-ui/core';
+
+import { checkSite } from '../functions/CheckSite';
+const root = checkSite();
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -21,9 +24,9 @@ const useStyles = makeStyles((theme) => ({
     borderBottom: '1px solid #e0e0e0',
   },
   imgLogo: {
-    width: 80,
-    height: 28.2,
-    alt: 'SUMAI',
+    width: root.logoWidth,
+    height: root.logoHeight,
+    alt: root.site,
   },
   link: {
     display: 'flex',
@@ -101,7 +104,7 @@ export default function PolicyHeader() {
         <Toolbar variant="dense">
 
           <a href="/" className={classes.link} >
-            <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} />
+            <img src={root.imgLogo} alt={root.site} className={classes.imgLogo} />
           </a>
 
         </Toolbar>
