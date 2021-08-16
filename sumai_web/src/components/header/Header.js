@@ -143,7 +143,7 @@ function Header(props) {
       flexDirection='row'
       style={{ marginLeft: 'auto', color: 'rgba(0, 0, 0, 0.87)' }}>
       <Box p={0}>
-        <AccountManagementMenu props={props} />
+        <AccountManagementMenu onLogout={props.onLogout} />
       </Box>
     </Box>
   );
