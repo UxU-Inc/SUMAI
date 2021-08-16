@@ -1,8 +1,8 @@
 import React from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
-import PrivacyContents from './PrivacyContents'
-import TermsContents from './TermsContents'
+import PrivacyContents from './policy/PrivacyContents'
+import TermsContents from './policy/TermsContents'
 import { DialogTitle, DialogActions, Button } from '@material-ui/core';
 import * as root from '../rootValue';
 import DialogContent from '@material-ui/core/DialogContent';

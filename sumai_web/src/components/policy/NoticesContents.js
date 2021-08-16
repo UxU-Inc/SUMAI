@@ -26,7 +26,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import axios from 'axios';
 
 //redux
-import {sendAct} from '../reducers/clientInfo'
+import {sendAct} from '../../reducers/clientInfo'
 import { useDispatch } from 'react-redux';
 
 
