@@ -1,4 +1,4 @@
-import React, { Component } from 'react'; 
+import React, { Component } from 'react';
 import { withRouter } from 'react-router'
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -42,7 +42,7 @@ const useStyles = theme => ({
             position: "relative",
         },
         [theme.breakpoints.up(600)]: {
-            '&::before, &::after' : {
+            '&::before, &::after': {
                 minHeight: '30px',
                 height: '24px',
                 boxSizing: 'border-box',
@@ -60,8 +60,8 @@ const useStyles = theme => ({
         },
         [theme.breakpoints.up(600)]: {
             maxWidth: '450px',
-            width:'100%',
-            minWidth:'300px',
+            width: '100%',
+            minWidth: '300px',
         },
     },
     cardHead: {
@@ -107,7 +107,7 @@ const useStyles = theme => ({
         color: '#ffffff',
         background: root.PrimaryColor,
         "&:hover": {
-          background: root.HoberColor
+            background: root.HoberColor
         },
         width: '100%',
         height: '50px',
@@ -125,7 +125,7 @@ const useStyles = theme => ({
         color: '#ffffff',
         background: root.PrimaryColor,
         "&:hover": {
-          background: root.HoberColor,
+            background: root.HoberColor,
         },
         width: '100%',
         height: '50px',
@@ -133,19 +133,19 @@ const useStyles = theme => ({
         fontWeight: 'bold',
     },
     imgLogo: {
-        width: 80,
-        height: 28.2,
-        alt: 'SUMAI',
+        width: root.logoWidth,
+        height: root.logoHeight,
+        alt: root.site,
     },
     termsButton: {
         width: "105px",
-        padding: "7.5px", 
-        fontSize: "12px", 
+        padding: "7.5px",
+        fontSize: "12px",
         color: "#fff",
         fontFamily: "NotoSansKR-Light",
         background: root.PrimaryColor,
         "&:hover": {
-          background: root.HoberColor,
+            background: root.HoberColor,
         },
     },
     termsCheckBox: {
@@ -155,9 +155,9 @@ const useStyles = theme => ({
     },
     formControl: {
         margin: "0px 15px",
-    },  
+    },
     displayNone: {
-      display: "none",
+        display: "none",
     },
 })
 
@@ -165,7 +165,7 @@ function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-class Signup extends Component{ 
+class Signup extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -192,7 +192,7 @@ class Signup extends Component{
             slideOpen: 0,
             errorCode: 0,
             errorMessage: '',
-            birthCode:0,
+            birthCode: 0,
             emailSendCount: 5,
             emailSendMessage: false,
             beforeSlide: null,
@@ -203,11 +203,11 @@ class Signup extends Component{
         this.textFieldRef = [React.createRef(), React.createRef(), React.createRef(), React.createRef()]
         this.textFieldRefBirthday = [React.createRef(), React.createRef()]
         this.textFieldRefGender = [React.createRef()]
-      }
+    }
 
     handleChange = (type, e) => {
-        if(type === "email") {
-            if(this.state.errorCode===1) {
+        if (type === "email") {
+            if (this.state.errorCode === 1) {
                 this.setState({
                     errorCode: 0,
                 })
@@ -228,11 +228,11 @@ class Signup extends Component{
                 passwordcheckerror: false,
                 passwordcheck: e.target.value.trim(),
             })
-        } else if(type === "terms") {
+        } else if (type === "terms") {
             this.setState({
                 termsChecked: e.target.checked,
             })
-        } else if(type === "privacy") {
+        } else if (type === "privacy") {
             this.setState({
                 privacyChecked: e.target.checked,
             })
@@ -241,10 +241,10 @@ class Signup extends Component{
         this.validation(type, e.target.value.trim(), e.target.checked)
     }
     validation = (type, value, checked) => {
-        if(type === "email") {
+        if (type === "email") {
             // 이메일 형식 검사
             const emailRegex = /^[0-9a-z]([-_.]?[0-9a-z])*@[0-9a-z]([-_.]?[0-9a-z])*\.[a-z]{2,}$/i;
-            if(!emailRegex.test(value) && value !== "") {
+            if (!emailRegex.test(value) && value !== "") {
                 this.setState({
                     emailerror: true,
                 })
@@ -256,7 +256,7 @@ class Signup extends Component{
         } else if (type === "name") {
             // 이름 형식 검사
             const nameRegex = /^[a-zA-Z가-힣0-9]{2,10}$/;
-            if(!nameRegex.test(value) && value !== "") {
+            if (!nameRegex.test(value) && value !== "") {
                 this.setState({
                     nameerror: true,
                 })
@@ -268,7 +268,7 @@ class Signup extends Component{
         } else if (type === "password") {
             // 비밀번호 유형 검사 (영어, 숫자 8~15자리)
             const passwordRegex = /^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[`~!@#$%^&+*()\-_+=.,<>/?'";:[\]{}\\|]).*$/;
-            if(!passwordRegex.test(value) && value !== "") {
+            if (!passwordRegex.test(value) && value !== "") {
                 this.setState({
                     passworderror: true,
                 })
@@ -289,7 +289,7 @@ class Signup extends Component{
             this.setState({
                 privacyCheckederror: false,
             })
-        } 
+        }
     }
 
     onResize = () => {
@@ -316,11 +316,11 @@ class Signup extends Component{
     handleChangeBirthday = (value, type) => {
         const re = /^[0-9\b]+$/
 
-        if(type === "year" && (value === '' || re.test(value.trim()) ) ) {
+        if (type === "year" && (value === '' || re.test(value.trim()))) {
             this.setState({ year: value.trim() })
-        } else if(type === "month") {
+        } else if (type === "month") {
             this.setState({ month: value.trim() })
-        } else if(type === "date" && (value === '' || re.test(value.trim()) ) ) {
+        } else if (type === "date" && (value === '' || re.test(value.trim()))) {
             this.setState({ date: value.trim() })
         }
     }
@@ -331,47 +331,47 @@ class Signup extends Component{
         let month = parseInt(this.state.month)
         let date = parseInt(this.state.date)
 
-        if(this.state.year === '' && this.state.month === '' && this.state.date === '') {
+        if (this.state.year === '' && this.state.month === '' && this.state.date === '') {
             return true
         }
 
-        if(this.state.year === '') {
+        if (this.state.year === '') {
             this.textFieldRefBirthday[0].current.focus()
             this.setState({ errorMassage: '생년월일을 정확히 입력해 주세요.' })
             return false
-        } else if(this.state.month === '') {
+        } else if (this.state.month === '') {
             this.setState({ errorMassage: '생년월일을 정확히 입력해 주세요.' })
             return false
-        } else if(this.state.date === '') {
+        } else if (this.state.date === '') {
             this.textFieldRefBirthday[1].current.focus()
             this.setState({ errorMassage: '생년월일을 정확히 입력해 주세요.' })
             return false
         }
-        
-        if(year < 1000 || 10000 <= year) {  // 연도 4자리 수 입력
+
+        if (year < 1000 || 10000 <= year) {  // 연도 4자리 수 입력
             this.textFieldRefBirthday[0].current.focus()
             this.setState({ errorMassage: '4자리 연도를 입력해 주세요.' })
             return false
-        } else if(year < 1890) {  // 1890년도 이후 입력 
+        } else if (year < 1890) {  // 1890년도 이후 입력 
             this.textFieldRefBirthday[0].current.focus()
             this.setState({ errorMassage: '올바른 연도를 입력해 주세요.' })
             return false
-        } else if(currentYear < year) {
+        } else if (currentYear < year) {
             this.textFieldRefBirthday[0].current.focus()
             this.setState({ errorMassage: '올바른 연도를 입력해 주세요.' })
             return false
         } else {
             this.setState({ errorMassage: '' })
         }
-    
-        if(month < 1 || 12 < month) {  // 월 범위 벗어나는 경우
+
+        if (month < 1 || 12 < month) {  // 월 범위 벗어나는 경우
             this.setState({ errorMassage: '올바른 월을 입력해 주세요.' })
             return false
         } else {
             this.setState({ errorMassage: '' })
         }
 
-        if(date < 1 || 31 < date) {  // 일 범위 벗어나는 경우
+        if (date < 1 || 31 < date) {  // 일 범위 벗어나는 경우
             this.textFieldRefBirthday[1].current.focus()
             this.setState({ errorMassage: '올바른 일을 입력해 주세요.' })
             return false
@@ -379,18 +379,18 @@ class Signup extends Component{
             this.setState({ errorMassage: '' })
         }
 
-        if(this.state.year !== '' && this.state.month !== '' && this.state.date !== '') {
+        if (this.state.year !== '' && this.state.month !== '' && this.state.date !== '') {
             let birthday
-            if(this.state.month.length === 1) birthday = this.state.year + "0" + this.state.month + this.state.date
+            if (this.state.month.length === 1) birthday = this.state.year + "0" + this.state.month + this.state.date
             else birthday = this.state.year + this.state.month + this.state.date
-            if(this.state.date.length === 1) birthday = this.state.year + this.state.month + "0" + this.state.date
+            if (this.state.date.length === 1) birthday = this.state.year + this.state.month + "0" + this.state.date
             else birthday = this.state.year + this.state.month + this.state.date
 
-            if(!moment(birthday).isValid()) {
+            if (!moment(birthday).isValid()) {
                 this.setState({ errorMassage: '올바른 생년월일을 입력해 주세요.' })  // 올바른 날짜인지 검증
                 return false
             }
-            else if(moment().isBefore(moment(birthday), 'date')) {
+            else if (moment().isBefore(moment(birthday), 'date')) {
                 this.setState({ errorMassage: '올바른 생년월일을 입력해 주세요.' })  // 현재 날짜 이후 생년월일 오류
                 return false
             } else {
@@ -412,262 +412,262 @@ class Signup extends Component{
         })
     }
     validationGender = () => {
-        if(this.state.genderCurrent === "") {
-            return true
-        } 
-        
-        if(this.state.genderCurrent === "사용자 지정" && this.state.genderCustom === "") {
-            this.textFieldRefGender[0].current.focus()
-            this.setState({ genderError: -2 })
-            return false
-        } 
-        
-        if(this.state.genderCurrent !== "" && this.state.genderCurrent !== "사용자 지정") {
+        if (this.state.genderCurrent === "") {
             return true
         }
 
-        if(this.state.genderCurrent === "사용자 지정" && this.state.genderCustom !== "") {
+        if (this.state.genderCurrent === "사용자 지정" && this.state.genderCustom === "") {
+            this.textFieldRefGender[0].current.focus()
+            this.setState({ genderError: -2 })
+            return false
+        }
+
+        if (this.state.genderCurrent !== "" && this.state.genderCurrent !== "사용자 지정") {
+            return true
+        }
+
+        if (this.state.genderCurrent === "사용자 지정" && this.state.genderCustom !== "") {
             return true
         }
     }
 
     snackBarHandleClose = (event, reason) => {
         if (reason === 'clickaway') {
-          return;
+            return;
         }
 
-        if(this.state.termsCheckederror) {
+        if (this.state.termsCheckederror) {
             this.setState({ termsCheckederror: false })
-        } else if(this.state.privacyCheckederror) {
+        } else if (this.state.privacyCheckederror) {
             this.setState({ privacyCheckederror: false })
-        } 
-        
-        if(this.state.errorCode !== 0) {
+        }
+
+        if (this.state.errorCode !== 0) {
             this.setState({ errorCode: 0 })
-        } 
-        
-        if(this.state.emailSendMessage === true) {
+        }
+
+        if (this.state.emailSendMessage === true) {
             this.setState({ emailSendMessage: false })
         }
     }
     onClickSignup = (e) => {
 
-        if (this.state.slideOpen===0) { // 회원가입 누르면
-            if(this.state.email === "" || this.state.emailerror) {
+        if (this.state.slideOpen === 0) { // 회원가입 누르면
+            if (this.state.email === "" || this.state.emailerror) {
                 this.textFieldRef[0].current.focus()
                 return
-            } else if(this.state.name === "" || this.state.nameerror) {
+            } else if (this.state.name === "" || this.state.nameerror) {
                 this.textFieldRef[1].current.focus()
                 return
-            } else if(this.state.password === "" || this.state.passworderror) {
+            } else if (this.state.password === "" || this.state.passworderror) {
                 this.textFieldRef[2].current.focus()
                 return
-            } else if(this.state.password !== this.state.passwordcheck) {
+            } else if (this.state.password !== this.state.passwordcheck) {
                 this.setState({
                     passwordcheckerror: true,
                     passwordcheck: '',
                 })
                 this.textFieldRef[3].current.focus()
                 return
-            } else if(this.state.password === this.state.passwordcheck) {
+            } else if (this.state.password === this.state.passwordcheck) {
                 this.setState({
                     passwordcheckerror: false,
                 })
-            } 
-            if(!this.state.termsChecked) {
+            }
+            if (!this.state.termsChecked) {
                 this.setState({
                     termsCheckederror: true,
                 })
                 return
-            } else if(!this.state.privacyChecked) {
+            } else if (!this.state.privacyChecked) {
                 this.setState({
                     privacyCheckederror: true,
                 })
                 return
             }
         }
-        
 
-        if(!this.state.emailerror && !this.state.nameerror && !this.state.passworderror && !this.state.passwordcheckerror && !this.state.termsCheckederror && !this.state.privacyCheckederror) {
-            if(this.state.slideOpen===0){
+
+        if (!this.state.emailerror && !this.state.nameerror && !this.state.passworderror && !this.state.passwordcheckerror && !this.state.termsCheckederror && !this.state.privacyCheckederror) {
+            if (this.state.slideOpen === 0) {
                 this.props.onCheckSignupEmail(this.state.email).then((res) => { // 다음을 누를경우 이메일을 검사하는 코드
-                    if(res.success) {
+                    if (res.success) {
                         this.setState({
                             slideOpen: 1,
                         })
-                    }else{
+                    } else {
                         this.setState({
                             errorCode: 1,
                         })
                     }
                 })
-            }else if(this.state.slideOpen===1 && this.validationBirthday() && this.validationGender()){ // 2번째 페이지에서 다음을 누를 경우..
+            } else if (this.state.slideOpen === 1 && this.validationBirthday() && this.validationGender()) { // 2번째 페이지에서 다음을 누를 경우..
                 let birthday
-                if(this.state.month.length === 1) birthday = this.state.year + "0" + this.state.month + this.state.date
+                if (this.state.month.length === 1) birthday = this.state.year + "0" + this.state.month + this.state.date
                 else birthday = this.state.year + this.state.month + this.state.date
-                if(this.state.date.length === 1) birthday = this.state.year + this.state.month + "0" + this.state.date
+                if (this.state.date.length === 1) birthday = this.state.year + this.state.month + "0" + this.state.date
                 else birthday = this.state.year + this.state.month + this.state.date
 
                 let gender = this.state.genderCurrent
-                if(this.state.genderCurrent === '사용자 지정') gender = this.state.genderCustom
+                if (this.state.genderCurrent === '사용자 지정') gender = this.state.genderCustom
 
-                axios.post('/api/email/sendEmailCertification', {email: this.state.email, name: this.state.name, password: this.state.password, birthday: birthday, gender: gender}).then((res) => {
+                axios.post('/api/email/sendEmailCertification', { email: this.state.email, name: this.state.name, password: this.state.password, birthday: birthday, gender: gender }).then((res) => {
                 }) // catch 일 경우.... 
                 this.setState({ slideOpen: 2 })
-                e.target.textContent='완료'
-            }else if(this.state.slideOpen===2){
+                e.target.textContent = '완료'
+            } else if (this.state.slideOpen === 2) {
                 this.props.onLogin(this.state.email, this.state.password).then(data => { // login 부분 ***********
                     if (data.success) {
                         this.props.history.push(returnUrl())
                     } else {
-                        this.setState({ errorCode: 2})
+                        this.setState({ errorCode: 2 })
                     }
                 })
             }
         }
     }
     onClickSendMail = () => {
-        if(0 < this.state.emailSendCount) {
+        if (0 < this.state.emailSendCount) {
             // axios.post('/api/email/sendEmailCertification', {email: this.state.email}).then((res) => {
             // })
-            this.setState({ 
+            this.setState({
                 emailSendCount: this.state.emailSendCount - 1,
-                emailSendMessage: true, 
+                emailSendMessage: true,
             })
         } else {
             this.setState({ errorCode: 4 })
         }
     }
     onKeyPress = (e) => {
-        if(e.key === 'Enter') {
+        if (e.key === 'Enter') {
             this.onClickSignup();
         }
     }
 
     onEnterSlide = (e) => {
-        e.style.position='relative'
+        e.style.position = 'relative'
         this.setState({
             beforeSlide: this.state.afterSlide,
             afterSlide: e
         })
     }
     onEnteredSlide = (e) => {
-        if(this.state.slideOpen===0) {
+        if (this.state.slideOpen === 0) {
             this.textFieldRef[0].current.focus()
-        }else if(this.state.slideOpen===1) {
+        } else if (this.state.slideOpen === 1) {
             this.textFieldRefBirthday[0].current.focus()
         }
     }
     onExitingSlide = (e) => {
         const beforeslide = this.state.beforeSlide
-        beforeslide.style.position='absolute'
+        beforeslide.style.position = 'absolute'
         // this.state.beforeSlide.style.position='absolute'
     }
 
     onClickBack = () => {
-        if(this.state.slideOpen === 1) this.setState({ slideOpen: 0 })
+        if (this.state.slideOpen === 1) this.setState({ slideOpen: 0 })
     }
 
-    render(){ 
+    render() {
         const { classes } = this.props;
         return (
             <div className={classes.root}>
                 <Box display="flex" justifyContent="center">
                     <Card elevation={3} className={classes.card}>
-                        <CardHeader className={classes.cardHead} style={{minHeight: '48px'}}
-                                    title={
-                                            isWidthUp('sm', this.props.width)?
-                                            <Box display="flex" alignItems="center">
+                        <CardHeader className={classes.cardHead} style={{ minHeight: '48px' }}
+                            title={
+                                isWidthUp('sm', this.props.width) ?
+                                    <Box display="flex" alignItems="center">
+                                        {this.state.slideOpen < 2
+                                            ? <IconButton style={{ marginRight: "10px" }} onClick={this.state.slideOpen === 0 ? () => this.props.history.goBack() : this.onClickBack}>
+                                                <ArrowBackIcon style={{ color: "#0000008A" }} />
+                                            </IconButton>
+                                            : null}
+
+                                        <img src={root.imgLogo} alt={root.site} className={classes.imgLogo} />
+
+                                        <Typography style={{ color: "#0000008A", fontSize: "28px", marginLeft: "10px" }}>
+                                            계정 만들기
+                                        </Typography>
+                                    </Box>
+                                    :
+                                    <Box>
+                                        <Box display="flex" alignItems="center" justifyContent="center">
+                                            <Box style={{ position: "absolute", left: "20px" }}>
                                                 {this.state.slideOpen < 2
-                                                ? <IconButton style={{marginRight: "10px"}} onClick={this.state.slideOpen === 0 ? () => this.props.history.goBack() : this.onClickBack}>
-                                                    <ArrowBackIcon style={{color: "#0000008A"}}/>  
-                                                </IconButton>
-                                                : null}
-
-                                                <img src={root.imgLogo} alt={root.site} className={classes.imgLogo} /> 
-
-                                                <Typography style={{color: "#0000008A", fontSize: "28px", marginLeft: "10px"}}>
-                                                    계정 만들기
-                                                </Typography>
+                                                    ? <IconButton onClick={this.state.slideOpen === 0 ? () => this.props.history.goBack() : this.onClickBack}>
+                                                        <ArrowBackIcon style={{ color: "#0000008A" }} />
+                                                    </IconButton>
+                                                    : null}
                                             </Box>
-                                            :
-                                            <Box>
-                                                <Box display="flex" alignItems="center" justifyContent="center"> 
-                                                    <Box style={{position: "absolute", left: "20px"}}>
-                                                        {this.state.slideOpen < 2
-                                                        ? <IconButton onClick={this.state.slideOpen === 0 ? () => this.props.history.goBack() : this.onClickBack}>
-                                                            <ArrowBackIcon style={{color: "#0000008A"}}/>  
-                                                        </IconButton>
-                                                        : null}
-                                                    </Box>
 
-                                                    <img src={root.imgLogo} alt={root.site} className={classes.imgLogo} /> 
-                                                </Box>
+                                            <img src={root.imgLogo} alt={root.site} className={classes.imgLogo} />
+                                        </Box>
 
-                                                <Box display="flex" justifyContent="center" style={{paddingTop: "10px"}}>
-                                                    <Typography style={{color: "#0000008A", fontSize: "28px", minWidth: "140px"}}>
-                                                        계정 만들기
-                                                    </Typography>
-                                                </Box>
-                                            </Box>
-                                        }
+                                        <Box display="flex" justifyContent="center" style={{ paddingTop: "10px" }}>
+                                            <Typography style={{ color: "#0000008A", fontSize: "28px", minWidth: "140px" }}>
+                                                계정 만들기
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                            }
                         />
                         <form autoComplete="off">
                             <Box className={classes.cardBody}>
-                                <Slide style={{position: 'relative', }} direction="left" in={this.state.slideOpen===0} timeout={{exit:0, enter: 0,}} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
-                                    <CardContent style={{padding: 0}}>
+                                <Slide style={{ position: 'relative', }} direction="left" in={this.state.slideOpen === 0} timeout={{ exit: 0, enter: 0, }} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
+                                    <CardContent style={{ padding: 0 }}>
                                         <TextField variant="outlined" onChange={this.handleChange.bind(this, "name")} error={this.state.nameerror}
-                                            fullWidth label="이름" placeholder="이름을 입력해주세요." name="nickname" id="nickname" autoComplete="nickname" style={{margin: "15px 0px 7.5px 0px"}} inputRef={this.textFieldRef[1]}
-                                            helperText={this.state.nameerror? "한글, 영어만 사용, 2~10자리": false} onKeyPress={this.onKeyPress} spellCheck="false"/>
-                                        <TextField variant="outlined" onChange={this.handleChange.bind(this, "email")} error={this.state.emailerror || this.state.errorCode===1}
-                                            fullWidth label="이메일" placeholder="이메일을 입력해주세요." type="email" name="username" id="username" autoComplete="username" style={{margin: "7.5px 0px"}} inputRef={this.textFieldRef[0]}
-                                            helperText={this.state.emailerror? "이메일 형식이 올바르지 않습니다.": false} onKeyPress={this.onKeyPress} spellCheck="false"/>
+                                            fullWidth label="이름" placeholder="이름을 입력해주세요." name="nickname" id="nickname" autoComplete="nickname" style={{ margin: "15px 0px 7.5px 0px" }} inputRef={this.textFieldRef[1]}
+                                            helperText={this.state.nameerror ? "한글, 영어만 사용, 2~10자리" : false} onKeyPress={this.onKeyPress} spellCheck="false" />
+                                        <TextField variant="outlined" onChange={this.handleChange.bind(this, "email")} error={this.state.emailerror || this.state.errorCode === 1}
+                                            fullWidth label="이메일" placeholder="이메일을 입력해주세요." type="email" name="username" id="username" autoComplete="username" style={{ margin: "7.5px 0px" }} inputRef={this.textFieldRef[0]}
+                                            helperText={this.state.emailerror ? "이메일 형식이 올바르지 않습니다." : false} onKeyPress={this.onKeyPress} spellCheck="false" />
                                         <TextField variant="outlined" onChange={this.handleChange.bind(this, "password")} error={this.state.passworderror}
-                                            fullWidth label="비밀번호" placeholder="비밀번호를 입력해주세요." type="password" name="newPassword" id="newPassword" autoComplete="new-password" style={{margin: "7.5px 0px"}} inputRef={this.textFieldRef[2]}
-                                            helperText={this.state.passworderror? "영어, 숫자, 특수문자 포함, 8~15자리": false} onKeyPress={this.onKeyPress}/>
+                                            fullWidth label="비밀번호" placeholder="비밀번호를 입력해주세요." type="password" name="newPassword" id="newPassword" autoComplete="new-password" style={{ margin: "7.5px 0px" }} inputRef={this.textFieldRef[2]}
+                                            helperText={this.state.passworderror ? "영어, 숫자, 특수문자 포함, 8~15자리" : false} onKeyPress={this.onKeyPress} />
                                         <TextField variant="outlined" onChange={this.handleChange.bind(this, "passwordcheck")} error={this.state.passwordcheckerror}
-                                            fullWidth label="비밀번호 확인" placeholder="비밀번호를 한 번 더 입력해주세요." type="password" name="confimPassword" id="confimPassword" autoComplete="new-password" style={{margin: "7.5px 0px 15px 0px"}} inputRef={this.textFieldRef[3]}
-                                            helperText={this.state.passwordcheckerror? "비밀번호가 다릅니다.": false} onKeyPress={this.onKeyPress}/>
+                                            fullWidth label="비밀번호 확인" placeholder="비밀번호를 한 번 더 입력해주세요." type="password" name="confimPassword" id="confimPassword" autoComplete="new-password" style={{ margin: "7.5px 0px 15px 0px" }} inputRef={this.textFieldRef[3]}
+                                            helperText={this.state.passwordcheckerror ? "비밀번호가 다릅니다." : false} onKeyPress={this.onKeyPress} />
 
 
-                                        <Box display="flex" style={{marginTop: "10px"}}>
-                                            <FormControlLabel label="이용약관 동의" className={classes.termsCheckBox} control={<Checkbox checked={this.state.termsChecked} onChange={this.handleChange.bind(this, "terms")} size="medium" value="termsChecked" color="primary"/>}   />
-                                            <Button className={classes.termsButton} onClick={this.setDialogOpen.bind(this, true, 'terms')} style={{textDecoration: 'none', marginLeft: "auto", maxHeight: '35px', minWidth: '105px'}}>이용약관</Button>
+                                        <Box display="flex" style={{ marginTop: "10px" }}>
+                                            <FormControlLabel label="이용약관 동의" className={classes.termsCheckBox} control={<Checkbox checked={this.state.termsChecked} onChange={this.handleChange.bind(this, "terms")} size="medium" value="termsChecked" color="primary" />} />
+                                            <Button className={classes.termsButton} onClick={this.setDialogOpen.bind(this, true, 'terms')} style={{ textDecoration: 'none', marginLeft: "auto", maxHeight: '35px', minWidth: '105px' }}>이용약관</Button>
                                         </Box>
                                         <Box display="flex">
-                                            <FormControlLabel label="개인정보처리방침 동의" className={classes.termsCheckBox} control={<Checkbox checked={this.state.privacyChecked} onChange={this.handleChange.bind(this, "privacy")} size="medium" value="privacyChecked" color="primary"/>}   />
-                                            <Button className={classes.termsButton} onClick={this.setDialogOpen.bind(this, true, 'privacy')} style={{textDecoration: 'none', marginLeft: "auto", maxHeight: '35px', minWidth: '105px'}}>개인정보처리방침</Button>
+                                            <FormControlLabel label="개인정보처리방침 동의" className={classes.termsCheckBox} control={<Checkbox checked={this.state.privacyChecked} onChange={this.handleChange.bind(this, "privacy")} size="medium" value="privacyChecked" color="primary" />} />
+                                            <Button className={classes.termsButton} onClick={this.setDialogOpen.bind(this, true, 'privacy')} style={{ textDecoration: 'none', marginLeft: "auto", maxHeight: '35px', minWidth: '105px' }}>개인정보처리방침</Button>
                                         </Box>
                                     </CardContent>
                                 </Slide>
 
-                                <Slide style={{position: 'relative', }} direction="left" in={this.state.slideOpen===1} timeout={{exit:0, enter: 500,}} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
-                                    <CardContent style={{padding: 0}}>
+                                <Slide style={{ position: 'relative', }} direction="left" in={this.state.slideOpen === 1} timeout={{ exit: 0, enter: 500, }} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
+                                    <CardContent style={{ padding: 0 }}>
                                         <Box height='388px'>
-                                            <Typography style={{color: '#0000008A', fontFamily: 'NotoSansKR-Regular'}}>생년월일 (선택사항)</Typography>
+                                            <Typography style={{ color: '#0000008A', fontFamily: 'NotoSansKR-Regular' }}>생년월일 (선택사항)</Typography>
                                             <Box display="flex" mt={2}>
                                                 <TextField fullWidth variant="outlined" value={this.state.year || ""} onChange={event => this.handleChangeBirthday(event.target.value, "year")}
-                                                            label={"연"} style={{minWidth: "120px"}} spellCheck="false" inputRef={this.textFieldRefBirthday[0]} />
+                                                    label={"연"} style={{ minWidth: "120px" }} spellCheck="false" inputRef={this.textFieldRefBirthday[0]} />
 
-                                                <FormControl variant="outlined" className={classes.formControl} style={{width: "100%"}}>
+                                                <FormControl variant="outlined" className={classes.formControl} style={{ width: "100%" }}>
                                                     <InputLabel id="demo-simple-select-outlined-label">월</InputLabel>
                                                     <Select labelId="demo-simple-select-outlined-label" id="demo-simple-select-outlined" value={this.state.month} onChange={event => this.handleChangeBirthday(event.target.value, "month")} label="월" >
-                                                        <MenuItem value={"01"}>1월</MenuItem> <MenuItem value={"02"}>2월</MenuItem> <MenuItem value={"03"}>3월</MenuItem> 
-                                                        <MenuItem value={"04"}>4월</MenuItem> <MenuItem value={"05"}>5월</MenuItem> <MenuItem value={"06"}>6월</MenuItem> 
-                                                        <MenuItem value={"07"}>7월</MenuItem> <MenuItem value={"08"}>8월</MenuItem> <MenuItem value={"09"}>9월</MenuItem> 
+                                                        <MenuItem value={"01"}>1월</MenuItem> <MenuItem value={"02"}>2월</MenuItem> <MenuItem value={"03"}>3월</MenuItem>
+                                                        <MenuItem value={"04"}>4월</MenuItem> <MenuItem value={"05"}>5월</MenuItem> <MenuItem value={"06"}>6월</MenuItem>
+                                                        <MenuItem value={"07"}>7월</MenuItem> <MenuItem value={"08"}>8월</MenuItem> <MenuItem value={"09"}>9월</MenuItem>
                                                         <MenuItem value={"10"}>10월</MenuItem> <MenuItem value={"11"}>11월</MenuItem> <MenuItem value={"12"}>12월</MenuItem>
                                                     </Select>
                                                 </FormControl>
 
-                                                <TextField fullWidth variant="outlined" value={this.state.date || ""} onChange={event => this.handleChangeBirthday(event.target.value, "date")} 
-                                                            label={"일"} style={{width: "100%"}} spellCheck="false" inputRef={this.textFieldRefBirthday[1]}/>
+                                                <TextField fullWidth variant="outlined" value={this.state.date || ""} onChange={event => this.handleChangeBirthday(event.target.value, "date")}
+                                                    label={"일"} style={{ width: "100%" }} spellCheck="false" inputRef={this.textFieldRefBirthday[1]} />
                                             </Box>
 
-                                            <Typography variant="body2" style={{fontFamily: "NotoSansKR-Regular", color: "#f44336", marginTop: "3px"}}>
+                                            <Typography variant="body2" style={{ fontFamily: "NotoSansKR-Regular", color: "#f44336", marginTop: "3px" }}>
                                                 &nbsp;{this.state.errorMassage}&nbsp;
                                             </Typography>
 
-                                            <FormControl variant="outlined" style={{width: '100%', marginTop: "10px"}}>
+                                            <FormControl variant="outlined" style={{ width: '100%', marginTop: "10px" }}>
                                                 <InputLabel htmlFor="gender">성별 (선택사항)</InputLabel>
                                                 <Select native label="성별 (선택사항)" labelId='gender' onChange={this.handleChangeGender} defaultValue=''>
                                                     <option aria-label="None" value="" disabled hidden />
@@ -678,26 +678,26 @@ class Signup extends Component{
                                                 </Select>
                                             </FormControl>
 
-                                            <TextField fullWidth variant="outlined" value={this.state.genderCustom || ''} label="성별 입력" style={{width: "100%", marginTop: "10px"}} onChange={this.handleChangeGenderCustom}
-                                                    className={clsx("none", {[classes.displayNone]: this.state.genderCurrent !== "사용자 지정"})}
-                                                    error={this.state.genderError === -2} inputRef={this.textFieldRefGender[0]}
-                                                    helperText={this.state.genderError === -2 ? "사용자 지정 성별을 입력해주세요." : false} />
+                                            <TextField fullWidth variant="outlined" value={this.state.genderCustom || ''} label="성별 입력" style={{ width: "100%", marginTop: "10px" }} onChange={this.handleChangeGenderCustom}
+                                                className={clsx("none", { [classes.displayNone]: this.state.genderCurrent !== "사용자 지정" })}
+                                                error={this.state.genderError === -2} inputRef={this.textFieldRefGender[0]}
+                                                helperText={this.state.genderError === -2 ? "사용자 지정 성별을 입력해주세요." : false} />
                                         </Box>
                                     </CardContent>
                                 </Slide>
-                                
-                                <Slide style={{position: 'relative', }} direction="left" in={this.state.slideOpen===2} timeout={{exit:0, enter: 500,}} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
-                                    <CardContent style={{padding: 0}}>
+
+                                <Slide style={{ position: 'relative', }} direction="left" in={this.state.slideOpen === 2} timeout={{ exit: 0, enter: 500, }} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
+                                    <CardContent style={{ padding: 0 }}>
                                         <Box height='auto' mt={2}>
-                                            <Typography variant='subtitle1' align="center" style={{color: '#0000008A'}}>
-                                                인증 메일이 <span style={{color: root.PrimaryColor}}>{this.state.email}</span>(으)로 전송되었습니다.<br/>
+                                            <Typography variant='subtitle1' align="center" style={{ color: '#0000008A' }}>
+                                                인증 메일이 <span style={{ color: root.PrimaryColor }}>{this.state.email}</span>(으)로 전송되었습니다.<br />
                                                 받으신 이메일을 열어 로그인 하러가기 버튼을 클릭하면 가입이 완료됩니다.
                                             </Typography>
                                         </Box>
                                         <Box height='auto' mt={5}>
-                                            <Typography variant='subtitle2' align="center" style={{color: '#0000008A'}}>
-                                                이메일을 확인할 수 없나요?<br/>
-                                                스팸편지함 확인 또는 <span onClick={this.onClickSendMail} style={{color: root.PrimaryColor, cursor:'pointer'}}>인증 메일 다시 보내기</span>
+                                            <Typography variant='subtitle2' align="center" style={{ color: '#0000008A' }}>
+                                                이메일을 확인할 수 없나요?<br />
+                                                스팸편지함 확인 또는 <span onClick={this.onClickSendMail} style={{ color: root.PrimaryColor, cursor: 'pointer' }}>인증 메일 다시 보내기</span>
                                             </Typography>
                                         </Box>
                                     </CardContent>
@@ -713,20 +713,20 @@ class Signup extends Component{
                     </Card >
                 </Box >
 
-                <Snackbar open={this.state.errorCode!==0} autoHideDuration={3000} onClose={this.snackBarHandleClose}> 
+                <Snackbar open={this.state.errorCode !== 0} autoHideDuration={3000} onClose={this.snackBarHandleClose}>
                     <Alert severity="error">
                         {
-                            (this.state.errorCode===1 && "해당 이메일로 가입한 계정이 존재합니다.") ||
-                            (this.state.errorCode===2 && "이메일 인증 후 회원가입이 완료됩니다.") ||
-                            (this.state.errorCode===3 && "인증 상태가 아닙니다.") ||
-                            (this.state.errorCode===4 && "더 이상 인증 메일을 보낼 수 없습니다.")
+                            (this.state.errorCode === 1 && "해당 이메일로 가입한 계정이 존재합니다.") ||
+                            (this.state.errorCode === 2 && "이메일 인증 후 회원가입이 완료됩니다.") ||
+                            (this.state.errorCode === 3 && "인증 상태가 아닙니다.") ||
+                            (this.state.errorCode === 4 && "더 이상 인증 메일을 보낼 수 없습니다.")
                         }
                     </Alert>
                 </Snackbar>
 
                 <Snackbar open={this.state.emailSendMessage} autoHideDuration={3000} onClose={this.snackBarHandleClose}>
                     <Alert severity="success">
-                        인증 메일을 전송했습니다.<br/>(남은 전송 횟수: {this.state.emailSendCount})
+                        인증 메일을 전송했습니다.<br />(남은 전송 횟수: {this.state.emailSendCount})
                     </Alert>
                 </Snackbar>
 
@@ -741,9 +741,9 @@ class Signup extends Component{
                         개인정보처리방침에 동의해주세요.
                     </Alert>
                 </Snackbar>
-                <DialogContents DialogContentState={this.state.dialogOpen} setDialogContentState={this.setDialogOpen} contentType={this.state.dialogContentType}/>
-            </div> 
-        ) 
+                <DialogContents DialogContentState={this.state.dialogOpen} setDialogContentState={this.setDialogOpen} contentType={this.state.dialogContentType} />
+            </div>
+        )
     }
 }
 

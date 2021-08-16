@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, { Component } from 'react'; 
+import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import './Header.css';
 import AppBar from '@material-ui/core/AppBar';
@@ -13,7 +13,6 @@ import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import imgLogo from '../images/sumai_logo_blue.png';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import PropTypes from 'prop-types';
@@ -25,7 +24,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import AccountIcon from '@material-ui/icons/AccountCircle';
-import * as root from '../rootValue';
 
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
@@ -40,6 +38,9 @@ import MuiAlert from '@material-ui/lab/Alert';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import { sendAct } from '../reducers/clientInfo';
+import imgLogo from '../images/SUMAI_logo.png';
+import * as root from '../rootValue';
+
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -76,7 +77,7 @@ const useStyles = theme => ({
     width: 'auto',
   },
   listText: {
-    fontFamily: "NotoSansKR-Regular",
+    fontFamily: "NotoSansKR-Regular",
     padding: theme.spacing(0.5),
     paddingLeft: theme.spacing(5),
     fontSize: 13,
@@ -119,10 +120,10 @@ const DialogActions = withStyles((theme) => ({
 }))(MuiDialogActions);
 
 function FeedbackDialog(props) {
-  const {open, setOpen, classes} = props
+  const { open, setOpen, classes } = props
   // const [screen, setScreen] = React.useState(null)
   const [message, setMessage] = React.useState('')
-  
+
   const [snackbarOpen, setSnackbarOpen] = React.useState(false)
 
   const [sendEmailButton, setSendEmailButton] = React.useState(true)
@@ -139,11 +140,11 @@ function FeedbackDialog(props) {
   //   setScreen(canvas)
   //   })
   // }
-  
+
   const showCanvas = () => {
     // console.log('미구현')
   }
-  
+
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false)
   }
@@ -154,8 +155,8 @@ function FeedbackDialog(props) {
   function sendEmail(e) {
     setSendEmailButton(false)
     e.preventDefault();
-    
-    axios.post('/api/Email/sendEmail', {message: message}).then((res) => { // email을 추가하려면 {massage: message, email: 변수}
+
+    axios.post('/api/Email/sendEmail', { message: message }).then((res) => { // email을 추가하려면 {massage: message, email: 변수}
       setSendEmailStatus(res.status)
       dispatch(sendAct('send feedback is success'))
       setSnackbarOpen(true)
@@ -188,25 +189,25 @@ function FeedbackDialog(props) {
   return (
     <Box>
       <Dialog id='feedback' onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}
-      style={{width: '460px', justifyContent: 'center', margin: '0 auto'}}>
-        <DialogTitle id="customized-dialog-title" onClose={handleClose} style={{backgroundColor: root.PrimaryColor, color: 'white', padding: "10px 15px"}}>
+        style={{ width: '460px', justifyContent: 'center', margin: '0 auto' }}>
+        <DialogTitle id="customized-dialog-title" onClose={handleClose} style={{ backgroundColor: root.PrimaryColor, color: 'white', padding: "10px 15px" }}>
           의견 보내기
         </DialogTitle>
-        <Box style={{minHeight: '200px', maxHeight: '250px', display: 'flex', padding: "10px 15px"}}>
+        <Box style={{ minHeight: '200px', maxHeight: '250px', display: 'flex', padding: "10px 15px" }}>
           <TextareaAutosize className={classes.textInput} maxLength="5000" autoFocus={true} onChange={handleMessage}
-          placeholder="의견을 보내고 싶으신가요? 보내 주신 의견은 소중하게 활용되지만, 민감한 정보는 공유하지 말아 주세요. 궁금하신 점이 있나요? 지원팀에 문의해 보세요."
-          style={{
-            boxSizing: "border-box",
-            flexGrow: 1,
-            width: '100%',
-            height: 'auto',
-            resize: 'none',
-            border: 'none',
-            outline: 'none',
-            font: "400 16px NotoSansKR-Regular",
-          }}/>
+            placeholder="의견을 보내고 싶으신가요? 보내 주신 의견은 소중하게 활용되지만, 민감한 정보는 공유하지 말아 주세요. 궁금하신 점이 있나요? 지원팀에 문의해 보세요."
+            style={{
+              boxSizing: "border-box",
+              flexGrow: 1,
+              width: '100%',
+              height: 'auto',
+              resize: 'none',
+              border: 'none',
+              outline: 'none',
+              font: "400 16px NotoSansKR-Regular",
+            }} />
         </Box>
-        <Box style={{display: 'block', background: 'WhiteSmoke', padding: '0'}}>
+        <Box style={{ display: 'block', background: 'WhiteSmoke', padding: '0' }}>
           {/* <Box id='screenshotButton' style={{display: 'flex', width: '400'}}>
             <Button onClick={(event) => {
               screenShot()
@@ -215,31 +216,31 @@ function FeedbackDialog(props) {
               스크린샷 첨부하기
             </Button>
           </Box> */}
-          <Box style={{display: 'flex'}}>
-            <img id="screenshotPreview" src='' alt='' style={{marginLeft: 'auto', marginRight: 'auto',}}onClick={showCanvas} />
+          <Box style={{ display: 'flex' }}>
+            <img id="screenshotPreview" src='' alt='' style={{ marginLeft: 'auto', marginRight: 'auto', }} onClick={showCanvas} />
           </Box>
         </Box>
         <small
-        style={{
-          borderTop: '1px solid rgb(224, 224, 224)',
-          color: 'rgb(168, 168, 168)',
-          backgroundColor: 'rgb(250, 250, 250)',
-          font: "12px NotoSansKR-Regular",
-          padding: "15px 15px"
-        }}>
-            일부 계정 및 시스템 정보가 SUMAI에 전송될 수 있습니다. 
-            제공해 주신 정보는 개인정보처리방침 및 서비스 약관에 따라 기술 문제를 해결하고 서비스를 개선하는 데 사용됩니다.
+          style={{
+            borderTop: '1px solid rgb(224, 224, 224)',
+            color: 'rgb(168, 168, 168)',
+            backgroundColor: 'rgb(250, 250, 250)',
+            font: "12px NotoSansKR-Regular",
+            padding: "15px 15px"
+          }}>
+          일부 계정 및 시스템 정보가 SUMAI에 전송될 수 있습니다.
+          제공해 주신 정보는 개인정보처리방침 및 서비스 약관에 따라 기술 문제를 해결하고 서비스를 개선하는 데 사용됩니다.
         </small>
         <DialogActions
-        style={{borderTop: '1px solid rgb(224, 224, 224)', backgroundColor: 'rgb(250, 250, 250)', padding: '5px 15px'}}>
-          <Button id='sendEmailButton' autoFocus color="primary" style={{font: "16px NotoSansKR-Regular",}} onClick={sendEmail} disabled={!sendEmailButton}>
+          style={{ borderTop: '1px solid rgb(224, 224, 224)', backgroundColor: 'rgb(250, 250, 250)', padding: '5px 15px' }}>
+          <Button id='sendEmailButton' autoFocus color="primary" style={{ font: "16px NotoSansKR-Regular", }} onClick={sendEmail} disabled={!sendEmailButton}>
             보내기
           </Button>
         </DialogActions>
       </Dialog>
       <Snackbar autoHideDuration={3000} open={snackbarOpen} onClose={handleCloseSnackbar}>
         {
-          ( sendEmailStatus===200 && 
+          (sendEmailStatus === 200 &&
             <Alert severity={"success"}>
               소중한 의견 감사합니다.
             </Alert>
@@ -257,7 +258,7 @@ function FeedbackDialog(props) {
 
 
 
-class Header extends Component{
+class Header extends Component {
 
   constructor(props) {
     super(props)
@@ -276,30 +277,30 @@ class Header extends Component{
 
 
   AccountManagementMenu = (props) => {
-    
+
     const [open, setOpen] = React.useState(false);
 
     const anchorRef = React.useRef(null);
-  
+
     const handleToggle = () => {
       setOpen((prevOpen) => !prevOpen);
     };
-  
+
     const handleClose = (event) => {
       if (anchorRef.current && anchorRef.current.contains(event.target)) {
         return;
       }
-  
+
       setOpen(false);
     };
-  
+
     function handleListKeyDown(event) {
       if (event.key === 'Tab') {
         event.preventDefault();
         setOpen(false);
       }
     }
-  
+
     // return focus to the button when we transitioned from !open -> open
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const prevOpen = React.useRef(open);
@@ -308,10 +309,10 @@ class Header extends Component{
       if (prevOpen.current === true && open === false) {
         anchorRef.current.focus();
       }
-  
+
       prevOpen.current = open;
     }, [open]);
-  
+
     return (
       <Box>
         <Box
@@ -319,10 +320,10 @@ class Header extends Component{
           aria-controls={open ? 'menu-list-grow' : undefined}
           aria-haspopup="true"
           onClick={handleToggle}
-          style={{color: "#0000008A", cursor:'pointer'}}
+          style={{ color: "#0000008A", cursor: 'pointer' }}
         >
           {props.currentUser}님
-          <IconButton style={{padding: "0px"}}>
+          <IconButton style={{ padding: "0px" }}>
             <ExpandMoreIcon />
           </IconButton>
         </Box>
@@ -358,27 +359,27 @@ class Header extends Component{
   }
 
 
-  
-  
-  render() { 
+
+
+  render() {
     const { classes } = this.props;
     const loginButton = (
       <Button onClick={this.onClickLink("/login")} style={{ background: root.PrimaryColor, color: "#fff", padding: "5px", minWidth: '80px' }}>
-        <AccountIcon style={{marginRight: "5px",}}/>
+        <AccountIcon style={{ marginRight: "5px", }} />
         로그인
       </Button>
     )
     const loginLayout = (
-      <Box display="flex" flexDirection="row" style={{ marginLeft: "auto", color: 'rgba(0, 0, 0, 0.87)'}}>
+      <Box display="flex" flexDirection="row" style={{ marginLeft: "auto", color: 'rgba(0, 0, 0, 0.87)' }}>
         <Box p={1}>
           {this.AccountManagementMenu.bind(this, this.props)}
         </Box>
       </Box>
     )
-    return ( 
+    return (
       <div className={classes.root}>
         <AppBar position="static" className={classes.AppBarStyle}>
-          <Toolbar variant="dense" style={{padding: "0px 10px 0px 20px", flex: 1}}>
+          <Toolbar variant="dense" style={{ padding: "0px 10px 0px 20px", flex: 1 }}>
             {['left'].map((anchor) => (
               <React.Fragment key={anchor}>
                 <IconButton onClick={this.toggleDrawer(anchor, true)} edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
@@ -394,15 +395,15 @@ class Header extends Component{
                     onClick={this.toggleDrawer(anchor, false)}
                     onKeyDown={this.toggleDrawer(anchor, false)}
                   >
-                  <ListItem >
-                    <a href="/" style={{marginTop: 5, marginLeft: 5}} className={classes.link} >
-                      <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
+                    <ListItem >
+                      <a href="/" style={{ marginTop: 5, marginLeft: 5 }} className={classes.link} >
+                        <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} />
 
-                      <Typography style={{color: "#0000008A", fontSize: "24px", marginLeft: "8px"}}>
-                        요약
-                      </Typography>
-                    </a>
-                  </ListItem>
+                        <Typography style={{ color: "#0000008A", fontSize: "24px", marginLeft: "8px" }}>
+                          요약
+                        </Typography>
+                      </a>
+                    </ListItem>
                     <List>
                       <ListItem button onClick={this.onClickLink("terms")} >
                         <ListItemText disableTypography primary="이용약관" className={classes.listText} />
@@ -423,20 +424,20 @@ class Header extends Component{
                         <ListItemText disableTypography primary="의견 보내기" className={classes.listText} />
                       </ListItem>
                     </List>
-                  </div> 
+                  </div>
                 </Drawer>
               </React.Fragment>
             ))}
 
             <a href="/" className={classes.link} >
-              <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} /> 
-          
-              <Typography style={{color: "#0000008A", fontSize: "24px", marginLeft: "8px"}}>
-                  요약
+              <img src={imgLogo} alt="SUMAI" className={classes.imgLogo} />
+
+              <Typography style={{ color: "#0000008A", fontSize: "24px", marginLeft: "8px" }}>
+                요약
               </Typography>
             </a>
 
-            <div style={{flexGrow: 1}}/>
+            <div style={{ flexGrow: 1 }} />
 
             {/* <IconButton style={{marginRight: "10px"}}>
                 <NewsIcon style={{color: root.PrimaryColor}}/>
@@ -447,7 +448,7 @@ class Header extends Component{
           </Toolbar>
         </AppBar>
 
-        <FeedbackDialog open={this.state.dialogOpen} setOpen={this.dialogOpen} classes={classes}/>        
+        <FeedbackDialog open={this.state.dialogOpen} setOpen={this.dialogOpen} classes={classes} />
 
 
       </div>
@@ -464,7 +465,7 @@ Header.propTypes = {
 Header.defaultProps = {
   isLoggedIn: false,
   currentUser: undefined,
-  onLogout: () => { console.error("logout function not defined");}
+  onLogout: () => { console.error("logout function not defined"); }
 };
 
 export default withStyles(useStyles)(Header);
