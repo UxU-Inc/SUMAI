@@ -8,7 +8,9 @@ import Box from '@material-ui/core/Box';
 import { useHistory, useLocation } from 'react-router';
 import { useMediaQuery, useTheme } from '@material-ui/core';
 
-import { checkSite } from '../functions/CheckSite';
+import { checkSite } from '../../functions/CheckSite';
+import { returnUrl } from '../../functions/util';
+
 const root = checkSite();
 
 
@@ -70,32 +72,32 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-function HeaderButton(props) {
-  const { currentPathname, newPathname, text, link } = props
-  const classes = useStyles()
-
-
-  return (
-    <Box flex={1} style={{ marginRight: "-1px" }}>
-      <Button className={`${classes.button} ${currentPathname === newPathname ? classes.buttonSelect : classes.buttonNomal}`} onClick={() => link(newPathname)}>
-        {text}
-      </Button>
-    </Box>
-  )
-}
-
 export default function PolicyHeader() {
   const classes = useStyles()
   const theme = useTheme()
   const history = useHistory()
   const location = useLocation()
   const matches = useMediaQuery(theme.breakpoints.up('md'))
-  const pathname = location.pathname;
+  const currentPathname = location.pathname;
 
   const link = React.useCallback((url) => {
-    if (pathname !== url)
+    if (currentPathname !== url)
       history.push(url);
-  }, [history, pathname])
+  }, [history, currentPathname])
+
+
+  function HeaderButton(props) {
+    const { newPathname, text } = props
+    const classes = useStyles()
+
+    return (
+      <Box flex={1} style={{ marginRight: "-1px" }}>
+        <Button className={`${classes.button} ${currentPathname === newPathname ? classes.buttonSelect : classes.buttonNomal}`} onClick={() => link(newPathname.concat(location.search))}>
+          {text}
+        </Button>
+      </Box>
+    )
+  }
 
 
   return (
@@ -103,7 +105,7 @@ export default function PolicyHeader() {
       <AppBar position="static" className={classes.appbarStyle}>
         <Toolbar variant="dense">
 
-          <a href="/" className={classes.link} >
+          <a href={returnUrl()} className={classes.link} >
             <img src={root.imgLogo} alt={root.site} className={classes.imgLogo} />
           </a>
 
@@ -113,9 +115,9 @@ export default function PolicyHeader() {
       <Box className={classes.headerRoot}>
 
         <Box display="flex" justifyContent="center">
-          <HeaderButton currentPathname={pathname} newPathname={'/terms'} text={'이용약관'} link={link} />
-          <HeaderButton currentPathname={pathname} newPathname={'/privacy'} text={'개인정보처리방침'} link={link} />
-          <HeaderButton currentPathname={pathname} newPathname={'/notices'} text={'공지사항'} link={link} />
+          <HeaderButton newPathname={'/terms'} text={'이용약관'}/>
+          <HeaderButton newPathname={'/privacy'} text={'개인정보처리방침'}/>
+          <HeaderButton newPathname={'/notices'} text={'공지사항'}/>
         </Box>
 
         {matches ? <Divider style={{ marginTop: "50px", marginBottom: "50px" }} /> : <></>}
