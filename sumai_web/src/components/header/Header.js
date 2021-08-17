@@ -124,9 +124,7 @@ function Header(props) {
   const loginButton = (
     <Button
       className={classes.loginButton}
-      onClick={onClickExternLink(
-        'https://sumai.co.kr/login?url=' + window.location.href
-      )}
+      onClick={onClickExternLink('/login')}
       style={
         matches
           ? { padding: '7.5px 15px' }

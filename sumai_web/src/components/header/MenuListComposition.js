@@ -4,8 +4,6 @@ import { useTheme } from '@material-ui/core/styles';
 import { GridList, GridListTile, useMediaQuery, Typography, IconButton, Box, Grow, Button, ClickAwayListener, Popper, Paper } from '@material-ui/core';
 import AppsIcon from "@material-ui/icons/Apps";
 import FeaturedPlayListIcon from "@material-ui/icons/FeaturedPlayList";
-import RecordVoiceOverIcon from '@material-ui/icons/RecordVoiceOver';
-import blue from '@material-ui/core/colors/blue';
 
 import { onClickExternLink } from '../../functions/util';
 import * as root from "../../rootValue";
@@ -112,7 +110,7 @@ function MenuListComposition(props) {
           role={undefined}
           transition
           disablePortal
-          style={{ zIndex: 100, }}
+          style={{ zIndex: 100, marginLeft: xsm ? '-50px' : undefined }}
         >
           {({ TransitionProps, placement }) => (
             <Grow

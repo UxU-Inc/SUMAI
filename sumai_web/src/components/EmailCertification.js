@@ -9,6 +9,7 @@ import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
 
 import { checkSite } from '../functions/CheckSite';
+import { returnUrl } from '../functions/util';
 const root = checkSite();
 
 
@@ -33,7 +34,7 @@ const useStyles = theme => ({
     },
     imgLogo: {
         width: root.logoWidth,
-        height: root.logoWidth,
+        height: root.logoHeight,
         alt: root.site,
     },
     loginMoveButton: {
@@ -59,10 +60,14 @@ function EmailCertificationComponent(props) {
 
     const [email, setEmail] = useState()
     const [comments, setComments] = useState()
-    const [code, setCode] = useState()
+    const [code, setCode] = useState(0)
 
     const theme = useTheme()
     const matches = useMediaQuery(theme.breakpoints.up('md'));
+    const loginUrl = {
+        SUMAI: '/login',
+        VOI: '/login?url='.concat(returnUrl())
+    }
 
     useEffect(() => {
         const id = location.search?.slice(1)?.split('id=')[1]?.split('&')[0]
@@ -97,7 +102,7 @@ function EmailCertificationComponent(props) {
                 </Typography>
             </Box>
             <Box display="flex" alignItems="center" justifyContent="center" mt={2} className={clsx("none", { [classes.displayNone]: code !== 0 && code !== 5 })}>
-                <Button className={classes.loginMoveButton} onClick={() => { history.push('/login') }}>
+                <Button className={classes.loginMoveButton} onClick={() => { history.push(loginUrl[root.site]) }}>
                     로그인하기
                 </Button>
             </Box>

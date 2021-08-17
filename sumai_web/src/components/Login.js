@@ -112,28 +112,6 @@ const useStyles = theme => ({
   },
 })
 
-
-const CssTextField = withStyles({
-  root: {
-    '& label.Mui-focused': {
-      color: root.PrimaryColor,
-    },
-    '& .MuiInput-underline:after': {
-      borderBottomColor: root.PrimaryColor,
-    },
-    '& .MuiOutlinedInput-root': {
-      '&:hover fieldset': {
-        borderColor: root.PrimaryColor,
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: root.PrimaryColor,
-      },
-    },
-  },
-})(TextField);
-
-
-
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -280,10 +258,10 @@ class Login extends Component {
                 }
               />
               <CardContent style={{ padding: "16px 10%" }}>
-                <CssTextField variant="outlined" autoFocus value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.loginerror}
+                <TextField variant="outlined" autoFocus value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.loginerror}
                   fullWidth label="이메일" placeholder="이메일을 입력해주세요." style={{ height: "70px", marginTop: "15px", fontFamily: "NotoSansKR-Thin" }} inputRef={this.textFieldRef[0]}
                   onKeyPress={this.onKeyPress} spellCheck="false" />
-                <CssTextField variant="outlined" value={this.state.password} onChange={this.handleChange.bind(this, "password")} error={this.state.loginerror}
+                <TextField variant="outlined" value={this.state.password} onChange={this.handleChange.bind(this, "password")} error={this.state.loginerror}
                   fullWidth label="비밀번호" placeholder="비밀번호를 입력해주세요." type="password" style={{ height: "70px" }} inputRef={this.textFieldRef[1]}
                   onKeyPress={this.onKeyPress} />
                 <Box textAlign="right" fontSize={13}>
@@ -358,10 +336,10 @@ class Login extends Component {
               </Typography>
             </Box>
 
-            <CssTextField variant="outlined" autoFocus value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.loginerror}
+            <TextField variant="outlined" autoFocus value={this.state.email} onChange={this.handleChange.bind(this, "email")} error={this.state.loginerror}
               fullWidth label="이메일" placeholder="이메일을 입력해주세요." style={{ height: "70px", marginTop: "30px" }} inputRef={this.textFieldRef[0]}
               onKeyPress={this.onKeyPress} spellCheck="false" />
-            <CssTextField variant="outlined" value={this.state.password} onChange={this.handleChange.bind(this, "password")} error={this.state.loginerror}
+            <TextField variant="outlined" value={this.state.password} onChange={this.handleChange.bind(this, "password")} error={this.state.loginerror}
               fullWidth label="비밀번호" placeholder="비밀번호를 입력해주세요." type="password" style={{ height: "70px" }} inputRef={this.textFieldRef[1]}
               onKeyPress={this.onKeyPress} />
 

@@ -511,7 +511,7 @@ class Signup extends Component {
                 let gender = this.state.genderCurrent
                 if (this.state.genderCurrent === '사용자 지정') gender = this.state.genderCustom
 
-                axios.post('/api/email/sendEmailCertification', { email: this.state.email, name: this.state.name, password: this.state.password, birthday: birthday, gender: gender }).then((res) => {
+                axios.post('/api/email/sendEmailCertification', { email: this.state.email, name: this.state.name, password: this.state.password, birthday: birthday, gender: gender, siteType:root.site }).then((res) => {
                 }) // catch 일 경우.... 
                 this.setState({ slideOpen: 2 })
                 e.target.textContent = '완료'
