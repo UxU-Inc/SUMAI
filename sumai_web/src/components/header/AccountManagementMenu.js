@@ -118,7 +118,7 @@ function AccountManagementMenu(props) {
             <Paper>
               <ClickAwayListener onClickAway={handleClose}>
                 <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
-                  <MenuItem onClick={() => window.location.assign("https://sumai.co.kr/accounts?url=" + window.location.href)}>계정 관리</MenuItem>
+                  <MenuItem onClick={() => window.location.assign("/accounts")}>계정 관리</MenuItem>
                   <MenuItem onClick={props.onLogout}>로그아웃</MenuItem>
                 </MenuList>
               </ClickAwayListener>

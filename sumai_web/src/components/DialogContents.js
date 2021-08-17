@@ -4,9 +4,13 @@ import Dialog from '@material-ui/core/Dialog';
 import PrivacyContents from './policy/PrivacyContents'
 import TermsContents from './policy/TermsContents'
 import { DialogTitle, DialogActions, Button } from '@material-ui/core';
-import * as root from '../rootValue';
 import DialogContent from '@material-ui/core/DialogContent';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+
+import { checkSite } from '../functions/CheckSite';
+
+const root = checkSite();
+
 
 const useStyles = makeStyles((theme) => ({
   DialogContent: {

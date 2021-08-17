@@ -158,6 +158,7 @@ export default function Account() {
     if (Object.keys(account).length !== 0 || account.constructor !== Object) {
       history.push({
         pathname: url,
+        search: window.location.search,
         state: {
           birthday: account.birth,
           gender: account.gender,

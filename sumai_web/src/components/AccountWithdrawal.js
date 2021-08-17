@@ -57,14 +57,13 @@ const useStyles = theme => ({
 function PasswordChangeMassage(props) {
     const { enqueueSnackbar } = useSnackbar();
     const { code, setCode } = props;
-    const site = root.site;
 
     React.useEffect(() => {
         if (code === 1) enqueueSnackbar('회원탈퇴 되었습니다. 이용해주셔서 감사합니다.', { variant: "success" });
         if (code === 2) enqueueSnackbar('해당 계정이 존재하지 않습니다.', { variant: "error" });
         if (code === 3) enqueueSnackbar('비밀번호가 틀립니다.', { variant: "error" });
         if (code === 4) enqueueSnackbar('로그인 상태가 아닙니다.', { variant: "error" });
-        if (code === 5) enqueueSnackbar({ site } + ' 해당 계정의 모든 데이터 삭제에 동의해주시면 회원탈퇴가 가능합니다.', { variant: "error" });
+        if (code === 5) enqueueSnackbar( root.site + ' 해당 계정의 모든 데이터 삭제에 동의해주시면 회원탈퇴가 가능합니다.', { variant: "error" });
         setCode(0);
     }, [code, enqueueSnackbar, setCode])
 
@@ -233,7 +232,10 @@ class AccountPassword extends React.Component {
                 );
 
                 setTimeout(function () {
-                    this.props.history.push("/login")
+                    this.props.history.push({
+                        pathname: '/login',
+                        search: window.location.search,
+                    })
                 }.bind(this), 2000)
 
             } else {

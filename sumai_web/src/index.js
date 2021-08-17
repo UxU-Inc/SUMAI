@@ -10,7 +10,9 @@ import thunk from 'redux-thunk';
 
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
-import * as root from './rootValue';
+import { checkSite } from './functions/CheckSite';
+
+const root = checkSite();
 
 const theme = createMuiTheme({
   typography: {
