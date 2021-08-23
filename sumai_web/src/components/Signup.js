@@ -53,6 +53,7 @@ const useStyles = theme => ({
         },
     },
     card: {
+        width: '100vw',
         position: 'relative',
         [theme.breakpoints.between(0, 600)]: {
             padding: '40px 40px 0px 40px',
@@ -60,7 +61,6 @@ const useStyles = theme => ({
         },
         [theme.breakpoints.up(600)]: {
             maxWidth: '450px',
-            width: '100%',
             minWidth: '300px',
         },
     },
@@ -189,11 +189,13 @@ class Signup extends Component {
             gender: '',
             genderCustom: '',
             genderError: '',
-            slideOpen: 0,
+            certNumber: '',
+            certError: false,
+            slideNumber: 0,
             errorCode: 0,
             errorMessage: '',
             birthCode: 0,
-            emailSendCount: 5,
+            emailSendCount: 3,
             emailSendMessage: false,
             beforeSlide: null,
             afterSlide: null,
@@ -235,6 +237,10 @@ class Signup extends Component {
         } else if (type === "privacy") {
             this.setState({
                 privacyChecked: e.target.checked,
+            })
+        } else if (type === "certNumber") {
+            this.setState({
+                certNumber: e.target.value.trim(),
             })
         }
 
@@ -288,6 +294,10 @@ class Signup extends Component {
             // 개인정보처리방침 동의 확인
             this.setState({
                 privacyCheckederror: false,
+            })
+        } else if (type === "certNumber") {
+            this.setState({
+                certError: false,
             })
         }
     }
@@ -450,9 +460,9 @@ class Signup extends Component {
             this.setState({ emailSendMessage: false })
         }
     }
-    onClickSignup = (e) => {
+    onClickSignup = async (e) => {
 
-        if (this.state.slideOpen === 0) { // 회원가입 누르면
+        if (this.state.slideNumber === 0) { // 회원가입 누르면
             if (this.state.email === "" || this.state.emailerror) {
                 this.textFieldRef[0].current.focus()
                 return
@@ -489,11 +499,11 @@ class Signup extends Component {
 
 
         if (!this.state.emailerror && !this.state.nameerror && !this.state.passworderror && !this.state.passwordcheckerror && !this.state.termsCheckederror && !this.state.privacyCheckederror) {
-            if (this.state.slideOpen === 0) {
+            if (this.state.slideNumber === 0) {
                 this.props.onCheckSignupEmail(this.state.email).then((res) => { // 다음을 누를경우 이메일을 검사하는 코드
                     if (res.success) {
                         this.setState({
-                            slideOpen: 1,
+                            slideNumber: 1,
                         })
                     } else {
                         this.setState({
@@ -501,7 +511,11 @@ class Signup extends Component {
                         })
                     }
                 })
-            } else if (this.state.slideOpen === 1 && this.validationBirthday() && this.validationGender()) { // 2번째 페이지에서 다음을 누를 경우..
+            } else if (this.state.slideNumber === 1 && this.validationBirthday() && this.validationGender()) { // 2번째 페이지에서 다음을 누를 경우..
+                this.sendCertMail();
+                this.setState({ slideNumber: 2 })
+                e.target.textContent = '완료'
+            } else if (this.state.slideNumber === 2) {
                 let birthday
                 if (this.state.month.length === 1) birthday = this.state.year + "0" + this.state.month + this.state.date
                 else birthday = this.state.year + this.state.month + this.state.date
@@ -511,25 +525,35 @@ class Signup extends Component {
                 let gender = this.state.genderCurrent
                 if (this.state.genderCurrent === '사용자 지정') gender = this.state.genderCustom
 
-                axios.post('/api/email/sendEmailCertification', { email: this.state.email, name: this.state.name, password: this.state.password, birthday: birthday, gender: gender, siteType:root.site }).then((res) => {
-                }) // catch 일 경우.... 
-                this.setState({ slideOpen: 2 })
-                e.target.textContent = '완료'
-            } else if (this.state.slideOpen === 2) {
-                this.props.onLogin(this.state.email, this.state.password).then(data => { // login 부분 ***********
-                    if (data.success) {
-                        this.props.history.push(returnUrl())
+                try {
+                    const response = await axios.post('/api/email/EmailCertification', { email: this.state.email, name: this.state.name, password: this.state.password, birthday: birthday, gender: gender, cert: this.state.certNumber })
+                    
+                    if (response.data.code === 0) {
+                        this.props.onLogin(this.state.email, this.state.password).then(data => { // login 부분 ***********
+                            if (data.success) {
+                                this.props.history.push(returnUrl())
+                            } else {
+                                this.setState({ errorCode: 2, certError: true })
+                            }
+                        })
                     } else {
-                        this.setState({ errorCode: 2 })
+                        this.setState({ errorCode: 2, certError: true })
                     }
-                })
+                    
+                } catch (e) {
+                    this.setState({ errorCode: 5 })
+                }
             }
         }
     }
+
+    sendCertMail = () => {
+        return axios.post('/api/email/sendEmailCertification', { email: this.state.email, name: this.state.name, siteType:root.site })
+    }
+
     onClickSendMail = () => {
         if (0 < this.state.emailSendCount) {
-            // axios.post('/api/email/sendEmailCertification', {email: this.state.email}).then((res) => {
-            // })
+            this.sendCertMail();
             this.setState({
                 emailSendCount: this.state.emailSendCount - 1,
                 emailSendMessage: true,
@@ -552,9 +576,9 @@ class Signup extends Component {
         })
     }
     onEnteredSlide = (e) => {
-        if (this.state.slideOpen === 0) {
+        if (this.state.slideNumber === 0) {
             this.textFieldRef[0].current.focus()
-        } else if (this.state.slideOpen === 1) {
+        } else if (this.state.slideNumber === 1) {
             this.textFieldRefBirthday[0].current.focus()
         }
     }
@@ -565,7 +589,7 @@ class Signup extends Component {
     }
 
     onClickBack = () => {
-        if (this.state.slideOpen === 1) this.setState({ slideOpen: 0 })
+        if (this.state.slideNumber === 1) this.setState({ slideNumber: 0 })
     }
 
     render() {
@@ -578,8 +602,8 @@ class Signup extends Component {
                             title={
                                 isWidthUp('sm', this.props.width) ?
                                     <Box display="flex" alignItems="center">
-                                        {this.state.slideOpen < 2
-                                            ? <IconButton style={{ marginRight: "10px" }} onClick={this.state.slideOpen === 0 ? () => this.props.history.goBack() : this.onClickBack}>
+                                        {this.state.slideNumber < 2
+                                            ? <IconButton style={{ marginRight: "10px" }} onClick={this.state.slideNumber === 0 ? () => this.props.history.goBack() : this.onClickBack}>
                                                 <ArrowBackIcon style={{ color: "#0000008A" }} />
                                             </IconButton>
                                             : null}
@@ -594,8 +618,8 @@ class Signup extends Component {
                                     <Box>
                                         <Box display="flex" alignItems="center" justifyContent="center">
                                             <Box style={{ position: "absolute", left: "20px" }}>
-                                                {this.state.slideOpen < 2
-                                                    ? <IconButton onClick={this.state.slideOpen === 0 ? () => this.props.history.goBack() : this.onClickBack}>
+                                                {this.state.slideNumber < 2
+                                                    ? <IconButton onClick={this.state.slideNumber === 0 ? () => this.props.history.goBack() : this.onClickBack}>
                                                         <ArrowBackIcon style={{ color: "#0000008A" }} />
                                                     </IconButton>
                                                     : null}
@@ -614,7 +638,7 @@ class Signup extends Component {
                         />
                         <form autoComplete="off">
                             <Box className={classes.cardBody}>
-                                <Slide style={{ position: 'relative', }} direction="left" in={this.state.slideOpen === 0} timeout={{ exit: 0, enter: 0, }} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
+                                <Slide style={{ position: 'relative', }} direction="left" in={this.state.slideNumber === 0} timeout={{ exit: 0, enter: 0, }} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
                                     <CardContent style={{ padding: 0 }}>
                                         <TextField variant="outlined" onChange={this.handleChange.bind(this, "name")} error={this.state.nameerror}
                                             fullWidth label="이름" placeholder="이름을 입력해주세요." name="nickname" id="nickname" autoComplete="nickname" style={{ margin: "15px 0px 7.5px 0px" }} inputRef={this.textFieldRef[1]}
@@ -641,7 +665,7 @@ class Signup extends Component {
                                     </CardContent>
                                 </Slide>
 
-                                <Slide style={{ position: 'relative', }} direction="left" in={this.state.slideOpen === 1} timeout={{ exit: 0, enter: 500, }} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
+                                <Slide style={{ position: 'relative', }} direction="left" in={this.state.slideNumber === 1} timeout={{ exit: 0, enter: 500, }} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
                                     <CardContent style={{ padding: 0 }}>
                                         <Box height='388px'>
                                             <Typography style={{ color: '#0000008A', fontFamily: 'NotoSansKR-Regular' }}>생년월일 (선택사항)</Typography>
@@ -686,14 +710,16 @@ class Signup extends Component {
                                     </CardContent>
                                 </Slide>
 
-                                <Slide style={{ position: 'relative', }} direction="left" in={this.state.slideOpen === 2} timeout={{ exit: 0, enter: 500, }} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
+                                <Slide style={{ position: 'relative', }} direction="left" in={this.state.slideNumber === 2} timeout={{ exit: 0, enter: 500, }} mountOnEnter unmountOnExit onEnter={this.onEnterSlide.bind(this)} onExiting={this.onExitingSlide.bind(this)} onEntered={this.onEnteredSlide.bind(this)}>
                                     <CardContent style={{ padding: 0 }}>
                                         <Box height='auto' mt={2}>
                                             <Typography variant='subtitle1' align="center" style={{ color: '#0000008A' }}>
-                                                인증 메일이 <span style={{ color: root.PrimaryColor }}>{this.state.email}</span>(으)로 전송되었습니다.<br />
-                                                받으신 이메일을 열어 로그인 하러가기 버튼을 클릭하면 가입이 완료됩니다.
+                                                인증 번호가 <span style={{ color: root.PrimaryColor }}>{this.state.email}</span>(으)로 전송되었습니다.<br /><br /><br />
                                             </Typography>
                                         </Box>
+                                        <TextField variant="outlined" onChange={this.handleChange.bind(this, "certNumber")} error={this.state.certError}
+                                                fullWidth label="인증 번호" placeholder="인증 번호를 입력해주세요." style={{ margin: "15px 0px 7.5px 0px" }} inputRef={this.textFieldRef[1]}
+                                                helperText={this.state.certError ? "인증 번호가 다릅니다." : false} onKeyPress={this.onKeyPress} spellCheck="false" />
                                         <Box height='auto' mt={5}>
                                             <Typography variant='subtitle2' align="center" style={{ color: '#0000008A' }}>
                                                 이메일을 확인할 수 없나요?<br />
@@ -717,9 +743,10 @@ class Signup extends Component {
                     <Alert severity="error">
                         {
                             (this.state.errorCode === 1 && "해당 이메일로 가입한 계정이 존재합니다.") ||
-                            (this.state.errorCode === 2 && "이메일 인증 후 회원가입이 완료됩니다.") ||
+                            (this.state.errorCode === 2 && "인증 번호가 다릅니다.") ||
                             (this.state.errorCode === 3 && "인증 상태가 아닙니다.") ||
-                            (this.state.errorCode === 4 && "더 이상 인증 메일을 보낼 수 없습니다.")
+                            (this.state.errorCode === 4 && "더 이상 인증 메일을 보낼 수 없습니다.") ||
+                            (this.state.errorCode === 5 && "죄송합니다. 서버에 오류가 발생하여 처리할 수가 없습니다.")
                         }
                     </Alert>
                 </Snackbar>
