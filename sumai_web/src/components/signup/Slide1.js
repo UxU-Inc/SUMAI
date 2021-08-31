@@ -169,7 +169,7 @@ export default function Slide1(props) {
 
     if (birthDate === null) return null;
 
-    await sendCertMail();
+    sendCertMail();
 
     return {birthday: birthDate, gender: (gender === ''? undefined: gender)};
   }

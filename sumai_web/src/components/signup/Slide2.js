@@ -31,7 +31,7 @@ export default function Slide2(props) {
   const onClickSendMail = async () => {
     try {
       if (countMailsSend > 0) {
-        await sendCertMail();
+        sendCertMail();
         snackbarDispatch({type: 'success', message: <>인증 메일을 다시 전송했습니다.<br />(남은 전송 횟수: {countMailsSend - 1})</>})
         setCountMailsSend(countMailsSend - 1);
       } else {

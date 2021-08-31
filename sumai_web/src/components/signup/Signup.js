@@ -156,6 +156,7 @@ export default function Signup() {
 
       return true;
     } catch(e) {
+      snackbarDispatch({type: 'error', message: '메일을 보내는데 실패했습니다.'})
       return false;
     }
   }
