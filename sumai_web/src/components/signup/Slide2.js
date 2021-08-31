@@ -1,13 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Box, Typography, TextField } from "@material-ui/core";
+import { useTheme } from '@material-ui/styles';
 
 import axios from 'axios';
 import useLogin from '../../hook/useLogin';
 
-import { checkSite } from '../../functions/CheckSite';
 import { returnUrl } from '../../functions/util';
-
-const root = checkSite();
 
 export default function Slide2(props) {
   const { 
@@ -17,6 +15,8 @@ export default function Slide2(props) {
     account,
     snackbarDispatch,
   } = props;
+
+  const theme = useTheme();
 
   const [certNumber, setCertNumber] = useState('');
 
@@ -77,7 +77,6 @@ export default function Slide2(props) {
       }
       
     } catch (e) {
-      console.log(e);
       snackbarDispatch({type: 'error', message: '죄송합니다. 서버에 오류가 발생하여 처리할 수가 없습니다.(2)'})
       return false;
     }
@@ -98,7 +97,7 @@ export default function Slide2(props) {
     <>
       <Box height='auto' mt={2}>
         <Typography variant='subtitle1' align="center" style={{ color: '#0000008A' }}>
-          인증 번호가 <span style={{ color: root.PrimaryColor }}>{account.email}</span>(으)로 전송되었습니다.<br /><br /><br />
+          인증 번호가 <span style={{ color: theme.palette.primary.main }}>{account.email}</span>(으)로 전송되었습니다.<br /><br /><br />
         </Typography>
       </Box>
       <TextField variant="outlined" onChange={(event) => handleChange("certNumber", event)} error={certError}
@@ -107,7 +106,7 @@ export default function Slide2(props) {
       <Box height='auto' mt={5}>
         <Typography variant='subtitle2' align="center" style={{ color: '#0000008A' }}>
           이메일을 확인할 수 없나요?<br />
-          스팸편지함 확인 또는 <span onClick={onClickSendMail} style={{ color: root.PrimaryColor, cursor: 'pointer' }}>인증 메일 다시 보내기</span>
+          스팸편지함 확인 또는 <span onClick={onClickSendMail} style={{ color: theme.palette.primary.main, cursor: 'pointer' }}>인증 메일 다시 보내기</span>
         </Typography>
       </Box>
     </>

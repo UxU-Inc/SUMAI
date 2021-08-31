@@ -84,7 +84,7 @@ const useStyles = theme => ({
             color: root.PrimaryColor
         },
         "&:active": {
-            color: root.HoberColor
+            color: root.HoverColor
         },
     }
 });

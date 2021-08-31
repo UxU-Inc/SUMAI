@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
   },
   loginButton: {
     '&:hover': {
-      background: root.HoberColor,
+      background: root.HoverColor,
     },
     background: root.PrimaryColor,
     color: '#fff',

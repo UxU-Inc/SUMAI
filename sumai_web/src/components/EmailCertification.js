@@ -40,9 +40,9 @@ const useStyles = theme => ({
     loginMoveButton: {
         variant: 'contained',
         color: '#ffffff',
-        background: root.PrimaryColor,
+        background: theme.palette.primary.main,
         "&:hover": {
-            background: root.HoberColor
+            background: theme.palette.hover.main
         },
         padding: '0px 30px',
         height: '50px',

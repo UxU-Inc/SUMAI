@@ -64,9 +64,9 @@ const useStyles = theme => ({
   loginButton: {
     variant: 'contained',
     color: '#ffffff',
-    background: root.PrimaryColor,
+    background: theme.palette.primary.main,
     "&:hover": {
-      background: root.HoberColor,
+      background: theme.palette.hover.main,
     },
     width: '100%',
     height: '50px',
@@ -77,9 +77,9 @@ const useStyles = theme => ({
   loginButtonMob: {
     variant: 'contained',
     color: '#ffffff',
-    background: root.PrimaryColor,
+    background: theme.palette.primary.main,
     "&:hover": {
-      background: root.HoberColor,
+      background: theme.palette.hover.main,
     },
     width: '100%',
     height: '50px',
@@ -89,7 +89,7 @@ const useStyles = theme => ({
   accountCreateButton: {
     padding: "7.5px 10px",
     fontSize: "15px",
-    color: root.PrimaryColor,
+    color: theme.palette.primary.main,
     "&:hover": {
       background: "none"
     },

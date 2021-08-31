@@ -88,9 +88,9 @@ const useStyles = makeStyles(theme => ({
   signupButton: {
     variant: 'contained',
     color: '#ffffff',
-    background: root.PrimaryColor,
+    background: theme.palette.primary.main,
     "&:hover": {
-      background: root.HoberColor
+      background: theme.palette.hover.main
     },
     width: '100%',
     height: '50px',

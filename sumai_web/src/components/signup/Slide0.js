@@ -3,10 +3,7 @@ import { Box, Button, Checkbox, FormControlLabel, makeStyles, TextField } from "
 
 import DialogContents from '../DialogContents'
 
-import { checkSite } from '../../functions/CheckSite';
 import axios from 'axios';
-
-const root = checkSite();
 
 const useStyles = makeStyles(theme => ({
   termsButton: {
@@ -15,9 +12,9 @@ const useStyles = makeStyles(theme => ({
     fontSize: "12px",
     color: "#fff",
     fontFamily: "NotoSansKR-Light",
-    background: root.PrimaryColor,
+    background: theme.palette.primary.main,
     "&:hover": {
-      background: root.HoberColor,
+      background: theme.palette.hover.main,
     },
   },
   termsCheckBox: {

@@ -35,6 +35,9 @@ const theme = createMuiTheme({
     secondary: {
       main: root.SecondaryColor,
     },
+    hover: {
+      main: root.HoverColor,
+    },
   },
 });
 

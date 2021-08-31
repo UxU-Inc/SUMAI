@@ -14,7 +14,7 @@ export const checkSite = () => {
       logoHeight: 28.125,
       PrimaryColor: root.VOIPrimaryColor,
       SecondaryColor: root.VOISecondaryColor,
-      HoberColor: root.VOIHoberColor,
+      HoverColor: root.VOIHoverColor,
     };
   }
   else {
@@ -25,7 +25,7 @@ export const checkSite = () => {
       logoHeight: 28.2,
       PrimaryColor: root.PrimaryColor,
       SecondaryColor: root.SecondaryColor,
-      HoberColor: root.HoberColor,
+      HoverColor: root.HoverColor,
     };
   }
 }

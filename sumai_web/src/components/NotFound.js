@@ -54,7 +54,7 @@ const useStyles = theme => ({
         color: '#ffffff',
         background: root.PrimaryColor,
         "&:hover": {
-            background: root.HoberColor
+            background: root.HoverColor
         },
         width: '100%',
         height: '50px',

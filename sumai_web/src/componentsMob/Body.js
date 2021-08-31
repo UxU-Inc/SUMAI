@@ -59,7 +59,7 @@ const useStyles = theme => ({
       color: '#ffffff',
       background: root.PrimaryColor,
       "&:hover": {
-        background: root.HoberColor
+        background: root.HoverColor
       },
       padding: theme.spacing(1),
       margin: "0px 10px 10px 0px",
