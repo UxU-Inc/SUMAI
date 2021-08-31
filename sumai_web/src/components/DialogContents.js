@@ -31,27 +31,27 @@ const useStyles = makeStyles((theme) => ({
 
 export default function DialogContents(props) {
   const theme = useTheme();
-    const classes = useStyles();
-    const matches = useMediaQuery(theme.breakpoints.up('sm'));
-    const {DialogContentState, setDialogContentState, contentType} = props
+  const classes = useStyles();
+  const matches = useMediaQuery(theme.breakpoints.up('sm'));
+  const { dialogStatus, setDialogStatus } = props
 
-    const handleClose = () => {
-        setDialogContentState(false)
-    }
+  const handleClose = () => {
+    setDialogStatus(dialogStatus.type, false)
+  }
 
-    return (
-        <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={DialogContentState} fullScreen={!matches}
-        style={{justifyContent: 'center', margin: '0 auto'}}>
-            <DialogTitle id="customized-dialog-title" onClose={handleClose} style={{backgroundColor: root.PrimaryColor, color: 'white', padding: "10px 15px"}}>
-                {(contentType==='privacy' && '개인정보처리방침') || (contentType==='terms' && '이용약관')}
-            </DialogTitle>
-            <DialogContent style={matches?{maxHeight: '500px', width: '450px',}:{}} className={classes.DialogContent} >
-                {(contentType==='privacy' && <PrivacyContents/>) || (contentType==='terms' && <TermsContents/>)}
-            </DialogContent>
-            <DialogActions style={{backgroundColor: 'WhiteSmoke'}}>
-                <Button onClick={handleClose}>확인</Button>
-            </DialogActions>
-        </Dialog>
-    )
+  return (
+    <Dialog onClose={() => handleClose()} aria-labelledby="customized-dialog-title" open={dialogStatus.open} fullScreen={!matches}
+      style={{ justifyContent: 'center', margin: '0 auto' }}>
+      <DialogTitle id="customized-dialog-title" onClose={handleClose} style={{ backgroundColor: root.PrimaryColor, color: 'white', padding: "10px 15px" }}>
+        {(dialogStatus.type === 'privacy' && '개인정보처리방침') || (dialogStatus.type === 'terms' && '이용약관')}
+      </DialogTitle>
+      <DialogContent style={matches ? { maxHeight: '500px', width: '450px', } : {}} className={classes.DialogContent} >
+        {(dialogStatus.type === 'privacy' && <PrivacyContents />) || (dialogStatus.type === 'terms' && <TermsContents />)}
+      </DialogContent>
+      <DialogActions style={{ backgroundColor: 'WhiteSmoke' }}>
+        <Button onClick={handleClose}>확인</Button>
+      </DialogActions>
+    </Dialog>
+  )
 }
 

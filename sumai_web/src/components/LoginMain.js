@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Signup from "./Signup";
+import Signup from "./signup/Signup";
 import Login from "./Login";
 import { Alert, AlertTitle } from '@material-ui/lab';
 
