@@ -128,6 +128,10 @@ class Login extends Component {
       snsloginerror: '',
       toomanyerror: false,
       errorNotice: false,
+      dialogStatus: {
+        type: undefined,
+        open: false,
+      },
     }
     this.textFieldRef = [React.createRef(), React.createRef()]
   }
@@ -230,10 +234,9 @@ class Login extends Component {
     }
   }
 
-  setDialogOpen = (bool, contentType) => {
+  setDialogStatus = (contentType, bool) => {
     this.setState({
-      dialogOpen: bool,
-      dialogContentType: contentType,
+      dialogStatus: {type: contentType, open: bool},
     })
   }
 
@@ -303,8 +306,8 @@ class Login extends Component {
 
           <Grid container justify="center" >
             <Box display="flex" flexDirection="row-reverse" style={{ width: "450px" }}>
-              <Button className={classes.termsButton} onClick={this.setDialogOpen.bind(this, true, 'terms')}>개인정보처리방침</Button>
-              <Button className={classes.termsButton} onClick={this.setDialogOpen.bind(this, true, 'privacy')}>이용약관</Button>
+              <Button className={classes.termsButton} onClick={this.setDialogStatus.bind(this, 'terms', true)}>개인정보처리방침</Button>
+              <Button className={classes.termsButton} onClick={this.setDialogStatus.bind(this, 'privacy', true)}>이용약관</Button>
             </Box>
           </Grid>
 
@@ -315,7 +318,7 @@ class Login extends Component {
               {this.state.toomanyerror ? "잠시 후 시도해주세요." : null}
             </Alert>
           </Snackbar>
-          <DialogContents DialogContentState={this.state.dialogOpen} setDialogContentState={this.setDialogOpen} contentType={this.state.dialogContentType} />
+          <DialogContents dialogStatus={this.state.dialogStatus} setDialogStatus={this.setDialogStatus} />
         </div>
       )
     }
@@ -372,8 +375,8 @@ class Login extends Component {
 
 
           <Box textAlign="right" alignSelf="flex-end" style={{ padding: "10px 30px 20px 40px" }}>
-            <Button className={classes.termsButton} onClick={this.setDialogOpen.bind(this, true, 'terms')}>이용약관</Button>
-            <Button className={classes.termsButton} onClick={this.setDialogOpen.bind(this, true, 'privacy')}>개인정보처리방침</Button>
+            <Button className={classes.termsButton} onClick={this.setDialogStatus.bind(this, 'terms', true)}>이용약관</Button>
+            <Button className={classes.termsButton} onClick={this.setDialogStatus.bind(this, 'privacy', true)}>개인정보처리방침</Button>
           </Box>
 
           <Snackbar open={this.state.errorNotice} autoHideDuration={3000} onClose={this.snackBarHandleClose}>
@@ -383,7 +386,7 @@ class Login extends Component {
               {this.state.toomanyerror ? "잠시 후 시도해주세요." : null}
             </Alert>
           </Snackbar>
-          <DialogContents DialogContentState={this.state.dialogOpen} setDialogContentState={this.setDialogOpen} contentType={this.state.dialogContentType} />
+          <DialogContents dialogStatus={this.state.dialogStatus} setDialogStatus={this.setDialogStatus} />
         </Box>
       )
     }

@@ -47,9 +47,13 @@ export function loginRequest(email, password) {
         .then((response) => {
             // SUCCEED
             dispatch(loginSuccess(response.data.id, response.data.email, response.data.name));
+
+            return {status: "SUCCESS"}
         }).catch((error) => {
             // FAILED
             dispatch(loginFailure(error.response.data.code || -1));
+
+            return {error: error.response.data.code || -1}
         });
     };
 }
