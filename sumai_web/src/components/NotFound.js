@@ -6,6 +6,7 @@ import { Card } from '@material-ui/core';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 import imgLogo from '../images/SUMAI_logo.png';
+import sumaiIcon from '../images/sumai192.png';
 import * as root from '../rootValue';
 
 const useStyles = (theme) => ({
@@ -100,7 +101,9 @@ function EmailLoginComponent(props) {
           elevation={3}
           className={classes.card}
           style={
-            matches ? { display: 'inline-block', maxWidth: '350px', minWidth: '300px', borderRadius: '0px', boxShadow: 'none' } : { padding: '40px 10px 0', borderRadius: '0px', boxShadow: 'none' }
+            matches
+              ? { display: 'inline-block', maxWidth: '350px', minWidth: '300px', borderRadius: '0px', boxShadow: 'none' }
+              : { padding: '40px 10px 0', borderRadius: '0px', boxShadow: 'none' }
           }>
           <Header matches={matches} classes={classes} />
           <Box style={matches ? { padding: '16px 0', minHeight: '150px' } : { flex: '1' }}>
@@ -110,7 +113,7 @@ function EmailLoginComponent(props) {
             </Typography>
           </Box>
         </Card>
-        {matches && <img src='https://www.sumai.co.kr/images/logo192.png' alt='SUMAI' className={classes.imgLogos} />}
+        {matches && <img src={sumaiIcon} alt='SUMAI' className={classes.imgLogos} />}
       </Box>
     </Box>
   );

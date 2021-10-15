@@ -7,6 +7,7 @@ import FeaturedPlayListIcon from "@material-ui/icons/FeaturedPlayList";
 
 import { onClickExternLink } from '../../functions/util';
 import * as root from "../../rootValue";
+import sumaiIcon from "./icon/sumai192.png"
 
 
 const useStyles = makeStyles((theme) => ({
@@ -30,7 +31,7 @@ function MenuListComposition(props) {
   const menuInfoList = [
     {
       Icon: undefined,
-      imageURL: 'https://www.sumai.co.kr/images/logo192.png',
+      imageURL: sumaiIcon,
       name: '요약',
       link: 'https://www.sumai.co.kr',
       color: undefined

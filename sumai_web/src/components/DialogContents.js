@@ -35,8 +35,16 @@ export default function DialogContents(props) {
   };
 
   return (
-    <Dialog onClose={() => handleClose()} aria-labelledby='customized-dialog-title' open={dialogStatus.open} fullScreen={!matches} style={{ justifyContent: 'center', margin: '0 auto' }}>
-      <DialogTitle id='customized-dialog-title' onClose={handleClose} style={{ backgroundColor: theme.palette.primary.main, color: 'white', padding: '10px 15px' }}>
+    <Dialog
+      onClose={() => handleClose()}
+      aria-labelledby='customized-dialog-title'
+      open={dialogStatus.open}
+      fullScreen={!matches}
+      style={{ justifyContent: 'center', margin: '0 auto' }}>
+      <DialogTitle
+        id='customized-dialog-title'
+        onClose={handleClose}
+        style={{ backgroundColor: theme.palette.primary.main, color: 'white', padding: '10px 15px' }}>
         {(dialogStatus.type === 'privacy' && '개인정보처리방침') || (dialogStatus.type === 'terms' && '이용약관')}
       </DialogTitle>
       <DialogContent style={matches ? { maxHeight: '500px', width: '450px' } : {}} className={classes.DialogContent}>
