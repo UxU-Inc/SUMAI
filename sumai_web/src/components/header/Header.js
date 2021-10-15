@@ -40,12 +40,12 @@ const useStyles = makeStyles((theme) => ({
   imgLogo: {
     width: 80,
     height: 28.2,
-    alt: "SUMAI",
+    alt: 'SUMAI',
   },
   imgLogoMob: {
     width: 64,
     height: 22.56,
-    alt: "SUMAI",
+    alt: 'SUMAI',
   },
   newsButton: {
     '&:hover': {
@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
   },
   loginButton: {
     '&:hover': {
-      background: root.HoberColor,
+      background: root.HoverColor,
     },
     background: root.PrimaryColor,
     color: '#fff',
@@ -92,9 +92,7 @@ function Header(props) {
 
   const matches = useMediaQuery(theme.breakpoints.up('md'));
   const xsm = useMediaQuery(theme.breakpoints.up('xsm'));
-  const isLoggedIn = useSelector(
-    (state) => state.authentication.status.isLoggedIn
-  );
+  const isLoggedIn = useSelector((state) => state.authentication.status.isLoggedIn);
 
   const [feedbackDialogOpen, setFeedbackDialogOpen] = React.useState(false);
 
@@ -104,18 +102,8 @@ function Header(props) {
 
   const Logo = (
     <a href='/' className={classes.link}>
-      <img
-        src={imgLogo}
-        alt='SUMAI'
-        className={matches ? classes.imgLogo : classes.imgLogoMob}
-      />
-      <Typography
-        className={classes.summaryTypo}
-        style={
-          matches
-            ? { fontSize: '28px', marginLeft: '10px' }
-            : { fontSize: '24px', marginLeft: '8px' }
-        }>
+      <img src={imgLogo} alt='SUMAI' className={matches ? classes.imgLogo : classes.imgLogoMob} />
+      <Typography className={classes.summaryTypo} style={matches ? { fontSize: '28px', marginLeft: '10px' } : { fontSize: '24px', marginLeft: '8px' }}>
         요약
       </Typography>
     </a>
@@ -125,21 +113,14 @@ function Header(props) {
     <Button
       className={classes.loginButton}
       onClick={onClickExternLink('/login')}
-      style={
-        matches
-          ? { padding: '7.5px 15px' }
-          : { padding: '5px', minWidth: '80px' }
-      }>
+      style={matches ? { padding: '7.5px 15px' } : { padding: '5px', minWidth: '80px' }}>
       <AccountIcon style={{ marginRight: '5px' }} />
       로그인
     </Button>
   );
 
   const loginLayout = (
-    <Box
-      display='flex'
-      flexDirection='row'
-      style={{ marginLeft: 'auto', color: 'rgba(0, 0, 0, 0.87)' }}>
+    <Box display='flex' flexDirection='row' style={{ marginLeft: 'auto', color: 'rgba(0, 0, 0, 0.87)' }}>
       <Box p={0}>
         <AccountManagementMenu onLogout={props.onLogout} />
       </Box>
@@ -148,18 +129,9 @@ function Header(props) {
 
   return (
     <div className={classes.root}>
-      <AppBar
-        position='static'
-        elevation={0}
-        className={classes.AppBarStyle}
-        style={matches ? { padding: '10px 0px' } : { minWidth: '250px' }}>
-        <Toolbar
-          variant='dense'
-          style={matches ? {} : { padding: '0px 10px 0px 20px', flex: 1 }}>
-          <LeftDrawer
-            classes={classes}
-            openFeedbackDialog={openFeedbackDialog}
-          />
+      <AppBar position='static' elevation={0} className={classes.AppBarStyle} style={matches ? { padding: '10px 0px' } : { minWidth: '250px' }}>
+        <Toolbar variant='dense' style={matches ? {} : { padding: '0px 10px 0px 20px', flex: 1 }}>
+          <LeftDrawer classes={classes} openFeedbackDialog={openFeedbackDialog} />
 
           {Logo}
 
@@ -171,10 +143,7 @@ function Header(props) {
         </Toolbar>
       </AppBar>
 
-      <FeedbackDialog
-        open={feedbackDialogOpen}
-        setOpen={setFeedbackDialogOpen}
-      />
+      <FeedbackDialog open={feedbackDialogOpen} setOpen={setFeedbackDialogOpen} />
     </div>
   );
 }

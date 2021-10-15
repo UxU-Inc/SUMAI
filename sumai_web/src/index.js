@@ -1,22 +1,22 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css'
-import App from './App';
+import React from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
+import App from "./App";
 
-import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
-import reducers from './reducers';
-import thunk from 'redux-thunk';
+import { Provider } from "react-redux";
+import { createStore, applyMiddleware } from "redux";
+import reducers from "./reducers";
+import thunk from "redux-thunk";
 
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 
-import { checkSite } from './functions/CheckSite';
+import { checkSite } from "./functions/CheckSite";
 
 const root = checkSite();
 
 const theme = createMuiTheme({
   typography: {
-    fontFamily: 'NotoSansKR-Medium',
+    fontFamily: "NotoSansKR-Medium",
   },
   breakpoints: {
     values: {
@@ -35,6 +35,9 @@ const theme = createMuiTheme({
     secondary: {
       main: root.SecondaryColor,
     },
+    hover: {
+      main: root.HoverColor,
+    },
   },
 });
 
@@ -46,5 +49,5 @@ ReactDOM.render(
       <App />
     </Provider>
   </MuiThemeProvider>,
-  document.getElementById('root')
+  document.getElementById("root")
 );

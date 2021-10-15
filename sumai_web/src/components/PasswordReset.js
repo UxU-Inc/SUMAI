@@ -55,9 +55,9 @@ const useStyles = theme => ({
     blueButton: {
         variant: 'contained',
         color: '#ffffff',
-        background: root.PrimaryColor,
+        background: theme.palette.primary.main,
         "&:hover": {
-            background: root.HoberColor
+            background: theme.palette.hover.main
         },
         width: '100%',
         height: '50px',
@@ -195,7 +195,7 @@ function PasswordResetComponent(props) {
                         <Slide style={{ position: 'absolute', }} direction="left" in={slideNumber === 1} timeout={{ exit: 0, enter: 500, }} mountOnEnter unmountOnExit onEnter={onEnterSlide} onExiting={onExitingSlide}>
                             <CardContent style={{ padding: 0 }}>
                                 <Typography style={{ fontFamily: 'NotoSansKR-Regular', color: '#424242', fontSize: '18px' }}>
-                                    <span style={{ color: root.PrimaryColor }}>{email}</span>로 이메일을 전송하였습니다. 해당 메일을 통해 인증 해주세요.
+                                    <span style={{ color: theme.palette.primary.main }}>{email}</span>로 이메일을 전송하였습니다. 해당 메일을 통해 인증 해주세요.
                                 </Typography>
                             </CardContent>
                         </Slide>
