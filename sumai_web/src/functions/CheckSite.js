@@ -1,5 +1,6 @@
 import imgSumaiLogo from '../images/SUMAI_logo.png';
 import imgVOILogo from '../images/VOI_logo.png';
+import imgCaiiLogo from '../images/Caii_logo.png';
 
 import * as root from '../rootValue';
 
@@ -15,6 +16,16 @@ export const checkSite = () => {
       PrimaryColor: root.VOIPrimaryColor,
       SecondaryColor: root.VOISecondaryColor,
       HoverColor: root.VOIHoverColor,
+    };
+  } else if (hostname === 'https://caii.sumai.co.kr/' || hostname === 'https://caii_en.sumai.co.kr/') {
+    return {
+      site: 'Caii',
+      imgLogo: imgCaiiLogo,
+      logoWidth: 68,
+      logoHeight: 30,
+      PrimaryColor: root.CaiiPrimaryColor,
+      SecondaryColor: root.CaiiSecondaryColor,
+      HoverColor: root.CaiiHoverColor,
     };
   } else {
     return {
